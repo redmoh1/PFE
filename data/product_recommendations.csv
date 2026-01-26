@@ -1,0 +1,41 @@
+RuleID,IF (Buy),THEN (Recommend),Support,Confidence,Lift,Leverage,Conviction
+1,"Case, Phone",Screen Protector,0.1,1.0,10.0,0.09,inf
+2,Screen Protector,"Case, Phone",0.1,1.0,10.0,0.09,inf
+3,Screen Protector,Case,0.1,1.0,5.0,0.08,inf
+4,"Phone, Screen Protector",Case,0.1,1.0,5.0,0.08,inf
+5,Headphones,Phone,0.2,1.0,2.5,0.12,inf
+6,Keyboard,Laptop,0.2,1.0,2.5,0.12,inf
+7,Keyboard,Mouse,0.2,1.0,2.5,0.12,inf
+8,Laptop,Mouse,0.4,1.0,2.5,0.24,inf
+9,Mouse,Laptop,0.4,1.0,2.5,0.24,inf
+10,Screen Protector,Phone,0.1,1.0,2.5,0.06,inf
+11,"Case, Screen Protector",Phone,0.1,1.0,2.5,0.06,inf
+12,"Charger, Headphones",Phone,0.1,1.0,2.5,0.06,inf
+13,"Keyboard, Laptop",Mouse,0.2,1.0,2.5,0.12,inf
+14,"Keyboard, Mouse",Laptop,0.2,1.0,2.5,0.12,inf
+15,Keyboard,"Laptop, Mouse",0.2,1.0,2.5,0.12,inf
+16,Charger,Phone,0.2,0.6666666666666667,1.6666666666666667,0.08000000000000002,1.8000000000000003
+17,Case,Screen Protector,0.1,0.5,5.0,0.08,1.8
+18,Case,"Phone, Screen Protector",0.1,0.5,5.0,0.08,1.8
+19,Tablet,Case,0.1,0.5,2.5,0.06,1.6
+20,Case,Tablet,0.1,0.5,2.5,0.06,1.6
+21,Phone,Headphones,0.2,0.5,2.5,0.12,1.6
+22,Laptop,Keyboard,0.2,0.5,2.5,0.12,1.6
+23,Mouse,Keyboard,0.2,0.5,2.5,0.12,1.6
+24,"Charger, Phone",Headphones,0.1,0.5,2.5,0.06,1.6
+25,Headphones,"Charger, Phone",0.1,0.5,2.5,0.06,1.6
+26,"Laptop, Mouse",Keyboard,0.2,0.5,2.5,0.12,1.6
+27,Laptop,"Keyboard, Mouse",0.2,0.5,2.5,0.12,1.6
+28,Mouse,"Keyboard, Laptop",0.2,0.5,2.5,0.12,1.6
+29,Headphones,Charger,0.1,0.5,1.6666666666666667,0.04000000000000001,1.4
+30,Phone,Charger,0.2,0.5,1.6666666666666667,0.08000000000000002,1.4
+31,Tablet,Charger,0.1,0.5,1.6666666666666667,0.04000000000000001,1.4
+32,"Headphones, Phone",Charger,0.1,0.5,1.6666666666666667,0.04000000000000001,1.4
+33,Case,Phone,0.1,0.5,1.25,0.01999999999999999,1.2
+34,Charger,Headphones,0.1,0.33333333333333337,1.6666666666666667,0.04000000000000001,1.2000000000000002
+35,Charger,Tablet,0.1,0.33333333333333337,1.6666666666666667,0.04000000000000001,1.2000000000000002
+36,Charger,"Headphones, Phone",0.1,0.33333333333333337,1.6666666666666667,0.04000000000000001,1.2000000000000002
+37,Phone,Screen Protector,0.1,0.25,2.5,0.06,1.2
+38,Phone,"Case, Screen Protector",0.1,0.25,2.5,0.06,1.2
+39,Phone,"Charger, Headphones",0.1,0.25,2.5,0.06,1.2
+40,Phone,Case,0.1,0.25,1.25,0.01999999999999999,1.0666666666666667

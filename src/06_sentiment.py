@@ -369,31 +369,47 @@ def plot_sentiment_distribution(df: pd.DataFrame, plots_dir: Path) -> None:
     logger.info("Generating sentiment visualizations...")
     
     if "SentimentLabel" not in df.columns:
-        raise ValueError("Missing SentimentLabel column")
+        logger.warning("Missing SentimentLabel column - skipping visualization")
+        return
+    
+    # Check if we have any data to plot
+    if df.empty or df["SentimentLabel"].isna().all():
+        logger.warning("No sentiment data available - skipping visualization")
+        return
     
     plt.style.use('seaborn-v0_8-darkgrid')
     
     # 1. Sentiment Label Distribution (Pie Chart)
     fig, ax = plt.subplots(figsize=(10, 7))
     sentiment_counts = df["SentimentLabel"].value_counts()
-    colors = {'Positive': '#6A994E', 'Neutral': '#F2CC8F', 'Negative': '#D62828'}
-    color_list = [colors.get(label, '#999999') for label in sentiment_counts.index]
     
-    wedges, texts, autotexts = ax.pie(
-        sentiment_counts.values,
-        labels=sentiment_counts.index,
-        autopct='%1.1f%%',
-        colors=color_list,
-        explode=(0.05, 0.05, 0.05),
-        startangle=90,
-        textprops={'fontsize': 11, 'fontweight': 'bold'}
-    )
-    ax.set_title("Sentiment Distribution\n(Customer Reviews)", fontsize=13, fontweight='bold', pad=20)
-    plt.tight_layout()
-    plot_path = plots_dir / "sentiment_distribution.png"
-    plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-    plt.close()
-    logger.info(f"Sentiment distribution pie chart saved to {plot_path}")
+    # Skip if no categories
+    if len(sentiment_counts) == 0:
+        logger.warning("No sentiment categories found - skipping pie chart")
+        plt.close()
+    else:
+        colors = {'Positive': '#6A994E', 'Neutral': '#F2CC8F', 'Negative': '#D62828'}
+        color_list = [colors.get(label, '#999999') for label in sentiment_counts.index]
+        
+        # CRITICAL: Generate explode dynamically to match number of categories
+        # Works for 2, 3, or any number of sentiment classes
+        explode = [0.05] * len(sentiment_counts)
+        
+        wedges, texts, autotexts = ax.pie(
+            sentiment_counts.values,
+            labels=sentiment_counts.index,
+            autopct='%1.1f%%',
+            colors=color_list,
+            explode=explode,
+            startangle=90,
+            textprops={'fontsize': 11, 'fontweight': 'bold'}
+        )
+        ax.set_title("Sentiment Distribution\n(Customer Reviews)", fontsize=13, fontweight='bold', pad=20)
+        plt.tight_layout()
+        plot_path = plots_dir / "sentiment_distribution.png"
+        plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        logger.info(f"Sentiment distribution pie chart saved to {plot_path}")
     
     # 2. Sentiment Score Distribution (Histogram)
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -656,7 +672,16 @@ def main() -> None:
         
         # If no reviews available, skip sentiment analysis gracefully
         if df is None:
-            logger.info("Sentiment Analysis skipped - exiting gracefully")
+            # CRITICAL: Delete old sentiment_results.csv to ensure no stale data
+            output_path = DATA_DIR / "sentiment_results.csv"
+            if output_path.exists():
+                try:
+                    output_path.unlink()
+                    logger.info("✓ Deleted old sentiment_results.csv (no reviews data)")
+                except Exception as del_e:
+                    logger.error(f"✗ Failed to delete old sentiment results: {del_e}")
+            
+            logger.info("Sentiment Analysis skipped (status: no_sentiment_data) - exiting gracefully")
             sys.exit(0)  # Exit with success (not a failure)
         
         logger.info(f"  Status: Loaded {len(df)} reviews")

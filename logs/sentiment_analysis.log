@@ -1290,3 +1290,475 @@ Outputs:
 2026-01-24 23:58:34,787 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
 2026-01-24 23:58:34,787 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
 2026-01-24 23:58:34,787 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 14:17:01,986 - INFO - ============================================================
+2026-01-26 14:17:01,986 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 14:17:01,986 - INFO - ============================================================
+2026-01-26 14:17:01,986 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 14:17:01,986 - INFO - ============================================================
+2026-01-26 14:17:01,986 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 14:17:01,986 - INFO - ============================================================
+2026-01-26 14:17:01,986 - INFO - ✓ Found 120 review records in customer_reviews.csv
+2026-01-26 14:17:01,986 - INFO - ✓ Validated 120 reviews for sentiment analysis
+2026-01-26 14:17:01,986 - INFO - ============================================================
+2026-01-26 14:17:01,986 - INFO -   Status: Loaded 120 reviews
+2026-01-26 14:17:01,986 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 14:17:01,986 - INFO - Preprocessing 120 reviews...
+2026-01-26 14:17:02,000 - INFO - Successfully preprocessed 120 reviews (quality: 100.0%)
+2026-01-26 14:17:02,000 - INFO -   Status: 120 valid reviews
+2026-01-26 14:17:02,000 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 14:17:02,000 - INFO - Computing sentiment scores...
+2026-01-26 14:17:02,016 - INFO - Computing VADER scores for comparison...
+2026-01-26 14:17:02,045 - INFO - Sentiment computation completed for 120 reviews
+2026-01-26 14:17:02,045 - INFO -   Status: Sentiment analysis complete
+2026-01-26 14:17:02,045 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 14:17:02,046 - INFO - Computing sentiment statistics...
+2026-01-26 14:17:02,050 - INFO - ======================================================================
+2026-01-26 14:17:02,050 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 14:17:02,050 - INFO - ======================================================================
+2026-01-26 14:17:02,050 - INFO - 
+Total Reviews Analyzed: 120
+2026-01-26 14:17:02,050 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 14:17:02,050 - INFO -   Positive    :  65 reviews ( 54.2%)
+2026-01-26 14:17:02,050 - INFO -   Negative    :  55 reviews ( 45.8%)
+2026-01-26 14:17:02,050 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 14:17:02,050 - INFO -   Mean:      0.0833
+2026-01-26 14:17:02,050 - INFO -   Median:    0.3333
+2026-01-26 14:17:02,050 - INFO -   Std Dev:   0.5118
+2026-01-26 14:17:02,050 - INFO -   Range:    [-0.9750, 0.8250]
+2026-01-26 14:17:02,050 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 14:17:02,050 - INFO -   Mean:      0.5719
+2026-01-26 14:17:02,050 - INFO -   Max:       1.0000
+2026-01-26 14:17:02,050 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 14:17:02,050 - INFO -   Unique Customers: 30
+2026-01-26 14:17:02,050 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-26 14:17:02,050 - INFO - 
+======================================================================
+2026-01-26 14:17:02,050 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 14:17:02,050 - INFO - Generating sentiment visualizations...
+2026-01-26 14:17:02,133 - ERROR - Sentiment analysis failed: 'explode' must be of length 'x'
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment.py", line 681, in main
+    plot_sentiment_distribution(df, PLOTS_DIR)
+  File "C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment.py", line 382, in plot_sentiment_distribution
+    wedges, texts, autotexts = ax.pie(
+                               ^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\__init__.py", line 1478, in inner
+    return func(ax, *map(sanitize_sequence, args), **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\axes\_axes.py", line 3239, in pie
+    raise ValueError("'explode' must be of length 'x'")
+ValueError: 'explode' must be of length 'x'
+2026-01-26 14:33:27,239 - INFO - ============================================================
+2026-01-26 14:33:27,239 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 14:33:27,239 - INFO - ============================================================
+2026-01-26 14:33:27,239 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 14:33:27,239 - INFO - ============================================================
+2026-01-26 14:33:27,239 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 14:33:27,239 - INFO - ============================================================
+2026-01-26 14:33:27,239 - INFO - ✓ Found 120 review records in customer_reviews.csv
+2026-01-26 14:33:27,239 - INFO - ✓ Validated 120 reviews for sentiment analysis
+2026-01-26 14:33:27,239 - INFO - ============================================================
+2026-01-26 14:33:27,239 - INFO -   Status: Loaded 120 reviews
+2026-01-26 14:33:27,239 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 14:33:27,239 - INFO - Preprocessing 120 reviews...
+2026-01-26 14:33:27,251 - INFO - Successfully preprocessed 120 reviews (quality: 100.0%)
+2026-01-26 14:33:27,251 - INFO -   Status: 120 valid reviews
+2026-01-26 14:33:27,251 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 14:33:27,251 - INFO - Computing sentiment scores...
+2026-01-26 14:33:27,281 - INFO - Computing VADER scores for comparison...
+2026-01-26 14:33:27,294 - INFO - Sentiment computation completed for 120 reviews
+2026-01-26 14:33:27,294 - INFO -   Status: Sentiment analysis complete
+2026-01-26 14:33:27,294 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 14:33:27,294 - INFO - Computing sentiment statistics...
+2026-01-26 14:33:27,305 - INFO - ======================================================================
+2026-01-26 14:33:27,305 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 14:33:27,305 - INFO - ======================================================================
+2026-01-26 14:33:27,305 - INFO - 
+Total Reviews Analyzed: 120
+2026-01-26 14:33:27,305 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 14:33:27,305 - INFO -   Positive    :  65 reviews ( 54.2%)
+2026-01-26 14:33:27,305 - INFO -   Negative    :  55 reviews ( 45.8%)
+2026-01-26 14:33:27,305 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 14:33:27,305 - INFO -   Mean:      0.0833
+2026-01-26 14:33:27,305 - INFO -   Median:    0.3333
+2026-01-26 14:33:27,305 - INFO -   Std Dev:   0.5118
+2026-01-26 14:33:27,305 - INFO -   Range:    [-0.9750, 0.8250]
+2026-01-26 14:33:27,305 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 14:33:27,305 - INFO -   Mean:      0.5719
+2026-01-26 14:33:27,305 - INFO -   Max:       1.0000
+2026-01-26 14:33:27,305 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 14:33:27,305 - INFO -   Unique Customers: 30
+2026-01-26 14:33:27,305 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-26 14:33:27,305 - INFO - 
+======================================================================
+2026-01-26 14:33:27,305 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 14:33:27,305 - INFO - Generating sentiment visualizations...
+2026-01-26 14:33:27,385 - ERROR - Sentiment analysis failed: 'explode' must be of length 'x'
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment.py", line 681, in main
+    plot_sentiment_distribution(df, PLOTS_DIR)
+  File "C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment.py", line 382, in plot_sentiment_distribution
+    wedges, texts, autotexts = ax.pie(
+                               ^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\__init__.py", line 1478, in inner
+    return func(ax, *map(sanitize_sequence, args), **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\axes\_axes.py", line 3239, in pie
+    raise ValueError("'explode' must be of length 'x'")
+ValueError: 'explode' must be of length 'x'
+2026-01-26 15:02:55,455 - INFO - ============================================================
+2026-01-26 15:02:55,455 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 15:02:55,455 - INFO - ============================================================
+2026-01-26 15:02:55,455 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 15:02:55,455 - INFO - ============================================================
+2026-01-26 15:02:55,455 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 15:02:55,455 - INFO - ============================================================
+2026-01-26 15:02:55,455 - INFO - ✓ Found 120 review records in customer_reviews.csv
+2026-01-26 15:02:55,455 - INFO - ✓ Validated 120 reviews for sentiment analysis
+2026-01-26 15:02:55,455 - INFO - ============================================================
+2026-01-26 15:02:55,455 - INFO -   Status: Loaded 120 reviews
+2026-01-26 15:02:55,455 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 15:02:55,455 - INFO - Preprocessing 120 reviews...
+2026-01-26 15:02:55,471 - INFO - Successfully preprocessed 120 reviews (quality: 100.0%)
+2026-01-26 15:02:55,471 - INFO -   Status: 120 valid reviews
+2026-01-26 15:02:55,471 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 15:02:55,471 - INFO - Computing sentiment scores...
+2026-01-26 15:02:55,497 - INFO - Computing VADER scores for comparison...
+2026-01-26 15:02:55,513 - INFO - Sentiment computation completed for 120 reviews
+2026-01-26 15:02:55,513 - INFO -   Status: Sentiment analysis complete
+2026-01-26 15:02:55,513 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 15:02:55,513 - INFO - Computing sentiment statistics...
+2026-01-26 15:02:55,520 - INFO - ======================================================================
+2026-01-26 15:02:55,520 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 15:02:55,520 - INFO - ======================================================================
+2026-01-26 15:02:55,520 - INFO - 
+Total Reviews Analyzed: 120
+2026-01-26 15:02:55,520 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 15:02:55,520 - INFO -   Positive    :  65 reviews ( 54.2%)
+2026-01-26 15:02:55,520 - INFO -   Negative    :  55 reviews ( 45.8%)
+2026-01-26 15:02:55,520 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 15:02:55,520 - INFO -   Mean:      0.0833
+2026-01-26 15:02:55,520 - INFO -   Median:    0.3333
+2026-01-26 15:02:55,520 - INFO -   Std Dev:   0.5118
+2026-01-26 15:02:55,520 - INFO -   Range:    [-0.9750, 0.8250]
+2026-01-26 15:02:55,520 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 15:02:55,520 - INFO -   Mean:      0.5719
+2026-01-26 15:02:55,520 - INFO -   Max:       1.0000
+2026-01-26 15:02:55,520 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 15:02:55,520 - INFO -   Unique Customers: 30
+2026-01-26 15:02:55,520 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-26 15:02:55,520 - INFO - 
+======================================================================
+2026-01-26 15:02:55,520 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 15:02:55,520 - INFO - Generating sentiment visualizations...
+2026-01-26 15:02:55,598 - ERROR - Sentiment analysis failed: 'explode' must be of length 'x'
+Traceback (most recent call last):
+  File "C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment.py", line 690, in main
+    plot_sentiment_distribution(df, PLOTS_DIR)
+  File "C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment.py", line 382, in plot_sentiment_distribution
+    wedges, texts, autotexts = ax.pie(
+                               ^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\__init__.py", line 1478, in inner
+    return func(ax, *map(sanitize_sequence, args), **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\axes\_axes.py", line 3239, in pie
+    raise ValueError("'explode' must be of length 'x'")
+ValueError: 'explode' must be of length 'x'
+2026-01-26 15:07:00,039 - INFO - ============================================================
+2026-01-26 15:07:00,039 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 15:07:00,039 - INFO - ============================================================
+2026-01-26 15:07:00,039 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 15:07:00,039 - INFO - ============================================================
+2026-01-26 15:07:00,039 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 15:07:00,039 - INFO - ============================================================
+2026-01-26 15:07:00,039 - INFO - ✓ Found 120 review records in customer_reviews.csv
+2026-01-26 15:07:00,039 - INFO - ✓ Validated 120 reviews for sentiment analysis
+2026-01-26 15:07:00,039 - INFO - ============================================================
+2026-01-26 15:07:00,039 - INFO -   Status: Loaded 120 reviews
+2026-01-26 15:07:00,039 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 15:07:00,039 - INFO - Preprocessing 120 reviews...
+2026-01-26 15:07:00,051 - INFO - Successfully preprocessed 120 reviews (quality: 100.0%)
+2026-01-26 15:07:00,051 - INFO -   Status: 120 valid reviews
+2026-01-26 15:07:00,052 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 15:07:00,052 - INFO - Computing sentiment scores...
+2026-01-26 15:07:00,076 - INFO - Computing VADER scores for comparison...
+2026-01-26 15:07:00,097 - INFO - Sentiment computation completed for 120 reviews
+2026-01-26 15:07:00,097 - INFO -   Status: Sentiment analysis complete
+2026-01-26 15:07:00,097 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 15:07:00,097 - INFO - Computing sentiment statistics...
+2026-01-26 15:07:00,108 - INFO - ======================================================================
+2026-01-26 15:07:00,108 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 15:07:00,108 - INFO - ======================================================================
+2026-01-26 15:07:00,108 - INFO - 
+Total Reviews Analyzed: 120
+2026-01-26 15:07:00,108 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 15:07:00,108 - INFO -   Positive    :  65 reviews ( 54.2%)
+2026-01-26 15:07:00,108 - INFO -   Negative    :  55 reviews ( 45.8%)
+2026-01-26 15:07:00,108 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 15:07:00,114 - INFO -   Mean:      0.0833
+2026-01-26 15:07:00,114 - INFO -   Median:    0.3333
+2026-01-26 15:07:00,114 - INFO -   Std Dev:   0.5118
+2026-01-26 15:07:00,114 - INFO -   Range:    [-0.9750, 0.8250]
+2026-01-26 15:07:00,114 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 15:07:00,114 - INFO -   Mean:      0.5719
+2026-01-26 15:07:00,114 - INFO -   Max:       1.0000
+2026-01-26 15:07:00,114 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 15:07:00,114 - INFO -   Unique Customers: 30
+2026-01-26 15:07:00,114 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-26 15:07:00,114 - INFO - 
+======================================================================
+2026-01-26 15:07:00,114 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 15:07:00,114 - INFO - Generating sentiment visualizations...
+2026-01-26 15:07:00,236 - ERROR - Sentiment analysis failed: 'explode' must be of length 'x'
+Traceback (most recent call last):
+  File "c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment.py", line 690, in main
+    plot_sentiment_distribution(df, PLOTS_DIR)
+  File "c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment.py", line 382, in plot_sentiment_distribution
+    wedges, texts, autotexts = ax.pie(
+                               ^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\__init__.py", line 1478, in inner
+    return func(ax, *map(sanitize_sequence, args), **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\axes\_axes.py", line 3239, in pie
+    raise ValueError("'explode' must be of length 'x'")
+ValueError: 'explode' must be of length 'x'
+2026-01-26 15:14:20,424 - INFO - ============================================================
+2026-01-26 15:14:20,424 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 15:14:20,424 - INFO - ============================================================
+2026-01-26 15:14:20,424 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 15:14:20,424 - INFO - ============================================================
+2026-01-26 15:14:20,424 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 15:14:20,424 - INFO - ============================================================
+2026-01-26 15:14:20,424 - INFO - ✓ Found 120 review records in customer_reviews.csv
+2026-01-26 15:14:20,424 - INFO - ✓ Validated 120 reviews for sentiment analysis
+2026-01-26 15:14:20,424 - INFO - ============================================================
+2026-01-26 15:14:20,424 - INFO -   Status: Loaded 120 reviews
+2026-01-26 15:14:20,424 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 15:14:20,424 - INFO - Preprocessing 120 reviews...
+2026-01-26 15:14:20,433 - INFO - Successfully preprocessed 120 reviews (quality: 100.0%)
+2026-01-26 15:14:20,433 - INFO -   Status: 120 valid reviews
+2026-01-26 15:14:20,433 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 15:14:20,433 - INFO - Computing sentiment scores...
+2026-01-26 15:14:20,463 - INFO - Computing VADER scores for comparison...
+2026-01-26 15:14:20,478 - INFO - Sentiment computation completed for 120 reviews
+2026-01-26 15:14:20,478 - INFO -   Status: Sentiment analysis complete
+2026-01-26 15:14:20,479 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 15:14:20,479 - INFO - Computing sentiment statistics...
+2026-01-26 15:14:20,485 - INFO - ======================================================================
+2026-01-26 15:14:20,485 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 15:14:20,486 - INFO - ======================================================================
+2026-01-26 15:14:20,486 - INFO - 
+Total Reviews Analyzed: 120
+2026-01-26 15:14:20,486 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 15:14:20,486 - INFO -   Positive    :  65 reviews ( 54.2%)
+2026-01-26 15:14:20,486 - INFO -   Negative    :  55 reviews ( 45.8%)
+2026-01-26 15:14:20,487 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 15:14:20,487 - INFO -   Mean:      0.0833
+2026-01-26 15:14:20,487 - INFO -   Median:    0.3333
+2026-01-26 15:14:20,487 - INFO -   Std Dev:   0.5118
+2026-01-26 15:14:20,487 - INFO -   Range:    [-0.9750, 0.8250]
+2026-01-26 15:14:20,487 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 15:14:20,488 - INFO -   Mean:      0.5719
+2026-01-26 15:14:20,488 - INFO -   Max:       1.0000
+2026-01-26 15:14:20,488 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 15:14:20,488 - INFO -   Unique Customers: 30
+2026-01-26 15:14:20,488 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-26 15:14:20,488 - INFO - 
+======================================================================
+2026-01-26 15:14:20,488 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 15:14:20,488 - INFO - Generating sentiment visualizations...
+2026-01-26 15:14:20,594 - ERROR - Sentiment analysis failed: 'explode' must be of length 'x'
+Traceback (most recent call last):
+  File "c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment.py", line 690, in main
+    plot_sentiment_distribution(df, PLOTS_DIR)
+  File "c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment.py", line 382, in plot_sentiment_distribution
+    wedges, texts, autotexts = ax.pie(
+                               ^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\__init__.py", line 1478, in inner
+    return func(ax, *map(sanitize_sequence, args), **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\matplotlib\axes\_axes.py", line 3239, in pie
+    raise ValueError("'explode' must be of length 'x'")
+ValueError: 'explode' must be of length 'x'
+2026-01-26 15:17:12,598 - INFO - ============================================================
+2026-01-26 15:17:12,598 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 15:17:12,598 - INFO - ============================================================
+2026-01-26 15:17:12,598 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 15:17:12,598 - INFO - ============================================================
+2026-01-26 15:17:12,598 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 15:17:12,598 - INFO - ============================================================
+2026-01-26 15:17:12,598 - INFO - ✓ Found 120 review records in customer_reviews.csv
+2026-01-26 15:17:12,598 - INFO - ✓ Validated 120 reviews for sentiment analysis
+2026-01-26 15:17:12,598 - INFO - ============================================================
+2026-01-26 15:17:12,598 - INFO -   Status: Loaded 120 reviews
+2026-01-26 15:17:12,598 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 15:17:12,598 - INFO - Preprocessing 120 reviews...
+2026-01-26 15:17:12,609 - INFO - Successfully preprocessed 120 reviews (quality: 100.0%)
+2026-01-26 15:17:12,609 - INFO -   Status: 120 valid reviews
+2026-01-26 15:17:12,609 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 15:17:12,609 - INFO - Computing sentiment scores...
+2026-01-26 15:17:12,637 - INFO - Computing VADER scores for comparison...
+2026-01-26 15:17:12,656 - INFO - Sentiment computation completed for 120 reviews
+2026-01-26 15:17:12,656 - INFO -   Status: Sentiment analysis complete
+2026-01-26 15:17:12,656 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 15:17:12,656 - INFO - Computing sentiment statistics...
+2026-01-26 15:17:12,669 - INFO - ======================================================================
+2026-01-26 15:17:12,669 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 15:17:12,669 - INFO - ======================================================================
+2026-01-26 15:17:12,670 - INFO - 
+Total Reviews Analyzed: 120
+2026-01-26 15:17:12,670 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 15:17:12,670 - INFO -   Positive    :  65 reviews ( 54.2%)
+2026-01-26 15:17:12,670 - INFO -   Negative    :  55 reviews ( 45.8%)
+2026-01-26 15:17:12,670 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 15:17:12,670 - INFO -   Mean:      0.0833
+2026-01-26 15:17:12,670 - INFO -   Median:    0.3333
+2026-01-26 15:17:12,670 - INFO -   Std Dev:   0.5118
+2026-01-26 15:17:12,670 - INFO -   Range:    [-0.9750, 0.8250]
+2026-01-26 15:17:12,670 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 15:17:12,671 - INFO -   Mean:      0.5719
+2026-01-26 15:17:12,671 - INFO -   Max:       1.0000
+2026-01-26 15:17:12,671 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 15:17:12,671 - INFO -   Unique Customers: 30
+2026-01-26 15:17:12,671 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-26 15:17:12,671 - INFO - 
+======================================================================
+2026-01-26 15:17:12,671 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 15:17:12,671 - INFO - Generating sentiment visualizations...
+2026-01-26 15:17:12,898 - INFO - Sentiment distribution pie chart saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-26 15:17:13,156 - INFO - Sentiment score histogram saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-26 15:17:13,346 - INFO - Sentiment count bar chart saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-26 15:17:13,346 - INFO -   Status: Generated 3 visualizations
+2026-01-26 15:17:13,346 - INFO - Sentiment results saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (120 reviews, 11 columns)
+2026-01-26 15:17:13,346 - INFO - 
+============================================================
+2026-01-26 15:17:13,346 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-26 15:17:13,346 - INFO - ============================================================
+2026-01-26 15:17:13,346 - INFO - 
+Outputs:
+2026-01-26 15:17:13,346 - INFO -   - Results: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 15:17:13,346 - INFO -   - Logs:    c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-26 15:17:13,346 - INFO -   - Plots:   c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 15:18:36,437 - INFO - ============================================================
+2026-01-26 15:18:36,437 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 15:18:36,438 - INFO - ============================================================
+2026-01-26 15:18:36,438 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 15:18:36,438 - INFO - ============================================================
+2026-01-26 15:18:36,438 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 15:18:36,438 - INFO - ============================================================
+2026-01-26 15:18:36,438 - INFO - ✓ Found 20 review records in customer_reviews.csv
+2026-01-26 15:18:36,438 - INFO - ✓ Validated 20 reviews for sentiment analysis
+2026-01-26 15:18:36,438 - INFO - ============================================================
+2026-01-26 15:18:36,438 - INFO -   Status: Loaded 20 reviews
+2026-01-26 15:18:36,438 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 15:18:36,438 - INFO - Preprocessing 20 reviews...
+2026-01-26 15:18:36,438 - INFO - Successfully preprocessed 20 reviews (quality: 100.0%)
+2026-01-26 15:18:36,438 - INFO -   Status: 20 valid reviews
+2026-01-26 15:18:36,438 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 15:18:36,438 - INFO - Computing sentiment scores...
+2026-01-26 15:18:36,460 - INFO - Computing VADER scores for comparison...
+2026-01-26 15:18:36,460 - INFO - Sentiment computation completed for 20 reviews
+2026-01-26 15:18:36,460 - INFO -   Status: Sentiment analysis complete
+2026-01-26 15:18:36,460 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 15:18:36,460 - INFO - Computing sentiment statistics...
+2026-01-26 15:18:36,471 - INFO - ======================================================================
+2026-01-26 15:18:36,471 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 15:18:36,471 - INFO - ======================================================================
+2026-01-26 15:18:36,471 - INFO - 
+Total Reviews Analyzed: 20
+2026-01-26 15:18:36,471 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 15:18:36,471 - INFO -   Positive    :  14 reviews ( 70.0%)
+2026-01-26 15:18:36,471 - INFO -   Negative    :   3 reviews ( 15.0%)
+2026-01-26 15:18:36,471 - INFO -   Neutral     :   3 reviews ( 15.0%)
+2026-01-26 15:18:36,471 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 15:18:36,471 - INFO -   Mean:      0.2087
+2026-01-26 15:18:36,471 - INFO -   Median:    0.3187
+2026-01-26 15:18:36,471 - INFO -   Std Dev:   0.4929
+2026-01-26 15:18:36,471 - INFO -   Range:    [-1.0000, 0.8125]
+2026-01-26 15:18:36,471 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 15:18:36,471 - INFO -   Mean:      0.5892
+2026-01-26 15:18:36,471 - INFO -   Max:       1.0000
+2026-01-26 15:18:36,471 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 15:18:36,471 - INFO -   Unique Customers: 5
+2026-01-26 15:18:36,471 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-26 15:18:36,471 - INFO - 
+======================================================================
+2026-01-26 15:18:36,471 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 15:18:36,471 - INFO - Generating sentiment visualizations...
+2026-01-26 15:18:36,689 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-26 15:18:36,955 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-26 15:18:37,173 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-26 15:18:37,173 - INFO -   Status: Generated 3 visualizations
+2026-01-26 15:18:37,173 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 12 columns)
+2026-01-26 15:18:37,173 - INFO - 
+============================================================
+2026-01-26 15:18:37,173 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-26 15:18:37,173 - INFO - ============================================================
+2026-01-26 15:18:37,173 - INFO - 
+Outputs:
+2026-01-26 15:18:37,173 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 15:18:37,173 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-26 15:18:37,173 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/

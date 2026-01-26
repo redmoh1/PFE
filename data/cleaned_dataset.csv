@@ -1,9 +1,34 @@
-OrderID,CustomerID,ProductID,Product,Quantity,UnitPrice,TotalPrice,OrderDate,Name,JoinDate,City,Month,OrderMonth,OrderYear,OrderValue,OrderQuarter,OrderWeek,CustomerLifetimeValue
-1001,1,P001,Laptop,1,1200,1200,2024-01-05,Ahmed Alami,2023-01-10,Algiers,2024-01,1,2024,1200,1,1,1500
-1002,2,P002,Mouse,2,20,40,2024-01-07,Sarah Benali,2023-02-15,Oran,2024-01,1,2024,40,1,1,60
-1003,3,P003,Keyboard,1,50,50,2024-02-10,Yacine Boudiaf,2023-03-01,Constantine,2024-02,2,2024,50,1,6,150
-1004,1,P004,Monitor,1,300,300,2024-02-15,Ahmed Alami,2023-01-10,Algiers,2024-02,2,2024,300,1,7,1500
-1005,4,P001,Laptop,1,1200,1200,2024-03-01,Nour Haddad,2023-01-25,Setif,2024-03,3,2024,1200,1,9,1200
-1006,5,P005,Headphones,2,80,160,2024-03-05,Khaled Amrani,2023-04-12,Blida,2024-03,3,2024,160,1,10,160
-1007,2,P002,Mouse,1,20,20,2024-03-10,Sarah Benali,2023-02-15,Oran,2024-03,3,2024,20,1,10,60
-1008,3,P003,Keyboard,2,50,100,2024-03-15,Yacine Boudiaf,2023-03-01,Constantine,2024-03,3,2024,100,1,11,150
+OrderID,Product,Category,Price
+1,Laptop,Electronics,1200
+1,Mouse,Electronics,25
+1,Keyboard,Electronics,45
+
+2,Phone,Electronics,800
+2,Charger,Accessories,20
+2,Headphones,Accessories,60
+
+3,Laptop,Electronics,1200
+3,Mouse,Electronics,25
+
+4,Phone,Electronics,800
+4,Headphones,Accessories,60
+
+5,Laptop,Electronics,1200
+5,Keyboard,Electronics,45
+5,Mouse,Electronics,25
+
+6,Tablet,Electronics,400
+6,Case,Accessories,30
+
+7,Tablet,Electronics,400
+7,Charger,Accessories,20
+
+8,Phone,Electronics,800
+8,Case,Accessories,30
+8,Screen Protector,Accessories,15
+
+9,Laptop,Electronics,1200
+9,Mouse,Electronics,25
+
+10,Phone,Electronics,800
+10,Charger,Accessories,20

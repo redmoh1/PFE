@@ -182,6 +182,10 @@ def encode_baskets(df: pd.DataFrame) -> Tuple[pd.DataFrame, List[str]]:
             index=baskets.index
         )
         
+        # CRITICAL: Convert to boolean dtype for mlxtend compatibility
+        # Prevents warning about non-bool DataFrame and ensures stable behavior
+        basket_encoded = basket_encoded.astype(bool)
+        
         logger.info(f"Created basket matrix: {basket_encoded.shape[0]} orders x {basket_encoded.shape[1]} products")
         
         # Sparsity analysis
@@ -244,11 +248,12 @@ def mine_association_rules(basket_encoded: pd.DataFrame,
     logger.info(f"Generating association rules (min_confidence={min_confidence})...")
     
     try:
+        # Use standard association_rules signature for mlxtend compatibility
+        # Do NOT use num_itemsets or other non-standard parameters
         rules = association_rules(
             frequent_itemsets,
             metric="confidence",
-            min_threshold=min_confidence,
-            num_itemsets=len(frequent_itemsets)
+            min_threshold=min_confidence
         )
         
         if len(rules) == 0:
@@ -256,6 +261,10 @@ def mine_association_rules(basket_encoded: pd.DataFrame,
                 f"No rules found with min_confidence={min_confidence}. "
                 f"Try lowering min_confidence or improving data quality."
             )
+    except TypeError as e:
+        # Handle any remaining parameter issues gracefully
+        logger.error(f"association_rules parameter error: {e}")
+        raise ValueError(f"Error generating association rules: {str(e)[:100]}")
     except Exception as e:
         raise ValueError(f"Error generating association rules: {str(e)[:100]}")
     
@@ -495,8 +504,18 @@ def main() -> None:
         except ValueError as e:
             logger.warning(f"  Apriori mining failed: {e}")
             logger.warning("  *** Dataset may be too small for meaningful recommendations ***")
+            
+            # CRITICAL: Delete old product_recommendations.csv to ensure no stale data
+            output_path = DATA_DIR / "product_recommendations.csv"
+            if output_path.exists():
+                try:
+                    output_path.unlink()
+                    logger.info(f"  ✓ Deleted old product_recommendations.csv (no new rules generated)")
+                except Exception as del_e:
+                    logger.error(f"  ✗ Failed to delete old recommendations: {del_e}")
+            
             logger.info("\n" + "=" * 70)
-            logger.info("Phase 5: Completed (No association rules found)")
+            logger.info("Phase 5: Completed (status: no_recommendations)")
             logger.info("=" * 70)
             return
         

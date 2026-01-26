@@ -53,14 +53,22 @@ def load_and_prepare_data(input_path: Path) -> Tuple[pd.DataFrame, pd.DataFrame,
     if len(df) == 0:
         raise ValueError("No valid data after date parsing")
     
+    # Use freq="MS" (Month Start) for stable cross-version pandas compatibility
+    # Avoids deprecated/unstable "M" and "ME" aliases
+    df = df.set_index("OrderDate")
     monthly_sales = (
-        df.groupby(pd.Grouper(key="OrderDate", freq="ME"))["TotalPrice"]
+        df
+        .resample("MS")["TotalPrice"]
         .sum()
         .reset_index()
     )
+    monthly_sales.columns = ["OrderDate", "TotalPrice"]
     
-    if len(monthly_sales) < 2:
-        raise ValueError("Insufficient monthly data (need at least 2 months)")
+    # Filter out any months with zero sales (incomplete data)
+    monthly_sales = monthly_sales[monthly_sales["TotalPrice"] > 0]
+    
+    if len(monthly_sales) < 3:
+        raise ValueError(f"Insufficient monthly data for forecasting (have {len(monthly_sales)} months, need at least 3)")
     
     logger.info(f"Aggregated {len(df)} records into {len(monthly_sales)} monthly periods")
     
@@ -101,11 +109,13 @@ def generate_forecast(model: LinearRegression, monthly_sales: pd.DataFrame,
     future_X = pd.DataFrame({"TimeIndex": future_index})
     future_sales = model.predict(future_X)
     
+    # Use freq="MS" (Month Start) for stable cross-version pandas compatibility
+    last_date = monthly_sales["OrderDate"].iloc[-1]
     future_dates = pd.date_range(
-        start=monthly_sales["OrderDate"].iloc[-1],
-        periods=periods + 1,
-        freq="ME"
-    )[1:]
+        start=last_date + pd.DateOffset(months=1),
+        periods=periods,
+        freq="MS"
+    )
     
     return future_sales, future_dates
 

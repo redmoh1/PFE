@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from functools import lru_cache
+import shutil
+import subprocess
 
 import joblib
 import numpy as np
@@ -21,6 +23,23 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
+
+# Import Pipeline Controller - SINGLE SOURCE OF TRUTH
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+try:
+    from pipeline_controller import (
+        orchestrate_pipeline,
+        hard_reset_derived_outputs,
+        detect_data_deletion,
+        get_pipeline_state,
+        DERIVED_OUTPUT_FILES,
+        CANONICAL_INPUT_FILES,
+    )
+    PIPELINE_CONTROLLER_AVAILABLE = True
+    logging.info("Pipeline Controller imported successfully")
+except ImportError as e:
+    PIPELINE_CONTROLLER_AVAILABLE = False
+    logging.warning(f"Pipeline Controller not available: {e}. Using fallback implementation.")
 
 # Rate Limiting
 try:
@@ -282,69 +301,152 @@ class DatasetPreview(BaseModel):
 # Data Loading Helpers
 # ============================================================================
 
+# Global DataFrames - NEVER CACHED, always reload from disk for freshness
+df = None
+forecast_df = None
+sentiment_df = None
+recommendation_df = None
+model = None
+data_last_modified = None
 
-@lru_cache(maxsize=1)
-def get_cached_dataframes():
-    """Cache loaded dataframes to avoid repeated file reads."""
-    return {
-        'df': df,
-        'forecast_df': forecast_df,
-        'sentiment_df': sentiment_df,
-        'recommendation_df': recommendation_df
+
+def clear_all_caches_and_reset():
+    """
+    CRITICAL: Clear ALL in-memory caches and reset ALL global DataFrames.
+    
+    This function MUST be called:
+    1. After deleting any dataset
+    2. After uploading any dataset (before pipeline runs)
+    3. After any pipeline completes
+    
+    ENTERPRISE BEHAVIOR:
+    - No stale data should ever remain in memory
+    - All APIs must fetch fresh data from disk after this call
+    """
+    global df, forecast_df, sentiment_df, recommendation_df, model, data_last_modified
+    
+    logger.info("=" * 60)
+    logger.info("[CACHE CLEAR] Resetting ALL in-memory state")
+    logger.info("=" * 60)
+    
+    # Reset all global DataFrames to None
+    df = None
+    forecast_df = None
+    sentiment_df = None
+    recommendation_df = None
+    model = None
+    data_last_modified = None
+    
+    logger.info("[CACHE CLEAR] All global DataFrames set to None")
+    logger.info("[CACHE CLEAR] Memory state cleared - APIs will read fresh from disk")
+    logger.info("=" * 60)
+
+
+def reload_all_data_from_disk():
+    """
+    Reload all data from disk into global DataFrames.
+    Called after pipeline completion to ensure fresh data is available.
+    
+    Returns:
+        dict with status of each data source
+    """
+    global df, forecast_df, sentiment_df, recommendation_df, model, data_last_modified
+    
+    logger.info("=" * 60)
+    logger.info("[DATA RELOAD] Reloading all data from disk")
+    logger.info("=" * 60)
+    
+    status = {
+        "cleaned_dataset": False,
+        "forecast": False,
+        "sentiment": False,
+        "recommendations": False,
+        "model": False
     }
+    
+    data_last_modified = datetime.utcnow()
+    
+    # Load cleaned dataset
+    cleaned_path = DATA_DIR / "cleaned_dataset.csv"
+    if cleaned_path.exists():
+        try:
+            df = pd.read_csv(cleaned_path)
+            df["OrderDate"] = pd.to_datetime(df["OrderDate"], errors="coerce")
+            if df.empty or df["OrderDate"].isna().all():
+                logger.warning("[DATA RELOAD] cleaned_dataset.csv is empty or invalid")
+                df = None
+            else:
+                logger.info(f"[DATA RELOAD] Loaded cleaned_dataset.csv: {len(df)} rows")
+                status["cleaned_dataset"] = True
+        except Exception as e:
+            logger.warning(f"[DATA RELOAD] Failed to load cleaned_dataset.csv: {e}")
+            df = None
+    else:
+        logger.info("[DATA RELOAD] cleaned_dataset.csv not found (expected after delete)")
+        df = None
+    
+    # Load forecast
+    forecast_path = DATA_DIR / "sales_forecast_future.csv"
+    if forecast_path.exists():
+        try:
+            forecast_df = pd.read_csv(forecast_path)
+            forecast_df["MonthStart"] = pd.to_datetime(forecast_df["MonthStart"], errors="coerce")
+            logger.info(f"[DATA RELOAD] Loaded sales_forecast_future.csv: {len(forecast_df)} rows")
+            status["forecast"] = True
+        except Exception as e:
+            logger.warning(f"[DATA RELOAD] Failed to load sales_forecast_future.csv: {e}")
+            forecast_df = None
+    else:
+        forecast_df = None
+    
+    # Load sentiment
+    sentiment_path = DATA_DIR / "sentiment_results.csv"
+    if sentiment_path.exists():
+        try:
+            sentiment_df = pd.read_csv(sentiment_path)
+            logger.info(f"[DATA RELOAD] Loaded sentiment_results.csv: {len(sentiment_df)} rows")
+            status["sentiment"] = True
+        except Exception as e:
+            logger.warning(f"[DATA RELOAD] Failed to load sentiment_results.csv: {e}")
+            sentiment_df = None
+    else:
+        sentiment_df = None
+    
+    # Load recommendations
+    recs_path = DATA_DIR / "product_recommendations.csv"
+    if recs_path.exists():
+        try:
+            recommendation_df = pd.read_csv(recs_path)
+            logger.info(f"[DATA RELOAD] Loaded product_recommendations.csv: {len(recommendation_df)} rows")
+            status["recommendations"] = True
+        except Exception as e:
+            logger.warning(f"[DATA RELOAD] Failed to load product_recommendations.csv: {e}")
+            recommendation_df = None
+    else:
+        recommendation_df = None
+    
+    # Load model
+    if MODEL_PATH.exists():
+        try:
+            model = joblib.load(MODEL_PATH)
+            logger.info("[DATA RELOAD] Loaded forecasting model")
+            status["model"] = True
+        except Exception as e:
+            logger.warning(f"[DATA RELOAD] Failed to load model: {e}")
+            model = None
+    else:
+        model = None
+    
+    logger.info(f"[DATA RELOAD] Status: {status}")
+    logger.info("=" * 60)
+    
+    return status
+
 
 @app.on_event("startup")
 def load_data():
     """Load all data at startup."""
-    global df, forecast_df, sentiment_df, recommendation_df, model, data_last_modified
-    
-    data_last_modified = datetime.utcnow()
-    
-    try:
-        df = pd.read_csv(DATA_DIR / "cleaned_dataset.csv")
-        df["OrderDate"] = pd.to_datetime(df["OrderDate"], errors="coerce")
-        # Data quality check
-        if df.empty or df["OrderDate"].isna().all():
-            logger.error("Dataset is empty or all dates are invalid")
-            df = None
-        else:
-            logger.info(f"Loaded {len(df)} sales records")
-    except Exception as e:
-        logger.warning(f"Could not load cleaned_dataset.csv: {e}")
-        df = None
-
-    try:
-        forecast_df = pd.read_csv(DATA_DIR / "sales_forecast_future.csv")
-        forecast_df["MonthStart"] = pd.to_datetime(forecast_df["MonthStart"], errors="coerce")
-        logger.info(f"Loaded {len(forecast_df)} forecast records")
-    except Exception as e:
-        logger.warning(f"Could not load sales_forecast_future.csv: {e}")
-        forecast_df = None
-
-    try:
-        sentiment_df = pd.read_csv(DATA_DIR / "sentiment_results.csv")
-        logger.info(f"Loaded {len(sentiment_df)} sentiment records")
-    except Exception as e:
-        logger.warning(f"Could not load sentiment_results.csv: {e}")
-        sentiment_df = None
-
-    try:
-        recommendation_df = pd.read_csv(DATA_DIR / "product_recommendations.csv")
-        logger.info(f"Loaded {len(recommendation_df)} recommendation rules")
-    except Exception as e:
-        logger.warning(f"Could not load product_recommendations.csv: {e}")
-        recommendation_df = None
-
-    try:
-        if MODEL_PATH.exists():
-            model = joblib.load(MODEL_PATH)
-            logger.info("Loaded forecasting model")
-        else:
-            logger.warning(f"Model not found at {MODEL_PATH}")
-            model = None
-    except Exception as e:
-        logger.warning(f"Could not load model: {e}")
-        model = None
+    reload_all_data_from_disk()
 
 
 def require_company_id(request: Request) -> str:
@@ -612,6 +714,12 @@ DERIVED_ML_FILES = [
     "sentiment_results.csv",
     "sales_forecast.csv",
     "sales_forecast_future.csv",
+    # Additional output files that may be generated
+    "eda_report.json",
+    "kpis.csv",
+    "monthly_sales.csv",
+    "sales_by_city.csv",
+    "top_products.csv",
 ]
 
 # Canonical input files that get copied from uploads
@@ -626,9 +734,12 @@ def cascade_delete_derived_files(dataset_type: str) -> dict:
     """
     Delete ALL derived ML output files when any dataset is deleted.
     
+    SINGLE SOURCE OF TRUTH: Uses pipeline_controller.detect_data_deletion() when available.
+    
     ENTERPRISE BEHAVIOR:
     - Deleting ANY dataset triggers full cascade deletion
     - No stale analytics should remain on disk
+    - No stale data should remain in memory
     - APIs will return 204 until new data is uploaded and processed
     
     Args:
@@ -637,29 +748,54 @@ def cascade_delete_derived_files(dataset_type: str) -> dict:
     Returns:
         dict with deleted_files list and any errors
     """
+    logger.info("=" * 60)
+    logger.info(f"[CASCADE DELETE] TRIGGERED for dataset_type={dataset_type}")
+    logger.info("=" * 60)
+    
+    # Use Pipeline Controller if available (PREFERRED - Single Source of Truth)
+    if PIPELINE_CONTROLLER_AVAILABLE:
+        logger.info("[CASCADE DELETE] Using Pipeline Controller (SINGLE SOURCE OF TRUTH)")
+        try:
+            result = detect_data_deletion(dataset_type)
+            # Also clear in-memory caches
+            clear_all_caches_and_reset()
+            logger.info(f"[CASCADE DELETE] Pipeline Controller completed: {result}")
+            return {
+                "deleted_files": result.get("hard_reset", {}).get("deleted_files", []),
+                "errors": result.get("hard_reset", {}).get("errors", []),
+                "total_deleted": result.get("hard_reset", {}).get("deleted_count", 0),
+                "memory_cleared": True,
+            }
+        except Exception as e:
+            logger.error(f"[CASCADE DELETE] Pipeline Controller failed: {e}")
+            logger.info("[CASCADE DELETE] Falling back to inline implementation")
+    
+    # FALLBACK: Inline implementation
     deleted_files = []
     errors = []
     
-    logger.info(f"=" * 60)
-    logger.info(f"CASCADING DELETION TRIGGERED for dataset_type={dataset_type}")
-    logger.info(f"=" * 60)
+    # Step 1: Clear ALL in-memory caches FIRST
+    logger.info("[CASCADE DELETE] Step 1: Clearing all in-memory caches...")
+    clear_all_caches_and_reset()
     
-    # Delete ALL derived ML outputs
+    # Step 2: Delete ALL derived ML outputs
+    logger.info("[CASCADE DELETE] Step 2: Deleting derived ML output files...")
     for filename in DERIVED_ML_FILES:
         file_path = DATA_DIR / filename
         try:
             if file_path.exists():
                 file_path.unlink()
                 deleted_files.append(filename)
-                logger.info(f"[CASCADE DELETE] Deleted derived file: {filename}")
+                logger.info(f"[CASCADE DELETE] ✓ Deleted: {filename}")
             else:
-                logger.info(f"[CASCADE DELETE] File not found (already clean): {filename}")
+                logger.debug(f"[CASCADE DELETE] File not found (already clean): {filename}")
         except Exception as e:
             error_msg = f"Failed to delete {filename}: {str(e)}"
             errors.append(error_msg)
-            logger.error(f"[CASCADE DELETE] {error_msg}")
+            logger.error(f"[CASCADE DELETE] ✗ {error_msg}")
     
-    # Also delete the canonical input file for this dataset type
+    # Step 3: Also delete the canonical input file for this dataset type
+    logger.info("[CASCADE DELETE] Step 3: Deleting canonical input file...")
     canonical_map = {
         "sales": "sales.csv",
         "customers": "customers.csv",
@@ -673,27 +809,37 @@ def cascade_delete_derived_files(dataset_type: str) -> dict:
             if file_path.exists():
                 file_path.unlink()
                 deleted_files.append(canonical_file)
-                logger.info(f"[CASCADE DELETE] Deleted canonical input: {canonical_file}")
+                logger.info(f"[CASCADE DELETE] ✓ Deleted canonical: {canonical_file}")
         except Exception as e:
             error_msg = f"Failed to delete canonical {canonical_file}: {str(e)}"
             errors.append(error_msg)
-            logger.error(f"[CASCADE DELETE] {error_msg}")
+            logger.error(f"[CASCADE DELETE] ✗ {error_msg}")
     
-    # Reset global DataFrames to None (no stale in-memory data)
-    global df, forecast_df, sentiment_df, recommendation_df
-    df = None
-    forecast_df = None
-    sentiment_df = None
-    recommendation_df = None
-    logger.info("[CASCADE DELETE] Reset all global DataFrames to None")
+    # Step 4: Clear output directory plots if they exist
+    logger.info("[CASCADE DELETE] Step 4: Cleaning output directory...")
+    output_dir = BASE_DIR / "output"
+    plots_dir = output_dir / "plots"
+    for output_file in ["eda_report.json", "kpis.csv", "monthly_sales.csv", "sales_by_city.csv", "top_products.csv"]:
+        try:
+            output_path = output_dir / output_file
+            if output_path.exists():
+                output_path.unlink()
+                deleted_files.append(f"output/{output_file}")
+                logger.info(f"[CASCADE DELETE] ✓ Deleted output: {output_file}")
+        except Exception as e:
+            logger.warning(f"[CASCADE DELETE] Could not delete output/{output_file}: {e}")
     
-    logger.info(f"[CASCADE DELETE] Completed: {len(deleted_files)} files deleted, {len(errors)} errors")
-    logger.info(f"=" * 60)
+    logger.info("=" * 60)
+    logger.info(f"[CASCADE DELETE] COMPLETED: {len(deleted_files)} files deleted, {len(errors)} errors")
+    logger.info("[CASCADE DELETE] All in-memory state cleared")
+    logger.info("[CASCADE DELETE] APIs will return 204 (No Content) until new data is uploaded")
+    logger.info("=" * 60)
     
     return {
         "deleted_files": deleted_files,
         "errors": errors,
         "total_deleted": len(deleted_files),
+        "memory_cleared": True,
     }
 
 
@@ -710,26 +856,36 @@ def is_company_active(dataset_id: int, company_id: str) -> bool:
 def run_full_sales_pipeline(uploaded_file: Path) -> bool:
     """
     Run the COMPLETE ML pipeline for sales data:
-    1. Copy uploaded file to canonical location (data/sales.csv)
-    2. Run 01_eda.py (creates merged_data.csv)
-    3. Run 02_cleaning_features.py (creates cleaned_dataset.csv)
-    4. Run 04_rfm.py (creates rfm_table.csv)
-    5. Run 05_recommendation.py (creates product_recommendations.csv)
+    1. Clear all caches first (no stale data)
+    2. Copy uploaded file to canonical location (data/sales.csv)
+    3. Run 01_eda.py (creates merged_data.csv)
+    4. Run 02_cleaning_features.py (creates cleaned_dataset.csv)
+    5. Run 04_rfm.py (creates rfm_table.csv)
+    6. Run 05_recommendation.py (creates product_recommendations.csv)
+    7. Reload all data into memory
     
     Returns:
         True if pipeline completed successfully, False otherwise
     """
-    import shutil
-    import subprocess
     
     try:
+        logger.info("=" * 60)
+        logger.info("[PIPELINE] FULL SALES PIPELINE STARTED")
+        logger.info(f"[PIPELINE] Input file: {uploaded_file}")
+        logger.info("=" * 60)
+        
+        # Step 0: Clear all caches FIRST to ensure no stale data
+        logger.info("[PIPELINE] Step 0: Clearing all caches before pipeline...")
+        clear_all_caches_and_reset()
+        
         # Step 1: Copy uploaded file to canonical location for ML scripts
         canonical_sales = DATA_DIR / "sales.csv"
-        logger.info(f"Copying {uploaded_file} -> {canonical_sales}")
+        logger.info(f"[PIPELINE] Step 1: Copying {uploaded_file.name} -> {canonical_sales}")
         shutil.copy2(uploaded_file, canonical_sales)
+        logger.info("[PIPELINE] ✓ Sales file copied to canonical location")
         
         # Step 2: Run EDA (Phase 1) - creates merged_data.csv
-        logger.info("Running Phase 1: EDA...")
+        logger.info("[PIPELINE] Step 2: Running Phase 1 - EDA...")
         result = subprocess.run(
             [sys.executable, str(BASE_DIR / "src" / "01_eda.py")],
             cwd=str(BASE_DIR),
@@ -738,12 +894,12 @@ def run_full_sales_pipeline(uploaded_file: Path) -> bool:
             timeout=120
         )
         if result.returncode != 0:
-            logger.error(f"Phase 1 EDA failed: {result.stderr}")
+            logger.error(f"[PIPELINE] ✗ Phase 1 EDA failed: {result.stderr}")
             return False
-        logger.info("Phase 1 EDA completed successfully")
+        logger.info("[PIPELINE] ✓ Phase 1 EDA completed")
         
         # Step 3: Run Cleaning & Features (Phase 2) - creates cleaned_dataset.csv
-        logger.info("Running Phase 2: Cleaning & Feature Engineering...")
+        logger.info("[PIPELINE] Step 3: Running Phase 2 - Cleaning & Feature Engineering...")
         result = subprocess.run(
             [sys.executable, str(BASE_DIR / "src" / "02_cleaning_features.py")],
             cwd=str(BASE_DIR),
@@ -752,12 +908,12 @@ def run_full_sales_pipeline(uploaded_file: Path) -> bool:
             timeout=120
         )
         if result.returncode != 0:
-            logger.error(f"Phase 2 Cleaning failed: {result.stderr}")
+            logger.error(f"[PIPELINE] ✗ Phase 2 Cleaning failed: {result.stderr}")
             return False
-        logger.info("Phase 2 Cleaning completed successfully")
+        logger.info("[PIPELINE] ✓ Phase 2 Cleaning completed")
         
         # Step 4: Run RFM Segmentation (Phase 4) - creates rfm_table.csv
-        logger.info("Running Phase 4: RFM Segmentation...")
+        logger.info("[PIPELINE] Step 4: Running Phase 4 - RFM Segmentation...")
         result = subprocess.run(
             [sys.executable, str(BASE_DIR / "src" / "04_rfm.py")],
             cwd=str(BASE_DIR),
@@ -767,12 +923,14 @@ def run_full_sales_pipeline(uploaded_file: Path) -> bool:
         )
         # RFM may exit 0 with warning if CustomerID missing - that's OK
         if result.returncode != 0:
-            logger.warning(f"Phase 4 RFM exited with code {result.returncode}: {result.stderr}")
+            logger.warning(f"[PIPELINE] ⚠ Phase 4 RFM exited with code {result.returncode}")
+            if result.stderr:
+                logger.warning(f"[PIPELINE] RFM stderr: {result.stderr[:500]}")
         else:
-            logger.info("Phase 4 RFM completed successfully")
+            logger.info("[PIPELINE] ✓ Phase 4 RFM completed")
         
         # Step 5: Run Recommendations (Phase 5) - creates product_recommendations.csv
-        logger.info("Running Phase 5: Market Basket Analysis...")
+        logger.info("[PIPELINE] Step 5: Running Phase 5 - Market Basket Analysis...")
         result = subprocess.run(
             [sys.executable, str(BASE_DIR / "src" / "05_recommendation.py")],
             cwd=str(BASE_DIR),
@@ -781,52 +939,65 @@ def run_full_sales_pipeline(uploaded_file: Path) -> bool:
             timeout=180
         )
         if result.returncode != 0:
-            logger.warning(f"Phase 5 Recommendations exited with code {result.returncode}: {result.stderr}")
+            logger.warning(f"[PIPELINE] ⚠ Phase 5 Recommendations exited with code {result.returncode}")
+            if result.stderr:
+                logger.warning(f"[PIPELINE] Recommendations stderr: {result.stderr[:500]}")
         else:
-            logger.info("Phase 5 Recommendations completed successfully")
+            logger.info("[PIPELINE] ✓ Phase 5 Recommendations completed")
         
-        # Reload global DataFrames
-        global df, recommendation_df
-        try:
-            df = pd.read_csv(DATA_DIR / "cleaned_dataset.csv")
-            logger.info(f"Reloaded cleaned_dataset.csv: {len(df)} rows")
-        except Exception as e:
-            logger.warning(f"Could not reload cleaned_dataset: {e}")
+        # Step 6: Reload ALL data from disk into memory
+        logger.info("[PIPELINE] Step 6: Reloading all data from disk...")
+        reload_status = reload_all_data_from_disk()
         
-        try:
-            recommendation_df = pd.read_csv(DATA_DIR / "product_recommendations.csv")
-            logger.info(f"Reloaded product_recommendations.csv: {len(recommendation_df)} rows")
-        except Exception as e:
-            logger.warning(f"Could not reload recommendations: {e}")
-            recommendation_df = None
+        logger.info("=" * 60)
+        logger.info("[PIPELINE] FULL SALES PIPELINE COMPLETED SUCCESSFULLY")
+        logger.info(f"[PIPELINE] Reload status: {reload_status}")
+        logger.info("=" * 60)
         
         return True
         
     except Exception as e:
-        logger.error(f"Full sales pipeline failed: {e}")
+        logger.error(f"[PIPELINE] ✗ Full sales pipeline failed with exception: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return False
 
 
 def run_sentiment_pipeline(uploaded_file: Path) -> bool:
     """
     Run sentiment analysis pipeline for reviews data:
-    1. Copy uploaded file to canonical location (data/customer_reviews.csv)
-    2. Run 06_sentiment.py (creates sentiment_results.csv)
+    1. Clear sentiment cache first (no stale data)
+    2. Copy uploaded file to canonical location (data/customer_reviews.csv)
+    3. Run 06_sentiment.py (creates sentiment_results.csv)
+    4. Reload sentiment data into memory
     
     Returns:
         True if pipeline completed successfully, False otherwise
     """
-    import shutil
-    import subprocess
+    global sentiment_df
     
     try:
+        logger.info("=" * 60)
+        logger.info("[SENTIMENT PIPELINE] STARTED")
+        logger.info(f"[SENTIMENT PIPELINE] Input file: {uploaded_file}")
+        logger.info("=" * 60)
+        
+        # Step 0: Clear sentiment data first
+        logger.info("[SENTIMENT PIPELINE] Step 0: Clearing old sentiment data...")
+        sentiment_df = None
+        sentiment_path = DATA_DIR / "sentiment_results.csv"
+        if sentiment_path.exists():
+            sentiment_path.unlink()
+            logger.info("[SENTIMENT PIPELINE] ✓ Old sentiment_results.csv deleted")
+        
         # Step 1: Copy uploaded file to canonical location for ML scripts
         canonical_reviews = DATA_DIR / "customer_reviews.csv"
-        logger.info(f"Copying {uploaded_file} -> {canonical_reviews}")
+        logger.info(f"[SENTIMENT PIPELINE] Step 1: Copying {uploaded_file.name} -> {canonical_reviews}")
         shutil.copy2(uploaded_file, canonical_reviews)
+        logger.info("[SENTIMENT PIPELINE] ✓ Reviews file copied to canonical location")
         
         # Step 2: Run Sentiment Analysis (Phase 6)
-        logger.info("Running Phase 6: Sentiment Analysis...")
+        logger.info("[SENTIMENT PIPELINE] Step 2: Running Phase 6 - Sentiment Analysis...")
         result = subprocess.run(
             [sys.executable, str(BASE_DIR / "src" / "06_sentiment.py")],
             cwd=str(BASE_DIR),
@@ -835,23 +1006,33 @@ def run_sentiment_pipeline(uploaded_file: Path) -> bool:
             timeout=300  # NLP can take longer
         )
         if result.returncode != 0:
-            logger.error(f"Phase 6 Sentiment failed: {result.stderr}")
+            logger.error(f"[SENTIMENT PIPELINE] ✗ Sentiment analysis failed: {result.stderr}")
             return False
-        logger.info("Phase 6 Sentiment completed successfully")
+        logger.info("[SENTIMENT PIPELINE] ✓ Sentiment analysis completed")
         
-        # Reload global DataFrame
-        global sentiment_df
-        try:
-            sentiment_df = pd.read_csv(DATA_DIR / "sentiment_results.csv")
-            logger.info(f"Reloaded sentiment_results.csv: {len(sentiment_df)} rows")
-        except Exception as e:
-            logger.warning(f"Could not reload sentiment results: {e}")
+        # Step 3: Reload sentiment data from disk
+        logger.info("[SENTIMENT PIPELINE] Step 3: Reloading sentiment data from disk...")
+        if sentiment_path.exists():
+            try:
+                sentiment_df = pd.read_csv(sentiment_path)
+                logger.info(f"[SENTIMENT PIPELINE] ✓ Loaded sentiment_results.csv: {len(sentiment_df)} rows")
+            except Exception as e:
+                logger.warning(f"[SENTIMENT PIPELINE] ⚠ Could not reload sentiment results: {e}")
+                sentiment_df = None
+        else:
+            logger.warning("[SENTIMENT PIPELINE] ⚠ sentiment_results.csv not created by pipeline")
             sentiment_df = None
+        
+        logger.info("=" * 60)
+        logger.info("[SENTIMENT PIPELINE] COMPLETED SUCCESSFULLY")
+        logger.info("=" * 60)
         
         return True
         
     except Exception as e:
-        logger.error(f"Sentiment pipeline failed: {e}")
+        logger.error(f"[SENTIMENT PIPELINE] ✗ Failed with exception: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return False
 
 
@@ -859,62 +1040,95 @@ def trigger_pipeline(company_id: str, dataset_type: str, action: str, file_path:
     """
     Hook for automation workflows - triggers COMPLETE ML pipelines when data is uploaded.
     
+    SINGLE SOURCE OF TRUTH: Uses pipeline_controller.orchestrate_pipeline() for all execution.
+    
     Pipeline Flow:
     - Sales data upload → EDA → Cleaning → RFM → Recommendations
     - Reviews data upload → Sentiment Analysis
+    - Customers data upload → Copy + Re-run full pipeline if sales exists
+    
+    CRITICAL: Each upload clears previous results first to ensure no stale data.
     """
-    logger.info(
-        "Pipeline trigger | company=%s dataset=%s action=%s file=%s",
-        company_id,
-        dataset_type,
-        action,
-        file_path,
-    )
+    logger.info("=" * 60)
+    logger.info(f"[TRIGGER] Pipeline trigger received")
+    logger.info(f"[TRIGGER] Company: {company_id}")
+    logger.info(f"[TRIGGER] Dataset: {dataset_type}")
+    logger.info(f"[TRIGGER] Action: {action}")
+    logger.info(f"[TRIGGER] File: {file_path}")
+    logger.info("=" * 60)
+    
+    # Use Pipeline Controller if available (PREFERRED - Single Source of Truth)
+    if PIPELINE_CONTROLLER_AVAILABLE:
+        logger.info("[TRIGGER] Using Pipeline Controller (SINGLE SOURCE OF TRUTH)")
+        try:
+            result = orchestrate_pipeline(dataset_type, action, file_path)
+            if result.get("execution", {}).get("success", False):
+                logger.info(f"[TRIGGER] ✓ Pipeline Controller completed successfully")
+            else:
+                logger.warning(f"[TRIGGER] ⚠ Pipeline Controller had issues: {result}")
+            
+            # Reload data after pipeline completion
+            reload_all_data_from_disk()
+            return
+            
+        except Exception as e:
+            logger.error(f"[TRIGGER] ✗ Pipeline Controller failed: {e}")
+            logger.info("[TRIGGER] Falling back to inline implementation")
+    
+    # FALLBACK: Inline implementation (only if Pipeline Controller unavailable)
+    logger.warning("[TRIGGER] Using FALLBACK inline implementation")
     
     # Trigger FULL sales pipeline (EDA → Cleaning → RFM → Recommendations)
     if dataset_type == "sales" and file_path and action in ["upload", "replace"]:
-        logger.info(f"Triggering FULL Sales Pipeline for {file_path}")
+        logger.info(f"[TRIGGER] Triggering FULL Sales Pipeline for {file_path}")
         try:
             success = run_full_sales_pipeline(file_path)
             if success:
-                logger.info("Full Sales Pipeline completed - all ML outputs generated")
+                logger.info("[TRIGGER] ✓ Full Sales Pipeline completed - all ML outputs regenerated")
             else:
-                logger.warning("Full Sales Pipeline had issues - check logs for details")
+                logger.warning("[TRIGGER] ⚠ Full Sales Pipeline had issues - check logs for details")
         except Exception as e:
-            logger.error(f"Error running full sales pipeline: {e}")
+            logger.error(f"[TRIGGER] ✗ Error running full sales pipeline: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
     
     # Trigger sentiment pipeline for reviews data
     if dataset_type == "reviews" and file_path and action in ["upload", "replace"]:
-        logger.info(f"Triggering Sentiment Analysis Pipeline for {file_path}")
+        logger.info(f"[TRIGGER] Triggering Sentiment Analysis Pipeline for {file_path}")
         try:
             success = run_sentiment_pipeline(file_path)
             if success:
-                logger.info("Sentiment Analysis Pipeline completed - sentiment results generated")
+                logger.info("[TRIGGER] ✓ Sentiment Analysis Pipeline completed - sentiment results regenerated")
             else:
-                logger.warning("Sentiment Analysis Pipeline failed - check logs for details")
+                logger.warning("[TRIGGER] ⚠ Sentiment Analysis Pipeline failed - check logs for details")
         except Exception as e:
-            logger.error(f"Error running sentiment pipeline: {e}")
+            logger.error(f"[TRIGGER] ✗ Error running sentiment pipeline: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
     
     # Handle customers upload - copy to canonical location and re-run pipeline if sales exists
     if dataset_type == "customers" and file_path and action in ["upload", "replace"]:
-        import shutil
         canonical_customers = DATA_DIR / "customers.csv"
-        logger.info(f"Copying customers file to {canonical_customers}")
+        logger.info(f"[TRIGGER] Handling customers upload -> {canonical_customers}")
         try:
             shutil.copy2(file_path, canonical_customers)
-            logger.info("Customers file copied to canonical location")
+            logger.info("[TRIGGER] ✓ Customers file copied to canonical location")
             
             # If sales.csv exists, re-run the pipeline to merge with new customers
             canonical_sales = DATA_DIR / "sales.csv"
             if canonical_sales.exists():
-                logger.info("Sales data exists - re-running full pipeline to merge with customers")
+                logger.info("[TRIGGER] Sales data exists - re-running full pipeline to merge with customers")
                 success = run_full_sales_pipeline(canonical_sales)
                 if success:
-                    logger.info("Pipeline re-run completed with new customer data")
+                    logger.info("[TRIGGER] ✓ Pipeline re-run completed with new customer data")
                 else:
-                    logger.warning("Pipeline re-run had issues - check logs")
+                    logger.warning("[TRIGGER] ⚠ Pipeline re-run had issues - check logs")
+            else:
+                logger.info("[TRIGGER] No sales data yet - customers stored, waiting for sales upload")
         except Exception as e:
-            logger.error(f"Error handling customers upload: {e}")
+            logger.error(f"[TRIGGER] ✗ Error handling customers upload: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
 
 
 def load_active_sales_df(company_id: Optional[str] = None) -> pd.DataFrame:
@@ -1203,26 +1417,39 @@ def health_check():
     }
 
 
-
-
-@app.get("/api/segmentation", response_model=SegmentationMetadata, tags=["Analytics"])
-def get_segmentation(request: Request):
-    """Return RFM segment counts from rfm_table.csv. 204 when missing/empty."""
-    _ = request.headers.get("X-Company-ID")
+def _get_rfm_segmentation_data(request: Request):
+    """
+    Internal function to read RFM segmentation data FRESH from disk.
+    
+    CRITICAL: Always reads from disk, NEVER from cached globals.
+    This ensures that after data deletion or upload, fresh results are returned.
+    
+    Returns:
+        SegmentationMetadata if data exists, Response(204) if not
+    """
+    company_id = request.headers.get("X-Company-ID")
     rfm_path = DATA_DIR / "rfm_table.csv"
+    
+    logger.info(f"[RFM API] Checking for RFM data at: {rfm_path}")
 
     if not rfm_path.exists():
-        logger.warning("RFM table not found; returning 204")
+        logger.info(f"[RFM API] rfm_table.csv not found - returning 204 (No Content)")
         return Response(status_code=204)
 
     try:
+        # ALWAYS read fresh from disk
         rfm_df = pd.read_csv(rfm_path)
-    except Exception as exc:  # noqa: BLE001
-        logger.error("Failed to read RFM table: %s", exc)
+        logger.info(f"[RFM API] Loaded rfm_table.csv: {len(rfm_df)} rows")
+    except Exception as exc:
+        logger.error(f"[RFM API] Failed to read rfm_table.csv: {exc}")
         raise HTTPException(status_code=500, detail="Unable to read rfm_table.csv") from exc
 
-    if rfm_df.empty or "Segment" not in rfm_df.columns:
-        logger.warning("RFM table empty or missing Segment column; returning 204")
+    if rfm_df.empty:
+        logger.info("[RFM API] rfm_table.csv is empty - returning 204 (No Content)")
+        return Response(status_code=204)
+    
+    if "Segment" not in rfm_df.columns:
+        logger.warning("[RFM API] rfm_table.csv missing 'Segment' column - returning 204")
         return Response(status_code=204)
 
     segment_colors = {
@@ -1255,6 +1482,8 @@ def get_segmentation(request: Request):
 
     segment_stats.sort(key=lambda x: x.customer_count, reverse=True)
     last_calculated = datetime.fromtimestamp(Path(rfm_path).stat().st_mtime).isoformat()
+    
+    logger.info(f"[RFM API] Returning {len(segment_stats)} segments for {len(rfm_df)} customers")
 
     return SegmentationMetadata(
         total_customers=len(rfm_df),
@@ -1263,6 +1492,18 @@ def get_segmentation(request: Request):
         data_source="rfm_table.csv",
         model_version="RFM",
     )
+
+
+@app.get("/api/segmentation", response_model=SegmentationMetadata, tags=["Analytics"])
+def get_segmentation(request: Request):
+    """Return RFM segment counts from rfm_table.csv. 204 when missing/empty."""
+    return _get_rfm_segmentation_data(request)
+
+
+@app.get("/api/rfm", response_model=SegmentationMetadata, tags=["Analytics"])
+def get_rfm(request: Request):
+    """Alias for /api/segmentation - Return RFM segment counts. 204 when missing/empty."""
+    return _get_rfm_segmentation_data(request)
 
 
 @app.get("/api/kpis", response_model=KPIResponse, tags=["Analytics"])
@@ -1455,35 +1696,44 @@ def get_top_cities(
 
 @app.get("/api/sentiment-analysis", response_model=SentimentAnalysisResponse, tags=["Analytics"])
 def get_sentiment_analysis():
-    """Compute sentiment percentages and keywords from sentiment_results.csv. 204 when missing/empty."""
+    """
+    Compute sentiment percentages and keywords from sentiment_results.csv.
+    
+    CRITICAL: Always reads FRESH from disk, never from cached globals.
+    Returns 204 (No Content) when data is missing or empty.
+    """
     sentiment_path = DATA_DIR / "sentiment_results.csv"
+    
+    logger.info(f"[SENTIMENT API] Checking for data at: {sentiment_path}")
 
     if not sentiment_path.exists():
-        logger.warning("Sentiment file missing; returning 204")
+        logger.info("[SENTIMENT API] sentiment_results.csv not found - returning 204")
         return Response(status_code=204)
 
     try:
-        sentiment_df = pd.read_csv(sentiment_path)
-    except Exception as exc:  # noqa: BLE001
-        logger.error("Failed to read sentiment_results.csv: %s", exc)
+        # ALWAYS read fresh from disk - use local variable, not global
+        local_sentiment_df = pd.read_csv(sentiment_path)
+        logger.info(f"[SENTIMENT API] Loaded sentiment_results.csv: {len(local_sentiment_df)} rows")
+    except Exception as exc:
+        logger.error(f"[SENTIMENT API] Failed to read sentiment_results.csv: {exc}")
         raise HTTPException(status_code=500, detail="Unable to read sentiment_results.csv") from exc
 
-    if sentiment_df.empty:
-        logger.warning("Sentiment file empty; returning 204")
+    if local_sentiment_df.empty:
+        logger.info("[SENTIMENT API] sentiment_results.csv is empty - returning 204")
         return Response(status_code=204)
 
     sentiment_col = None
     for col in ["SentimentLabel", "Sentiment", "Label", "sentiment_label"]:
-        if col in sentiment_df.columns:
+        if col in local_sentiment_df.columns:
             sentiment_col = col
             break
 
     if sentiment_col is None:
-        logger.warning("Sentiment label column missing; returning 204")
+        logger.warning("[SENTIMENT API] Sentiment label column missing - returning 204")
         return Response(status_code=204)
 
-    total = len(sentiment_df)
-    sentiment_counts = sentiment_df[sentiment_col].value_counts().to_dict()
+    total = len(local_sentiment_df)
+    sentiment_counts = local_sentiment_df[sentiment_col].value_counts().to_dict()
 
     sentiment_breakdown = [
         SentimentDetail(
@@ -1495,14 +1745,14 @@ def get_sentiment_analysis():
     ]
 
     text_col = None
-    if "CleanedText" in sentiment_df.columns:
+    if "CleanedText" in local_sentiment_df.columns:
         text_col = "CleanedText"
-    elif "ReviewText" in sentiment_df.columns:
+    elif "ReviewText" in local_sentiment_df.columns:
         text_col = "ReviewText"
 
     top_keywords: List[str] = []
     if text_col:
-        positive_reviews = sentiment_df[sentiment_df[sentiment_col] == "Positive"]
+        positive_reviews = local_sentiment_df[local_sentiment_df[sentiment_col] == "Positive"]
         if not positive_reviews.empty:
             text = " ".join(positive_reviews[text_col].astype(str).tolist()).lower()
             stop_words = {"the", "a", "and", "or", "is", "it", "to", "but", "i", "this", "that", "of", "in", "for"}
@@ -1513,6 +1763,8 @@ def get_sentiment_analysis():
             top_keywords = [word for word, _ in word_freq.most_common(5)]
 
     last_analyzed = datetime.fromtimestamp(Path(sentiment_path).stat().st_mtime).isoformat()
+    
+    logger.info(f"[SENTIMENT API] Returning analysis for {total} reviews")
 
     return SentimentAnalysisResponse(
         total_reviews=total,
@@ -1531,21 +1783,30 @@ def get_sentiment_summary():
 
 @app.get("/api/recommendations", response_model=List[RecommendationResponse], tags=["Analytics"])
 def get_recommendations(limit: int = Query(10, ge=1, le=100)):
-    """Return association rules from product_recommendations.csv. 204 when missing/empty."""
-
+    """
+    Return association rules from product_recommendations.csv.
+    
+    CRITICAL: Always reads FRESH from disk, never from cached globals.
+    Returns 204 (No Content) when data is missing or empty.
+    """
     recommendations_path = DATA_DIR / "product_recommendations.csv"
+    
+    logger.info(f"[RECOMMENDATIONS API] Checking for data at: {recommendations_path}")
+    
     if not recommendations_path.exists():
-        logger.warning("product_recommendations.csv missing; returning 204")
+        logger.info("[RECOMMENDATIONS API] product_recommendations.csv not found - returning 204")
         return Response(status_code=204)
 
     try:
+        # ALWAYS read fresh from disk
         rules_df = pd.read_csv(recommendations_path)
-    except Exception as exc:  # noqa: BLE001
-        logger.error("Failed to read product_recommendations.csv: %s", exc)
+        logger.info(f"[RECOMMENDATIONS API] Loaded product_recommendations.csv: {len(rules_df)} rows")
+    except Exception as exc:
+        logger.error(f"[RECOMMENDATIONS API] Failed to read product_recommendations.csv: {exc}")
         raise HTTPException(status_code=500, detail="Unable to read product_recommendations.csv") from exc
 
     if rules_df.empty:
-        logger.warning("Recommendation CSV empty; returning 204")
+        logger.info("[RECOMMENDATIONS API] product_recommendations.csv is empty - returning 204")
         return Response(status_code=204)
 
     if "Confidence" in rules_df.columns:
@@ -1555,6 +1816,7 @@ def get_recommendations(limit: int = Query(10, ge=1, le=100)):
 
     rules_df = rules_df.head(limit)
     if rules_df.empty:
+        logger.info("[RECOMMENDATIONS API] No valid rules after filtering - returning 204")
         return Response(status_code=204)
 
     results: List[RecommendationResponse] = []
@@ -1588,6 +1850,7 @@ def get_recommendations(limit: int = Query(10, ge=1, le=100)):
             )
         )
 
+    logger.info(f"[RECOMMENDATIONS API] Returning {len(results)} recommendation rules")
     return results
 
 

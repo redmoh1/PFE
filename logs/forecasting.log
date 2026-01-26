@@ -53,3 +53,40 @@
 2026-01-24 20:11:18,833 - INFO - ============================================================
 2026-01-24 20:11:18,833 - INFO - Phase 3: Sales Forecasting Completed Successfully
 2026-01-24 20:11:18,833 - INFO - ============================================================
+2026-01-26 15:05:54,600 - INFO - ============================================================
+2026-01-26 15:05:54,600 - INFO - Phase 3: Sales Forecasting Started
+2026-01-26 15:05:54,600 - INFO - ============================================================
+2026-01-26 15:05:54,603 - INFO - Loaded 307 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-26 15:05:54,606 - ERROR - Data validation error: Invalid frequency: ME
+2026-01-26 15:10:11,559 - INFO - ============================================================
+2026-01-26 15:10:11,560 - INFO - Phase 3: Sales Forecasting Started
+2026-01-26 15:10:11,560 - INFO - ============================================================
+2026-01-26 15:10:11,564 - INFO - Loaded 307 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-26 15:10:11,571 - INFO - Aggregated 307 records into 5 monthly periods
+2026-01-26 15:10:11,573 - INFO - Training Linear Regression model...
+2026-01-26 15:10:11,581 - INFO - Model R2 Score: 0.0735
+2026-01-26 15:10:11,581 - INFO - Model MAE: 6,231.40
+2026-01-26 15:10:11,581 - INFO - Model RMSE: 6,831.25
+2026-01-26 15:10:11,581 - INFO - Generating 6-month forecast...
+2026-01-26 15:10:11,581 - INFO - Generating forecast visualization...
+2026-01-26 15:10:11,992 - INFO - Forecast plot saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sales_forecast.png
+2026-01-26 15:10:11,997 - INFO - Forecast saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv with 6 periods
+2026-01-26 15:10:11,997 - INFO - ============================================================
+2026-01-26 15:10:11,997 - INFO - Phase 3: Sales Forecasting Completed Successfully
+2026-01-26 15:10:12,000 - INFO - ============================================================
+2026-01-26 15:19:47,735 - INFO - ============================================================
+2026-01-26 15:19:47,735 - INFO - Phase 3: Sales Forecasting Started
+2026-01-26 15:19:47,735 - INFO - ============================================================
+2026-01-26 15:19:47,738 - INFO - Loaded 8 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-26 15:19:47,743 - INFO - Aggregated 8 records into 3 monthly periods
+2026-01-26 15:19:47,745 - INFO - Training Linear Regression model...
+2026-01-26 15:19:47,748 - INFO - Model R2 Score: 0.0406
+2026-01-26 15:19:47,748 - INFO - Model MAE: 448.89
+2026-01-26 15:19:47,748 - INFO - Model RMSE: 476.12
+2026-01-26 15:19:47,749 - INFO - Generating 6-month forecast...
+2026-01-26 15:19:47,750 - INFO - Generating forecast visualization...
+2026-01-26 15:19:48,137 - INFO - Forecast plot saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sales_forecast.png
+2026-01-26 15:19:48,152 - INFO - Forecast saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv with 6 periods
+2026-01-26 15:19:48,152 - INFO - ============================================================
+2026-01-26 15:19:48,152 - INFO - Phase 3: Sales Forecasting Completed Successfully
+2026-01-26 15:19:48,153 - INFO - ============================================================

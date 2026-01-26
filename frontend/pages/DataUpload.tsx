@@ -78,14 +78,16 @@ const DataUpload: React.FC = () => {
         throw new Error(errorData.detail || `Upload failed with status ${res.status}`);
       }
 
+      // Reload dataset list
       await loadDatasets();
+      
+      // CRITICAL: Refresh all analytics data from server to get fresh pipeline results
+      console.log('[DataUpload] Upload complete - refreshing all analytics data...');
+      await refreshData();
+      
       setUploadStatus('success');
-      setMessage('Dataset uploaded successfully. Analytics and ML retraining started.');
-
-      // Optional: keep existing local simulation
-      if (datasetType === 'sales') {
-        uploadData('sales', []);
-      }
+      setMessage('Dataset uploaded successfully. Analytics pipeline completed. Dashboard updated with fresh data.');
+      setSelectedFile(null);
     } catch (error) {
       console.error(error);
       setUploadStatus('error');
@@ -109,8 +111,15 @@ const DataUpload: React.FC = () => {
         body: formData
       });
       if (!res.ok) throw new Error('Replace failed');
+      
+      // Reload dataset list
       await loadDatasets();
-      setMessage('Dataset replaced. Previous version archived. Analytics/ML retraining started.');
+      
+      // CRITICAL: Refresh all analytics data from server
+      console.log('[DataUpload] Replace complete - refreshing all analytics data...');
+      await refreshData();
+      
+      setMessage('Dataset replaced. Previous version archived. Analytics regenerated with new data.');
     } catch (error) {
       console.error(error);
       setMessage('Replace failed.');

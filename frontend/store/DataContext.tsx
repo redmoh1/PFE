@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { SalesData, ForecastPoint, RFMSegment, Recommendation, SentimentData, KPIData } from '../types';
 
@@ -36,13 +36,24 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = async () => {
+  /**
+   * CRITICAL: Fetch ALL data fresh from the server.
+   * 
+   * This function:
+   * 1. Clears all local state FIRST to prevent stale data display
+   * 2. Fetches fresh data from each endpoint
+   * 3. Handles 204 (No Content) responses by setting empty arrays
+   * 4. NEVER uses cached or localStorage data for analytics
+   */
+  const fetchData = useCallback(async () => {
     if (!user) {
+      // Clear all state when no user
       setSales([]);
       setForecast([]);
       setSegments([]);
       setRecommendations([]);
       setSentiment([]);
+      setKpis(null);
       setLastTrainingDate(null);
       setIsLoading(false);
       return;
@@ -60,18 +71,25 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Fetch KPIs
       try {
         const kpiRes = await fetch(`${API_BASE_URL}/api/kpis`, { headers });
-        if (kpiRes.ok) {
+        if (kpiRes.status === 204) {
+          setKpis(null);
+        } else if (kpiRes.ok) {
           const kpiData = await kpiRes.json();
           setKpis(kpiData);
+        } else {
+          setKpis(null);
         }
       } catch (e) {
         console.error('Failed to fetch KPIs:', e);
+        setKpis(null);
       }
 
       // Fetch sales data (raw data endpoint)
       try {
         const salesRes = await fetch(`${API_BASE_URL}/api/raw-data?limit=100`, { headers });
-        if (salesRes.ok) {
+        if (salesRes.status === 204) {
+          setSales([]);
+        } else if (salesRes.ok) {
           const salesData = await salesRes.json();
           setSales(salesData.map((item: any, idx: number) => ({
             id: item.OrderID || item.Product_ID || `s-${idx}`,
@@ -82,40 +100,54 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             city: item.City || item.Region || 'Unknown',
             customerId: item.CustomerID || 'c-unknown'
           })));
+        } else {
+          setSales([]);
         }
       } catch (e) {
         console.error('Failed to fetch sales data:', e);
+        setSales([]);
       }
 
       // Fetch forecast data
       try {
         const forecastRes = await fetch(`${API_BASE_URL}/api/monthly-sales`, { headers });
-        if (forecastRes.ok) {
+        if (forecastRes.status === 204) {
+          setForecast([]);
+        } else if (forecastRes.ok) {
           const forecastData = await forecastRes.json();
           setForecast(forecastData.map((item: any) => ({
             date: item.month,
             actual: item.actual_sales || undefined,
             forecast: item.forecasted_sales || undefined
           })));
+        } else {
+          setForecast([]);
         }
       } catch (e) {
         console.error('Failed to fetch forecast data:', e);
+        setForecast([]);
       }
 
-      // Fetch recommendations
+      // Fetch recommendations - ALWAYS fresh from server
       try {
         const recsRes = await fetch(`${API_BASE_URL}/api/recommendations?limit=10`, { headers });
         if (recsRes.status === 204) {
+          // 204 = No Content - explicitly set empty array
+          console.log('[DataContext] Recommendations API returned 204 - clearing state');
           setRecommendations([]);
         } else if (recsRes.ok) {
           const recsData = await recsRes.json();
-          setRecommendations(recsData.map((item: any, idx: number) => ({
-            id: `rec-${idx}`,
-            baseProduct: item.if_product || '',
-            recommendedProduct: item.then_product || '',
-            confidence: item.confidence || 0,
-            lift: item.lift || 0
-          })));
+          if (Array.isArray(recsData) && recsData.length > 0) {
+            setRecommendations(recsData.map((item: any, idx: number) => ({
+              id: `rec-${idx}`,
+              baseProduct: item.if_product || '',
+              recommendedProduct: item.then_product || '',
+              confidence: item.confidence || 0,
+              lift: item.lift || 0
+            })));
+          } else {
+            setRecommendations([]);
+          }
         } else {
           console.warn('Recommendations API returned non-OK status:', recsRes.status);
           setRecommendations([]);
@@ -125,10 +157,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setRecommendations([]);
       }
 
-      // Fetch RFM segmentation data (real data from rfm_table.csv)
+      // Fetch RFM segmentation data - ALWAYS fresh from server
       try {
         const segmentRes = await fetch(`${API_BASE_URL}/api/segmentation`, { headers });
         if (segmentRes.status === 204) {
+          // 204 = No Content - explicitly set empty array
+          console.log('[DataContext] Segmentation API returned 204 - clearing state');
           setSegments([]);
         } else if (segmentRes.ok) {
           const segmentData = await segmentRes.json();
@@ -162,10 +196,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user]);
 
-  // Reset all analytics state - used after dataset deletion
-  const resetAllAnalytics = () => {
+  /**
+   * CRITICAL: Reset ALL analytics state immediately.
+   * 
+   * Called after dataset deletion to ensure:
+   * 1. No stale data is displayed
+   * 2. UI shows empty states
+   * 3. Next API call will fetch fresh (empty) data
+   */
+  const resetAllAnalytics = useCallback(() => {
+    console.log('[DataContext] resetAllAnalytics called - clearing ALL state');
+    
+    // Immediately clear all state
     setSales([]);
     setForecast([]);
     setSegments([]);
@@ -175,40 +219,37 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLastTrainingDate(null);
     setError(null);
     
-    // Clear local storage for this tenant
+    // Clear local storage for this tenant (no stale cached data)
     if (user) {
       const tenantKey = `data_${user.company}`;
       localStorage.removeItem(tenantKey);
+      console.log(`[DataContext] Cleared localStorage for ${tenantKey}`);
     }
-  };
-
-  // Load user-specific data from local storage to simulate tenant isolation
-  useEffect(() => {
-    fetchData();
   }, [user]);
 
-  const uploadData = async (type: string, data: any[]) => {
+  // Fetch data when user changes - DO NOT use localStorage for analytics
+  useEffect(() => {
+    fetchData();
+  }, [user, fetchData]);
+
+  /**
+   * Handle local data upload simulation.
+   * After upload, trigger a refresh to get fresh data from server.
+   */
+  const uploadData = useCallback(async (type: string, data: any[]) => {
     setIsProcessing(true);
-    // Simulate pipeline processing (cleaning, FE, ML training)
-    setTimeout(() => {
-      if (type === 'sales') setSales(data as SalesData[]);
-      setLastTrainingDate(new Date().toISOString());
+    
+    // Wait for backend pipeline to process
+    // The actual upload is handled by DataUpload.tsx calling the API directly
+    setTimeout(async () => {
       setIsProcessing(false);
+      setLastTrainingDate(new Date().toISOString());
       
-      // Save updated data
-      if (user) {
-        const tenantKey = `data_${user.company}`;
-        localStorage.setItem(tenantKey, JSON.stringify({
-          sales: type === 'sales' ? data : sales,
-          forecast,
-          segments,
-          recommendations,
-          sentiment,
-          lastTrainingDate: new Date().toISOString()
-        }));
-      }
+      // Refresh data from server to get fresh pipeline results
+      console.log('[DataContext] uploadData complete - refreshing from server');
+      await fetchData();
     }, 2000);
-  };
+  }, [fetchData]);
 
   return (
     <DataContext.Provider value={{
