@@ -5254,3 +5254,378 @@ UnicodeEncodeError: 'charmap' codec can't encode cha
 2026-01-26 17:28:36,645 - backend.main - INFO - [SENTIMENT API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
 2026-01-26 17:28:36,655 - backend.main - INFO - [SENTIMENT API] Loaded sentiment_results.csv: 120 rows
 2026-01-26 17:28:36,658 - backend.main - INFO - [SENTIMENT API] Returning analysis for 120 reviews
+2026-01-26 18:24:21,808 - root - INFO - Pipeline Controller imported successfully
+2026-01-26 18:24:21,852 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-01-26 18:24:21,852 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-01-26 18:24:21,886 - backend.main - INFO - ============================================================
+2026-01-26 18:24:21,886 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-01-26 18:24:21,886 - backend.main - INFO - ============================================================
+2026-01-26 18:24:21,892 - backend.main - INFO - [DATA RELOAD] Loaded cleaned_dataset.csv: 307 rows
+2026-01-26 18:24:21,892 - backend.main - INFO - [DATA RELOAD] Loaded sentiment_results.csv: 120 rows
+2026-01-26 18:24:21,892 - backend.main - INFO - [DATA RELOAD] Loaded product_recommendations.csv: 60 rows
+2026-01-26 18:24:21,892 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': True, 'forecast': False, 'sentiment': True, 'recommendations': True, 'model': False}
+2026-01-26 18:24:21,892 - backend.main - INFO - ============================================================
+2026-01-26 18:26:35,361 - main - INFO - Computed 5 monthly sales for Acme Corp
+2026-01-26 18:26:35,361 - main - INFO - Returning 5 combined monthly sales records for Acme Corp
+2026-01-26 18:26:35,374 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:26:35,374 - main - INFO - [RECOMMENDATIONS API] Loaded product_recommendations.csv: 60 rows
+2026-01-26 18:26:35,374 - main - INFO - [RECOMMENDATIONS API] Returning 10 recommendation rules
+2026-01-26 18:26:35,374 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:26:35,386 - main - INFO - [RFM API] Loaded rfm_table.csv: 29 rows
+2026-01-26 18:26:35,386 - main - INFO - [RFM API] Returning 5 segments for 29 customers
+2026-01-26 18:26:53,125 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:26:53,127 - main - INFO - [RECOMMENDATIONS API] Loaded product_recommendations.csv: 60 rows
+2026-01-26 18:26:53,131 - main - INFO - [RECOMMENDATIONS API] Returning 10 recommendation rules
+2026-01-26 18:26:53,134 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:26:53,136 - main - INFO - [RECOMMENDATIONS API] Loaded product_recommendations.csv: 60 rows
+2026-01-26 18:26:53,138 - main - INFO - [RECOMMENDATIONS API] Returning 10 recommendation rules
+2026-01-26 18:26:53,897 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:26:53,901 - main - INFO - [RFM API] Loaded rfm_table.csv: 29 rows
+2026-01-26 18:26:53,903 - main - INFO - [RFM API] Returning 5 segments for 29 customers
+2026-01-26 18:26:53,907 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:26:53,909 - main - INFO - [RFM API] Loaded rfm_table.csv: 29 rows
+2026-01-26 18:26:53,910 - main - INFO - [RFM API] Returning 5 segments for 29 customers
+2026-01-26 18:26:54,767 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:26:54,767 - main - INFO - [RECOMMENDATIONS API] Loaded product_recommendations.csv: 60 rows
+2026-01-26 18:26:54,767 - main - INFO - [RECOMMENDATIONS API] Returning 10 recommendation rules
+2026-01-26 18:26:54,767 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:26:54,767 - main - INFO - [RECOMMENDATIONS API] Loaded product_recommendations.csv: 60 rows
+2026-01-26 18:26:54,767 - main - INFO - [RECOMMENDATIONS API] Returning 10 recommendation rules
+2026-01-26 18:26:55,292 - main - INFO - [SENTIMENT API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 18:26:55,294 - main - INFO - [SENTIMENT API] Loaded sentiment_results.csv: 120 rows
+2026-01-26 18:26:55,298 - main - INFO - [SENTIMENT API] Returning analysis for 120 reviews
+2026-01-26 18:26:55,298 - main - INFO - [SENTIMENT API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 18:26:55,303 - main - INFO - [SENTIMENT API] Loaded sentiment_results.csv: 120 rows
+2026-01-26 18:26:55,303 - main - INFO - [SENTIMENT API] Returning analysis for 120 reviews
+2026-01-26 18:26:57,938 - main - INFO - DELETE request for dataset_id=30, type=customers, company=Acme Corp
+2026-01-26 18:26:57,942 - main - INFO - Deleted raw file: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\customers\20260126162553_customers_big.csv
+2026-01-26 18:26:57,942 - main - INFO - ============================================================
+2026-01-26 18:26:57,943 - main - INFO - [CASCADE DELETE] TRIGGERED for dataset_type=customers
+2026-01-26 18:26:57,943 - main - INFO - ============================================================
+2026-01-26 18:26:57,943 - main - INFO - [CASCADE DELETE] Using Pipeline Controller (SINGLE SOURCE OF TRUTH)
+2026-01-26 18:26:57,944 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:57,944 - PipelineController - INFO - [DELETION DETECT] Dataset type: customers
+2026-01-26 18:26:57,944 - PipelineController - INFO - [DELETION DETECT] Triggering HARD RESET of all derived outputs
+2026-01-26 18:26:57,944 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:57,946 - PipelineController - INFO - [DELETE] ✓ Deleted: customers.csv (canonical input)
+2026-01-26 18:26:57,947 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:57,947 - PipelineController - INFO - [HARD RESET] Deleting ALL derived output files
+2026-01-26 18:26:57,948 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:57,949 - PipelineController - INFO - [DELETE] ✓ Deleted: merged_data.csv (data dir)
+2026-01-26 18:26:57,949 - PipelineController - INFO - [DELETE] ✓ Deleted: cleaned_dataset.csv (data dir)
+2026-01-26 18:26:57,950 - PipelineController - INFO - [DELETE] ✓ Deleted: rfm_table.csv (data dir)
+2026-01-26 18:26:57,950 - PipelineController - INFO - [DELETE] ✓ Deleted: product_recommendations.csv (data dir)
+2026-01-26 18:26:57,950 - PipelineController - INFO - [DELETE] ✓ Deleted: sentiment_results.csv (data dir)
+2026-01-26 18:26:57,953 - PipelineController - INFO - [HARD RESET] ✓ Cleared plots directory
+2026-01-26 18:26:57,954 - PipelineController - INFO - [HARD RESET] ✓ Cleared model_registry directory
+2026-01-26 18:26:57,954 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:57,956 - PipelineController - INFO - [HARD RESET] COMPLETE: 14 files deleted
+2026-01-26 18:26:57,956 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:57,956 - main - INFO - ============================================================
+2026-01-26 18:26:57,956 - main - INFO - [CACHE CLEAR] Resetting ALL in-memory state
+2026-01-26 18:26:57,956 - main - INFO - ============================================================
+2026-01-26 18:26:57,957 - main - INFO - [CACHE CLEAR] All global DataFrames set to None
+2026-01-26 18:26:57,957 - main - INFO - [CACHE CLEAR] Memory state cleared - APIs will read fresh from disk
+2026-01-26 18:26:57,957 - main - INFO - ============================================================
+2026-01-26 18:26:57,957 - main - INFO - [CASCADE DELETE] Pipeline Controller completed: {'dataset_type': 'customers', 'canonical_deleted': 'customers.csv', 'hard_reset': {'deleted_count': 14, 'deleted_files': ['merged_data.csv', 'cleaned_dataset.csv', 'rfm_table.csv', 'product_recommendations.csv', 'sentiment_results.csv', 'plots/monthly_sales.png', 'plots/rfm_heatmap.png', 'plots/rfm_metrics_distribution.png', 'plots/rfm_segments.png', 'plots/rules_confidence_lift.png', 'plots/rules_metrics_distribution.png', 'plots/sentiment_analysis.png', 'plots/top_products.png', 'plots/top_rules_by_lift.png'], 'errors': [], 'timestamp': '2026-01-26T17:26:57.956200'}, 'timestamp': '2026-01-26T17:26:57.956200'}
+2026-01-26 18:26:58,004 - main - INFO - Computed 5 monthly sales for Acme Corp
+2026-01-26 18:26:58,005 - main - INFO - Returning 5 combined monthly sales records for Acme Corp
+2026-01-26 18:26:58,010 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:26:58,010 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:26:58,015 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:26:58,015 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:26:59,526 - main - INFO - DELETE request for dataset_id=31, type=reviews, company=Acme Corp
+2026-01-26 18:26:59,531 - main - INFO - Deleted raw file: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\reviews\20260126162606_customer_reviews_big.csv
+2026-01-26 18:26:59,531 - main - INFO - ============================================================
+2026-01-26 18:26:59,531 - main - INFO - [CASCADE DELETE] TRIGGERED for dataset_type=reviews
+2026-01-26 18:26:59,531 - main - INFO - ============================================================
+2026-01-26 18:26:59,531 - main - INFO - [CASCADE DELETE] Using Pipeline Controller (SINGLE SOURCE OF TRUTH)
+2026-01-26 18:26:59,531 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:59,531 - PipelineController - INFO - [DELETION DETECT] Dataset type: reviews
+2026-01-26 18:26:59,531 - PipelineController - INFO - [DELETION DETECT] Triggering HARD RESET of all derived outputs
+2026-01-26 18:26:59,531 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:59,531 - PipelineController - INFO - [DELETE] ✓ Deleted: customer_reviews.csv (canonical input)
+2026-01-26 18:26:59,531 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:59,531 - PipelineController - INFO - [HARD RESET] Deleting ALL derived output files
+2026-01-26 18:26:59,531 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:59,537 - PipelineController - INFO - [HARD RESET] ✓ Cleared plots directory
+2026-01-26 18:26:59,537 - PipelineController - INFO - [HARD RESET] ✓ Cleared model_registry directory
+2026-01-26 18:26:59,537 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:59,537 - PipelineController - INFO - [HARD RESET] COMPLETE: 0 files deleted
+2026-01-26 18:26:59,537 - PipelineController - INFO - ======================================================================
+2026-01-26 18:26:59,537 - main - INFO - ============================================================
+2026-01-26 18:26:59,537 - main - INFO - [CACHE CLEAR] Resetting ALL in-memory state
+2026-01-26 18:26:59,537 - main - INFO - ============================================================
+2026-01-26 18:26:59,537 - main - INFO - [CACHE CLEAR] All global DataFrames set to None
+2026-01-26 18:26:59,537 - main - INFO - [CACHE CLEAR] Memory state cleared - APIs will read fresh from disk
+2026-01-26 18:26:59,537 - main - INFO - ============================================================
+2026-01-26 18:26:59,537 - main - INFO - [CASCADE DELETE] Pipeline Controller completed: {'dataset_type': 'reviews', 'canonical_deleted': 'customer_reviews.csv', 'hard_reset': {'deleted_count': 0, 'deleted_files': [], 'errors': [], 'timestamp': '2026-01-26T17:26:59.537376'}, 'timestamp': '2026-01-26T17:26:59.537376'}
+2026-01-26 18:26:59,598 - main - INFO - Computed 5 monthly sales for Acme Corp
+2026-01-26 18:26:59,598 - main - INFO - Returning 5 combined monthly sales records for Acme Corp
+2026-01-26 18:26:59,616 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:26:59,618 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:26:59,623 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:26:59,623 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:27:01,876 - main - INFO - DELETE request for dataset_id=29, type=sales, company=Acme Corp
+2026-01-26 18:27:01,880 - main - INFO - Deleted raw file: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\sales\20260126162540_sales_big.csv
+2026-01-26 18:27:01,880 - main - INFO - ============================================================
+2026-01-26 18:27:01,880 - main - INFO - [CASCADE DELETE] TRIGGERED for dataset_type=sales
+2026-01-26 18:27:01,882 - main - INFO - ============================================================
+2026-01-26 18:27:01,882 - main - INFO - [CASCADE DELETE] Using Pipeline Controller (SINGLE SOURCE OF TRUTH)
+2026-01-26 18:27:01,882 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:01,882 - PipelineController - INFO - [DELETION DETECT] Dataset type: sales
+2026-01-26 18:27:01,882 - PipelineController - INFO - [DELETION DETECT] Triggering HARD RESET of all derived outputs
+2026-01-26 18:27:01,882 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:01,882 - PipelineController - INFO - [DELETE] ✓ Deleted: sales.csv (canonical input)
+2026-01-26 18:27:01,882 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:01,882 - PipelineController - INFO - [HARD RESET] Deleting ALL derived output files
+2026-01-26 18:27:01,882 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:01,882 - PipelineController - INFO - [HARD RESET] ✓ Cleared plots directory
+2026-01-26 18:27:01,882 - PipelineController - INFO - [HARD RESET] ✓ Cleared model_registry directory
+2026-01-26 18:27:01,882 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:01,882 - PipelineController - INFO - [HARD RESET] COMPLETE: 0 files deleted
+2026-01-26 18:27:01,882 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:01,882 - main - INFO - ============================================================
+2026-01-26 18:27:01,882 - main - INFO - [CACHE CLEAR] Resetting ALL in-memory state
+2026-01-26 18:27:01,882 - main - INFO - ============================================================
+2026-01-26 18:27:01,882 - main - INFO - [CACHE CLEAR] All global DataFrames set to None
+2026-01-26 18:27:01,882 - main - INFO - [CACHE CLEAR] Memory state cleared - APIs will read fresh from disk
+2026-01-26 18:27:01,882 - main - INFO - ============================================================
+2026-01-26 18:27:01,882 - main - INFO - [CASCADE DELETE] Pipeline Controller completed: {'dataset_type': 'sales', 'canonical_deleted': 'sales.csv', 'hard_reset': {'deleted_count': 0, 'deleted_files': [], 'errors': [], 'timestamp': '2026-01-26T17:27:01.882756'}, 'timestamp': '2026-01-26T17:27:01.882756'}
+2026-01-26 18:27:01,919 - main - WARNING - Failed to load active sales data for Acme Corp: 503: No sales data available
+2026-01-26 18:27:01,920 - main - WARNING - No monthly sales data for Acme Corp (no actuals or forecasts)
+2026-01-26 18:27:01,924 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:27:01,924 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:27:01,927 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:27:01,927 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:27:21,721 - main - INFO - ============================================================
+2026-01-26 18:27:21,721 - main - INFO - [TRIGGER] Pipeline trigger received
+2026-01-26 18:27:21,721 - main - INFO - [TRIGGER] Company: Acme Corp
+2026-01-26 18:27:21,721 - main - INFO - [TRIGGER] Dataset: sales
+2026-01-26 18:27:21,721 - main - INFO - [TRIGGER] Action: upload
+2026-01-26 18:27:21,721 - main - INFO - [TRIGGER] File: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\sales\20260126172720_Amazon_Sale_Report.csv
+2026-01-26 18:27:21,721 - main - INFO - ============================================================
+2026-01-26 18:27:21,721 - main - INFO - [TRIGGER] Using Pipeline Controller (SINGLE SOURCE OF TRUTH)
+2026-01-26 18:27:21,721 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:21,721 - PipelineController - INFO - [ORCHESTRATE] Pipeline Orchestration Request
+2026-01-26 18:27:21,721 - PipelineController - INFO - [ORCHESTRATE] Dataset: sales
+2026-01-26 18:27:21,721 - PipelineController - INFO - [ORCHESTRATE] Action: upload
+2026-01-26 18:27:21,721 - PipelineController - INFO - [ORCHESTRATE] File: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\sales\20260126172720_Amazon_Sale_Report.csv
+2026-01-26 18:27:21,721 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:21,721 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:21,721 - PipelineController - INFO - [SALES PIPELINE] STARTING FULL SALES PIPELINE
+2026-01-26 18:27:21,721 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:21,721 - PipelineController - INFO - [SALES PIPELINE] Step 1: HARD RESET derived outputs
+2026-01-26 18:27:21,721 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:21,721 - PipelineController - INFO - [HARD RESET] Deleting ALL derived output files
+2026-01-26 18:27:21,721 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:21,721 - PipelineController - INFO - [HARD RESET] ✓ Cleared plots directory
+2026-01-26 18:27:21,721 - PipelineController - INFO - [HARD RESET] ✓ Cleared model_registry directory
+2026-01-26 18:27:21,721 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:21,721 - PipelineController - INFO - [HARD RESET] COMPLETE: 0 files deleted
+2026-01-26 18:27:21,721 - PipelineController - INFO - ======================================================================
+2026-01-26 18:27:21,721 - PipelineController - INFO - [SALES PIPELINE] Step 2: Copying 20260126172720_Amazon_Sale_Report.csv -> sales.csv
+2026-01-26 18:27:21,721 - PipelineController - INFO - [SALES PIPELINE] Step 3: Running EDA (01_eda.py)
+2026-01-26 18:27:21,721 - PipelineController - INFO - [RUN SCRIPT] Executing: 01_eda.py
+2026-01-26 18:27:23,421 - PipelineController - WARNING - [RUN SCRIPT] ⚠ 01_eda.py exited with code 1
+2026-01-26 18:27:23,421 - PipelineController - ERROR - [SALES PIPELINE] EDA failed - cannot continue
+2026-01-26 18:27:23,421 - main - WARNING - [TRIGGER] ⚠ Pipeline Controller had issues: {'dataset_type': 'sales', 'action': 'upload', 'file_path': 'C:\\Users\\DELL\\Desktop\\New folder\\Sales_Intelligence_Project\\data\\Acme Corp\\sales\\20260126172720_Amazon_Sale_Report.csv', 'timestamp': '2026-01-26T17:27:21.721610', 'execution': {'success': False, 'steps': {'hard_reset': {'deleted_count': 0, 'deleted_files': [], 'errors': [], 'timestamp': '2026-01-26T17:27:21.721610'}, 'copy_file': {'success': True, 'source': 'C:\\Users\\DELL\\Desktop\\New folder\\Sales_Intelligence_Project\\data\\Acme Corp\\sales\\20260126172720_Amazon_Sale_Report.csv'}, 'eda': {'success': False, 'script': '01_eda.py', 'return_code': 1, 'stdout': "2026-01-26 18:27:22,430 - INFO - ============================================================\n2026-01-26 18:27:22,430 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED\n2026-01-26 18:27:22,430 - INFO - ============================================================\n2026-01-26 18:27:22,430 - INFO - ============================================================\n2026-01-26 18:27:22,430 - INFO - DATA LOADING PHASE\n2026-01-26 18:27:22,430 - INFO - ============================================================\n2026-01-26 18:27:22,487 - INFO - [OK] Loaded 128975 sales records (MANDATORY)\n2026-01-26 18:27:22,487 - WARNING - [WARN] customers.csv not found – continuing without customers\n2026-01-26 18:27:22,505 - INFO - Cleaning data...\n2026-01-26 18:27:22,505 - INFO - Data cleaning completed\n2026-01-26 18:27:22,505 - INFO - ============================================================\n2026-01-26 18:27:22,505 - INFO - DATA MERGING PHASE\n2026-01-26 18:27:22,505 - INFO - ============================================================\n2026-01-26 18:27:22,505 - INFO - [SKIP] No customer enrichment applied\n2026-01-26 18:27:22,738 - INFO - [OK] merged_data.csv generated for Phase 2\n2026-01-26 18:27:22,955 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines\n2026-01-26 18:27:22,971 - INFO - Total Sales Revenue: 78,592,678.30\n2026-01-26 18:27:22,971 - INFO - Total Orders: 128,975.00\n2026-01-26 18:27:22,971 - INFO - Total Customers: 0.00\n2026-01-26 18:27:22,971 - INFO - Average Order Value: 609.36\n2026-01-26 18:27:22,971 - INFO - Median Order Value: 583.00\n2026-01-26 18:27:22,971 - INFO - Total Products Sold: 0.00\n2026-01-26 18:27:22,971 - INFO - Performing EDA...\n2026-01-26 18:27:23,338 - ERROR - Pipeline failed: 'Product'\n", 'stderr': ''}}, 'timestamp_start': '2026-01-26T17:27:21.721610', 'timestamp_end': '2026-01-26T17:27:23.421126'}}
+2026-01-26 18:27:23,421 - main - INFO - ============================================================
+2026-01-26 18:27:23,421 - main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-01-26 18:27:23,421 - main - INFO - ============================================================
+2026-01-26 18:27:23,489 - main - INFO - [DATA RELOAD] Loaded cleaned_dataset.csv: 128975 rows
+2026-01-26 18:27:23,504 - main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': True, 'forecast': False, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-01-26 18:27:23,504 - main - INFO - ============================================================
+2026-01-26 18:27:23,908 - main - INFO - Computed 4 monthly sales for Acme Corp
+2026-01-26 18:27:23,909 - main - INFO - Returning 4 combined monthly sales records for Acme Corp
+2026-01-26 18:27:23,915 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:27:23,915 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:27:23,919 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:27:23,919 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:27:30,564 - main - INFO - Computed 4 monthly sales for Acme Corp
+2026-01-26 18:27:30,564 - main - INFO - Returning 4 combined monthly sales records for Acme Corp
+2026-01-26 18:27:30,728 - main - INFO - Computed 4 monthly sales for Acme Corp
+2026-01-26 18:27:30,729 - main - INFO - Returning 4 combined monthly sales records for Acme Corp
+2026-01-26 18:27:36,367 - main - INFO - Computed 4 monthly sales for Acme Corp
+2026-01-26 18:27:36,380 - main - INFO - Returning 4 combined monthly sales records for Acme Corp
+2026-01-26 18:27:36,387 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:27:36,387 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:27:36,390 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:27:36,391 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:27:45,929 - main - INFO - Computed 4 monthly sales for Acme Corp
+2026-01-26 18:27:45,930 - main - INFO - Returning 4 combined monthly sales records for Acme Corp
+2026-01-26 18:27:46,084 - main - INFO - Computed 4 monthly sales for Acme Corp
+2026-01-26 18:27:46,084 - main - INFO - Returning 4 combined monthly sales records for Acme Corp
+2026-01-26 18:27:46,718 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:27:46,719 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:27:46,722 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:27:46,722 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:27:48,157 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:27:48,157 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:27:48,158 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:27:48,158 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:27:48,643 - main - INFO - [SENTIMENT API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 18:27:48,643 - main - INFO - [SENTIMENT API] sentiment_results.csv not found - returning 204
+2026-01-26 18:27:48,645 - main - INFO - [SENTIMENT API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 18:27:48,646 - main - INFO - [SENTIMENT API] sentiment_results.csv not found - returning 204
+2026-01-26 18:53:38,953 - main - INFO - Computed 4 monthly sales for Acme Corp
+2026-01-26 18:53:38,954 - main - INFO - Returning 4 combined monthly sales records for Acme Corp
+2026-01-26 18:53:38,962 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:53:38,962 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:53:38,964 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:53:38,965 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:53:45,901 - main - INFO - DELETE request for dataset_id=32, type=sales, company=Acme Corp
+2026-01-26 18:53:45,909 - main - INFO - Deleted raw file: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\sales\20260126172720_Amazon_Sale_Report.csv
+2026-01-26 18:53:45,909 - main - INFO - ============================================================
+2026-01-26 18:53:45,910 - main - INFO - [CASCADE DELETE] TRIGGERED for dataset_type=sales
+2026-01-26 18:53:45,910 - main - INFO - ============================================================
+2026-01-26 18:53:45,910 - main - INFO - [CASCADE DELETE] Using Pipeline Controller (SINGLE SOURCE OF TRUTH)
+2026-01-26 18:53:45,910 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:45,910 - PipelineController - INFO - [DELETION DETECT] Dataset type: sales
+2026-01-26 18:53:45,911 - PipelineController - INFO - [DELETION DETECT] Triggering HARD RESET of all derived outputs
+2026-01-26 18:53:45,911 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:45,912 - PipelineController - INFO - [DELETE] ✓ Deleted: sales.csv (canonical input)
+2026-01-26 18:53:45,913 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:45,913 - PipelineController - INFO - [HARD RESET] Deleting ALL derived output files
+2026-01-26 18:53:45,913 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:45,914 - PipelineController - INFO - [DELETE] ✓ Deleted: merged_data.csv (data dir)
+2026-01-26 18:53:45,915 - PipelineController - INFO - [DELETE] ✓ Deleted: cleaned_dataset.csv (data dir)
+2026-01-26 18:53:45,915 - PipelineController - INFO - [HARD RESET] ✓ Cleared plots directory
+2026-01-26 18:53:45,915 - PipelineController - INFO - [HARD RESET] ✓ Cleared model_registry directory
+2026-01-26 18:53:45,915 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:45,915 - PipelineController - INFO - [HARD RESET] COMPLETE: 2 files deleted
+2026-01-26 18:53:45,915 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:45,915 - main - INFO - ============================================================
+2026-01-26 18:53:45,915 - main - INFO - [CACHE CLEAR] Resetting ALL in-memory state
+2026-01-26 18:53:45,915 - main - INFO - ============================================================
+2026-01-26 18:53:45,916 - main - INFO - [CACHE CLEAR] All global DataFrames set to None
+2026-01-26 18:53:45,916 - main - INFO - [CACHE CLEAR] Memory state cleared - APIs will read fresh from disk
+2026-01-26 18:53:45,917 - main - INFO - ============================================================
+2026-01-26 18:53:45,917 - main - INFO - [CASCADE DELETE] Pipeline Controller completed: {'dataset_type': 'sales', 'canonical_deleted': 'sales.csv', 'hard_reset': {'deleted_count': 2, 'deleted_files': ['merged_data.csv', 'cleaned_dataset.csv'], 'errors': [], 'timestamp': '2026-01-26T17:53:45.915836'}, 'timestamp': '2026-01-26T17:53:45.915836'}
+2026-01-26 18:53:45,944 - main - WARNING - Failed to load active sales data for Acme Corp: 503: No sales data available
+2026-01-26 18:53:45,944 - main - WARNING - No monthly sales data for Acme Corp (no actuals or forecasts)
+2026-01-26 18:53:45,950 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:53:45,950 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:53:45,954 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:53:45,955 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:53:58,476 - main - WARNING - Failed to normalize uploaded sales file C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\sales\20260126175358_cleaned_dataset.csv: 400: Missing date column. Expected one of: OrderDate, Sale_Date, Order_Date, Date
+2026-01-26 18:53:58,485 - main - INFO - ============================================================
+2026-01-26 18:53:58,486 - main - INFO - [TRIGGER] Pipeline trigger received
+2026-01-26 18:53:58,486 - main - INFO - [TRIGGER] Company: Acme Corp
+2026-01-26 18:53:58,486 - main - INFO - [TRIGGER] Dataset: sales
+2026-01-26 18:53:58,486 - main - INFO - [TRIGGER] Action: upload
+2026-01-26 18:53:58,486 - main - INFO - [TRIGGER] File: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\sales\20260126175358_cleaned_dataset.csv
+2026-01-26 18:53:58,486 - main - INFO - ============================================================
+2026-01-26 18:53:58,486 - main - INFO - [TRIGGER] Using Pipeline Controller (SINGLE SOURCE OF TRUTH)
+2026-01-26 18:53:58,486 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:58,486 - PipelineController - INFO - [ORCHESTRATE] Pipeline Orchestration Request
+2026-01-26 18:53:58,486 - PipelineController - INFO - [ORCHESTRATE] Dataset: sales
+2026-01-26 18:53:58,487 - PipelineController - INFO - [ORCHESTRATE] Action: upload
+2026-01-26 18:53:58,487 - PipelineController - INFO - [ORCHESTRATE] File: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\sales\20260126175358_cleaned_dataset.csv
+2026-01-26 18:53:58,487 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:58,487 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:58,487 - PipelineController - INFO - [SALES PIPELINE] STARTING FULL SALES PIPELINE
+2026-01-26 18:53:58,487 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:58,487 - PipelineController - INFO - [SALES PIPELINE] Step 1: HARD RESET derived outputs
+2026-01-26 18:53:58,487 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:58,487 - PipelineController - INFO - [HARD RESET] Deleting ALL derived output files
+2026-01-26 18:53:58,487 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:58,489 - PipelineController - INFO - [HARD RESET] ✓ Cleared plots directory
+2026-01-26 18:53:58,489 - PipelineController - INFO - [HARD RESET] ✓ Cleared model_registry directory
+2026-01-26 18:53:58,489 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:58,489 - PipelineController - INFO - [HARD RESET] COMPLETE: 0 files deleted
+2026-01-26 18:53:58,490 - PipelineController - INFO - ======================================================================
+2026-01-26 18:53:58,490 - PipelineController - INFO - [SALES PIPELINE] Step 2: Copying 20260126175358_cleaned_dataset.csv -> sales.csv
+2026-01-26 18:53:58,492 - PipelineController - INFO - [SALES PIPELINE] Step 3: Running EDA (01_eda.py)
+2026-01-26 18:53:58,492 - PipelineController - INFO - [RUN SCRIPT] Executing: 01_eda.py
+2026-01-26 18:53:59,256 - PipelineController - WARNING - [RUN SCRIPT] ⚠ 01_eda.py exited with code 1
+2026-01-26 18:53:59,256 - PipelineController - ERROR - [SALES PIPELINE] EDA failed - cannot continue
+2026-01-26 18:53:59,256 - main - WARNING - [TRIGGER] ⚠ Pipeline Controller had issues: {'dataset_type': 'sales', 'action': 'upload', 'file_path': 'C:\\Users\\DELL\\Desktop\\New folder\\Sales_Intelligence_Project\\data\\Acme Corp\\sales\\20260126175358_cleaned_dataset.csv', 'timestamp': '2026-01-26T17:53:58.487891', 'execution': {'success': False, 'steps': {'hard_reset': {'deleted_count': 0, 'deleted_files': [], 'errors': [], 'timestamp': '2026-01-26T17:53:58.490405'}, 'copy_file': {'success': True, 'source': 'C:\\Users\\DELL\\Desktop\\New folder\\Sales_Intelligence_Project\\data\\Acme Corp\\sales\\20260126175358_cleaned_dataset.csv'}, 'eda': {'success': False, 'script': '01_eda.py', 'return_code': 1, 'stdout': '2026-01-26 18:53:59,143 - INFO - ============================================================\n2026-01-26 18:53:59,144 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED\n2026-01-26 18:53:59,144 - INFO - ============================================================\n2026-01-26 18:53:59,144 - INFO - ============================================================\n2026-01-26 18:53:59,144 - INFO - DATA LOADING PHASE\n2026-01-26 18:53:59,144 - INFO - ============================================================\n2026-01-26 18:53:59,168 - INFO - [OK] Loaded 4854 sales records (MANDATORY)\n2026-01-26 18:53:59,168 - WARNING - [WARN] customers.csv not found – continuing without customers\n2026-01-26 18:53:59,168 - ERROR - Pipeline failed: OrderDate is mandatory in sales data\n', 'stderr': ''}}, 'timestamp_start': '2026-01-26T17:53:58.487891', 'timestamp_end': '2026-01-26T17:53:59.256879'}}
+2026-01-26 18:53:59,256 - main - INFO - ============================================================
+2026-01-26 18:53:59,256 - main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-01-26 18:53:59,256 - main - INFO - ============================================================
+2026-01-26 18:53:59,256 - main - INFO - [DATA RELOAD] cleaned_dataset.csv not found (expected after delete)
+2026-01-26 18:53:59,256 - main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': False, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-01-26 18:53:59,256 - main - INFO - ============================================================
+2026-01-26 18:53:59,373 - main - WARNING - Failed to load active sales data for Acme Corp: 400: Missing date column. Expected one of: OrderDate, Sale_Date, Order_Date, Date
+2026-01-26 18:53:59,373 - main - WARNING - No monthly sales data for Acme Corp (no actuals or forecasts)
+2026-01-26 18:53:59,377 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:53:59,377 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:53:59,383 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:53:59,383 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:54:04,284 - main - WARNING - Failed to load active sales data for Acme Corp: 400: Missing date column. Expected one of: OrderDate, Sale_Date, Order_Date, Date
+2026-01-26 18:54:04,284 - main - WARNING - No monthly sales data for Acme Corp (no actuals or forecasts)
+2026-01-26 18:54:04,315 - main - WARNING - Failed to load active sales data for Acme Corp: 400: Missing date column. Expected one of: OrderDate, Sale_Date, Order_Date, Date
+2026-01-26 18:54:04,315 - main - WARNING - No monthly sales data for Acme Corp (no actuals or forecasts)
+2026-01-26 18:54:04,791 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:54:04,792 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:54:04,793 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:54:04,793 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 18:54:05,496 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:54:05,498 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:54:05,498 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:54:05,498 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:54:06,667 - main - INFO - [SENTIMENT API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 18:54:06,667 - main - INFO - [SENTIMENT API] sentiment_results.csv not found - returning 204
+2026-01-26 18:54:06,669 - main - INFO - [SENTIMENT API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 18:54:06,670 - main - INFO - [SENTIMENT API] sentiment_results.csv not found - returning 204
+2026-01-26 18:54:10,434 - main - INFO - DELETE request for dataset_id=33, type=sales, company=Acme Corp
+2026-01-26 18:54:10,439 - main - INFO - Deleted raw file: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\sales\20260126175358_cleaned_dataset.csv
+2026-01-26 18:54:10,439 - main - INFO - ============================================================
+2026-01-26 18:54:10,439 - main - INFO - [CASCADE DELETE] TRIGGERED for dataset_type=sales
+2026-01-26 18:54:10,439 - main - INFO - ============================================================
+2026-01-26 18:54:10,439 - main - INFO - [CASCADE DELETE] Using Pipeline Controller (SINGLE SOURCE OF TRUTH)
+2026-01-26 18:54:10,439 - PipelineController - INFO - ======================================================================
+2026-01-26 18:54:10,439 - PipelineController - INFO - [DELETION DETECT] Dataset type: sales
+2026-01-26 18:54:10,439 - PipelineController - INFO - [DELETION DETECT] Triggering HARD RESET of all derived outputs
+2026-01-26 18:54:10,439 - PipelineController - INFO - ======================================================================
+2026-01-26 18:54:10,439 - PipelineController - INFO - [DELETE] ✓ Deleted: sales.csv (canonical input)
+2026-01-26 18:54:10,442 - PipelineController - INFO - ======================================================================
+2026-01-26 18:54:10,442 - PipelineController - INFO - [HARD RESET] Deleting ALL derived output files
+2026-01-26 18:54:10,442 - PipelineController - INFO - ======================================================================
+2026-01-26 18:54:10,443 - PipelineController - INFO - [HARD RESET] ✓ Cleared plots directory
+2026-01-26 18:54:10,444 - PipelineController - INFO - [HARD RESET] ✓ Cleared model_registry directory
+2026-01-26 18:54:10,444 - PipelineController - INFO - ======================================================================
+2026-01-26 18:54:10,444 - PipelineController - INFO - [HARD RESET] COMPLETE: 0 files deleted
+2026-01-26 18:54:10,444 - PipelineController - INFO - ======================================================================
+2026-01-26 18:54:10,445 - main - INFO - ============================================================
+2026-01-26 18:54:10,445 - main - INFO - [CACHE CLEAR] Resetting ALL in-memory state
+2026-01-26 18:54:10,445 - main - INFO - ============================================================
+2026-01-26 18:54:10,445 - main - INFO - [CACHE CLEAR] All global DataFrames set to None
+2026-01-26 18:54:10,446 - main - INFO - [CACHE CLEAR] Memory state cleared - APIs will read fresh from disk
+2026-01-26 18:54:10,446 - main - INFO - ============================================================
+2026-01-26 18:54:10,446 - main - INFO - [CASCADE DELETE] Pipeline Controller completed: {'dataset_type': 'sales', 'canonical_deleted': 'sales.csv', 'hard_reset': {'deleted_count': 0, 'deleted_files': [], 'errors': [], 'timestamp': '2026-01-26T17:54:10.445351'}, 'timestamp': '2026-01-26T17:54:10.445351'}
+2026-01-26 18:54:10,471 - main - WARNING - Failed to load active sales data for Acme Corp: 503: No sales data available
+2026-01-26 18:54:10,471 - main - WARNING - No monthly sales data for Acme Corp (no actuals or forecasts)
+2026-01-26 18:54:10,479 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 18:54:10,479 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 18:54:10,482 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 18:54:10,482 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 22:03:18,283 - main - WARNING - Failed to load active sales data for Acme Corp: 503: No sales data available
+2026-01-26 22:03:18,284 - main - WARNING - No monthly sales data for Acme Corp (no actuals or forecasts)
+2026-01-26 22:03:18,292 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 22:03:18,292 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 22:03:18,299 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 22:03:18,299 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 22:07:06,487 - main - WARNING - Failed to load active sales data for Acme Corp: 503: No sales data available
+2026-01-26 22:07:06,487 - main - WARNING - No monthly sales data for Acme Corp (no actuals or forecasts)
+2026-01-26 22:07:06,490 - main - WARNING - Failed to load active sales data for Acme Corp: 503: No sales data available
+2026-01-26 22:07:06,491 - main - WARNING - No monthly sales data for Acme Corp (no actuals or forecasts)
+2026-01-26 22:07:07,921 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 22:07:07,922 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 22:07:07,922 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 22:07:07,924 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)
+2026-01-26 22:07:08,313 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 22:07:08,315 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 22:07:08,317 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 22:07:08,317 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 22:07:09,214 - main - INFO - [SENTIMENT API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 22:07:09,214 - main - INFO - [SENTIMENT API] sentiment_results.csv not found - returning 204
+2026-01-26 22:07:09,217 - main - INFO - [SENTIMENT API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 22:07:09,217 - main - INFO - [SENTIMENT API] sentiment_results.csv not found - returning 204
+2026-01-26 22:42:40,149 - main - WARNING - Failed to load active sales data for Acme Corp: 503: No sales data available
+2026-01-26 22:42:40,149 - main - WARNING - No monthly sales data for Acme Corp (no actuals or forecasts)
+2026-01-26 22:42:40,149 - main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-26 22:42:40,149 - main - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 22:42:40,165 - main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-26 22:42:40,165 - main - INFO - [RFM API] rfm_table.csv not found - returning 204 (No Content)

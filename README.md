@@ -45,26 +45,21 @@ Sales_Intelligence_Project/
 │   ├── main.py                 # API endpoints
 │   └── requirements.txt        # Python dependencies
 ├── frontend/                   # React + TypeScript + Vite
-│   ├── src/
-│   ├── package.json
-│   └── ...
+│   ├── pages/                  # Page components
+│   ├── components/             # UI components
+│   ├── store/                  # State management
+│   └── package.json
 ├── src/
 │   ├── 01_eda.py               # Exploratory data analysis
-│   ├── 02_cleaning_features.py # Data cleaning and feature engineering
-│   ├── 03_forecasting.py       # Basic forecasting
-│   ├── 04_rfm.py               # RFM customer analysis
+│   ├── 03_forecasting.py       # Sales forecasting
+│   ├── 04_rfm.py               # RFM customer segmentation
 │   ├── 05_recommendation.py    # Product recommendations
 │   ├── 06_sentiment.py         # Sentiment analysis
-│   ├── 07_dashboard.py         # Dashboard utilities
-│   └── ml_lifecycle/
-│       ├── train_forecast.py   # Model training
-│       ├── evaluate_forecast.py # Model evaluation
-│       ├── predict_forecast.py  # Generate predictions
-│       ├── retrain_forecast.py  # Model retraining
-│       └── model_registry/
-├── data/                       # Project data files
-├── logs/                       # Log files
-├── ML_LIFECYCLE.md             # ML lifecycle documentation
+│   ├── pipeline_controller.py  # Pipeline orchestration
+│   └── ml_lifecycle/           # ML model management
+├── data/                       # Uploaded datasets
+├── output/                     # Generated reports
+├── tests/                      # Unit tests
 └── README.md                   # This file
 ```
 
@@ -169,19 +164,13 @@ python src/ml_lifecycle/retrain_forecast.py
 
 The data analysis is organized into sequential phases. You can run each phase independently:
 
-### Phase 1: Exploratory Data Analysis
+### Phase 1: Data Analysis
 
 ```bash
 python src/01_eda.py
 ```
 
-### Phase 2: Data Cleaning and Feature Engineering
-
-```bash
-python src/02_cleaning_features.py
-```
-
-### Phase 3: Sales Forecasting
+### Phase 2: Sales Forecasting
 
 ```bash
 python src/03_forecasting.py
@@ -203,12 +192,6 @@ python src/05_recommendation.py
 
 ```bash
 python src/06_sentiment.py
-```
-
-### Phase 7: Dashboard Generation
-
-```bash
-python src/07_dashboard.py
 ```
 
 ---
@@ -267,7 +250,6 @@ http://localhost:8000
 
 For more detailed information, check these resources:
 
-- **ML Lifecycle Details**: See [ML_LIFECYCLE.md](ML_LIFECYCLE.md)
 - **API Documentation**: http://localhost:8000/docs (Swagger UI)
 - **Frontend Guide**: [Frontend README](frontend/README.md)
 
@@ -301,9 +283,9 @@ If you would like to contribute to this project:
 
 If you run into issues or have questions, check these resources:
 
-- `logs/forecast_lifecycle.log` - System logs
-- `backend/main.py` - API documentation
-- `ML_LIFECYCLE.md` - Model lifecycle details
+- API Documentation at http://localhost:8000/docs
+- System logs in `logs/` folder
+- Backend code in `backend/main.py`
 
 ---
 
