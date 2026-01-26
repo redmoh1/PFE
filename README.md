@@ -1,92 +1,105 @@
-# Intelligent Sales Analytics & Forecasting System
+# Intelligent Sales Analytics and Forecasting System
 
-## 🚀 نظرة عامة
+## Overview
 
-نظام متكامل لتحليل المبيعات والتنبؤ الذكي يجمع بين:
-- **Python Backend**: معالجة البيانات، التنبؤ بالمبيعات، تحليل المشاعر، التوصيات
-- **React Frontend**: لوحة تحكم تفاعلية حديثة مع تصور بيانات احترافي
-- **Machine Learning**: نموذج Linear Regression مع دورة حياة كاملة (train/eval/predict/retrain)
+This is a complete sales intelligence platform that brings together data analytics, machine learning, and modern web technologies. The system is designed to help businesses understand their sales patterns, predict future trends, and make data-driven decisions.
+
+The project consists of three main components:
+
+- **Python Backend**: Handles data processing, sales forecasting, sentiment analysis, and product recommendations using FastAPI
+- **React Frontend**: A modern interactive dashboard built with TypeScript and Vite for data visualization
+- **Machine Learning Pipeline**: Linear Regression model with a full lifecycle including training, evaluation, prediction, and retraining capabilities
 
 ---
 
-## 📋 المتطلبات
+## Requirements
 
-### Python 3.8+
+Before getting started, make sure you have the following installed on your system:
+
+### Python 3.8 or higher
+
+Install the Python dependencies by running:
+
 ```bash
-# تثبيت مكتبات Python (Python environment)
 pip install -r requirements.txt
 ```
 
-### Node.js 18+
+### Node.js 18 or higher
+
+Navigate to the frontend folder and install the JavaScript dependencies:
+
 ```bash
-# تثبيت مكتبات JavaScript (مجلد frontend)
 cd frontend
 npm install
 ```
 
 ---
 
-## 📁 هيكل المشروع
+## Project Structure
+
+Here is how the project is organized:
 
 ```
 Sales_Intelligence_Project/
 ├── backend/                    # FastAPI Backend
-│   ├── main.py                # API endpoints
-│   └── requirements.txt        # مكتبات Python
+│   ├── main.py                 # API endpoints
+│   └── requirements.txt        # Python dependencies
 ├── frontend/                   # React + TypeScript + Vite
 │   ├── src/
 │   ├── package.json
 │   └── ...
 ├── src/
-│   ├── 01_eda.py              # تحليل استكشافي
-│   ├── 02_cleaning_features.py # تنظيف البيانات
-│   ├── 03_forecasting.py       # التنبؤ الأساسي
-│   ├── 04_rfm.py               # تحليل RFM
-│   ├── 05_recommendation.py    # توصيات المنتجات
-│   ├── 06_sentiment.py         # تحليل المشاعر
-│   ├── 07_dashboard.py         # لوحة التحكم
+│   ├── 01_eda.py               # Exploratory data analysis
+│   ├── 02_cleaning_features.py # Data cleaning and feature engineering
+│   ├── 03_forecasting.py       # Basic forecasting
+│   ├── 04_rfm.py               # RFM customer analysis
+│   ├── 05_recommendation.py    # Product recommendations
+│   ├── 06_sentiment.py         # Sentiment analysis
+│   ├── 07_dashboard.py         # Dashboard utilities
 │   └── ml_lifecycle/
-│       ├── train_forecast.py   # تدريب النموذج
-│       ├── evaluate_forecast.py # تقييم النموذج
-│       ├── predict_forecast.py # توليد التنبؤات
-│       ├── retrain_forecast.py # إعادة تدريب
+│       ├── train_forecast.py   # Model training
+│       ├── evaluate_forecast.py # Model evaluation
+│       ├── predict_forecast.py  # Generate predictions
+│       ├── retrain_forecast.py  # Model retraining
 │       └── model_registry/
-├── data/                       # بيانات المشروع
-├── logs/                       # ملفات السجل
-├── ML_LIFECYCLE.md             # توثيق دورة حياة ML
-└── README.md                   # هذا الملف
+├── data/                       # Project data files
+├── logs/                       # Log files
+├── ML_LIFECYCLE.md             # ML lifecycle documentation
+└── README.md                   # This file
 ```
 
 ---
 
-## 🚀 التشغيل السريع
+## Getting Started
 
-### 1️⃣ تشغيل Backend API
+### Step 1: Start the Backend API
+
+Open a terminal in the project root directory and run:
 
 ```bash
-# من مجلد المشروع الرئيسي
 python -m pip install -r backend/requirements.txt
-
-# تشغيل API
 python -m uvicorn backend.main:app --reload --port 8000
 ```
 
-API سيكون متاح على: **http://localhost:8000**
+Once running, the API will be available at: **http://localhost:8000**
 
-Documentation: **http://localhost:8000/docs** (Swagger)
+You can explore the API documentation at: **http://localhost:8000/docs** (Swagger UI)
 
-### 2️⃣ تشغيل Frontend Dashboard
+### Step 2: Start the Frontend Dashboard
+
+Open another terminal, navigate to the frontend folder, and run:
 
 ```bash
-# من مجلد frontend
 cd frontend
-npm install  # إذا لم تقم بذلك بعد
+npm install
 npm run dev
 ```
 
-Dashboard سيكون متاح على: **http://localhost:5173**
+The dashboard will be available at: **http://localhost:5173**
 
-### 3️⃣ تشغيل كلا الجزأين معاً (اختياري)
+### Step 3: Running Both Together (Optional)
+
+If you want to run both the backend and frontend simultaneously, you will need two terminal windows:
 
 **Terminal 1 - Backend:**
 ```bash
@@ -100,106 +113,125 @@ cd frontend && npm run dev
 
 ---
 
-## 📊 API Endpoints
+## API Endpoints
 
-| Endpoint | الوصف | الأسلوب |
-|----------|-------|--------|
-| `/api/health` | فحص الصحة | GET |
-| `/api/kpis` | مؤشرات الأداء الرئيسية | GET |
-| `/api/monthly-sales` | المبيعات الشهرية + التنبؤات | GET |
-| `/api/top-products` | أفضل المنتجات | GET |
-| `/api/top-cities` | أفضل المدن | GET |
-| `/api/sentiment` | ملخص تحليل المشاعر | GET |
-| `/api/recommendations` | قواعد التوصيات | GET |
-| `/api/raw-data` | البيانات الخام | GET |
-| `/api/summary` | ملخص شامل | GET |
+Here are the available API endpoints:
+
+| Endpoint | Description | Method |
+|----------|-------------|--------|
+| `/api/health` | Health check | GET |
+| `/api/kpis` | Key performance indicators | GET |
+| `/api/monthly-sales` | Monthly sales with forecasts | GET |
+| `/api/top-products` | Best selling products | GET |
+| `/api/top-cities` | Top performing cities | GET |
+| `/api/sentiment` | Sentiment analysis summary | GET |
+| `/api/recommendations` | Product recommendation rules | GET |
+| `/api/raw-data` | Raw data access | GET |
+| `/api/summary` | Comprehensive summary | GET |
 
 ---
 
-## 🤖 ML Lifecycle Scripts
+## Machine Learning Lifecycle
 
-### تدريب نموذج جديد
+The project includes a complete ML lifecycle for the forecasting model. Here is how to use each script:
+
+### Train a New Model
+
 ```bash
 python src/ml_lifecycle/train_forecast.py
 ```
 
-### تقييم النموذج
+### Evaluate the Model
+
 ```bash
 python src/ml_lifecycle/evaluate_forecast.py
 ```
 
-### توليد التنبؤات
+### Generate Predictions
+
 ```bash
-# التنبؤ للشهور الـ 6 القادمة (افتراضي)
+# Predict the next 6 months (default)
 python src/ml_lifecycle/predict_forecast.py
 
-# التنبؤ للشهور الـ 12 القادمة
+# Predict the next 12 months
 python src/ml_lifecycle/predict_forecast.py 12
 ```
 
-### إعادة تدريب النموذج
+### Retrain the Model
+
 ```bash
 python src/ml_lifecycle/retrain_forecast.py
 ```
 
 ---
 
-## 📈 مراحل تحليل البيانات
+## Data Analysis Pipeline
 
-### Phase 1: تحليل استكشافي (EDA)
+The data analysis is organized into sequential phases. You can run each phase independently:
+
+### Phase 1: Exploratory Data Analysis
+
 ```bash
 python src/01_eda.py
 ```
 
-### Phase 2: تنظيف وهندسة الميزات
+### Phase 2: Data Cleaning and Feature Engineering
+
 ```bash
 python src/02_cleaning_features.py
 ```
 
-### Phase 3: التنبؤ بالمبيعات
+### Phase 3: Sales Forecasting
+
 ```bash
 python src/03_forecasting.py
 ```
 
-### Phase 4: تحليل RFM
+### Phase 4: RFM Customer Analysis
+
 ```bash
 python src/04_rfm.py
 ```
 
-### Phase 5: توصيات المنتجات
+### Phase 5: Product Recommendations
+
 ```bash
 python src/05_recommendation.py
 ```
 
-### Phase 6: تحليل المشاعر
+### Phase 6: Sentiment Analysis
+
 ```bash
 python src/06_sentiment.py
 ```
 
-### Phase 7: لوحة التحكم
+### Phase 7: Dashboard Generation
+
 ```bash
 python src/07_dashboard.py
 ```
 
 ---
 
-## 📝 ملفات الإخراج الرئيسية
+## Output Files
 
-| الملف | الوصف |
-|------|-------|
-| `data/cleaned_dataset.csv` | البيانات المنظفة والمجهزة |
-| `data/sales_forecast_future.csv` | التنبؤات المستقبلية |
-| `data/sentiment_results.csv` | نتائج تحليل المشاعر |
-| `data/product_recommendations.csv` | قواعد التوصيات |
-| `logs/forecast_lifecycle.log` | سجلات دورة حياة ML |
+The system generates several output files during processing:
+
+| File | Description |
+|------|-------------|
+| `data/cleaned_dataset.csv` | Cleaned and processed data |
+| `data/sales_forecast_future.csv` | Future sales predictions |
+| `data/sentiment_results.csv` | Sentiment analysis results |
+| `data/product_recommendations.csv` | Product recommendation rules |
+| `logs/forecast_lifecycle.log` | ML lifecycle logs |
 
 ---
 
-## 🔧 التكوين والإعدادات
+## Configuration
 
-### متغيرات البيئة (اختياري)
+### Environment Variables (Optional)
 
-أنشئ ملف `.env` في المجلد الرئيسي:
+You can create a `.env` file in the project root to customize settings:
 
 ```env
 FLASK_ENV=development
@@ -210,65 +242,71 @@ FORECAST_HORIZON=6
 
 ---
 
-## 🧪 الاختبار
+## Testing
 
-### اختبار Backend API
+### Testing the Backend API
+
+You can test the API endpoints using curl or Postman:
 
 ```bash
-# استخدم curl أو Postman
 curl http://localhost:8000/api/health
 curl http://localhost:8000/api/kpis
 curl http://localhost:8000/api/monthly-sales
 ```
 
-### اختبار Frontend
+### Testing the Frontend
 
-تأكد من أن الـ React app يتصل بـ API على:
+Make sure the React app is configured to connect to the API at:
 ```
 http://localhost:8000
 ```
 
 ---
 
-## 📚 المراجع والتوثيق
+## Documentation
 
-- **ML Lifecycle**: اطلع على [ML_LIFECYCLE.md](ML_LIFECYCLE.md)
-- **FastAPI Docs**: http://localhost:8000/docs (Swagger UI)
-- **React Best Practices**: [Frontend README](frontend/README.md)
+For more detailed information, check these resources:
 
----
-
-## 🎯 الميزات الرئيسية
-
-✅ **تحليل المبيعات**: مؤشرات أداء رئيسية، اتجاهات شهرية، أفضل المنتجات  
-✅ **التنبؤ الذكي**: Linear Regression مع دورة حياة كاملة  
-✅ **تحليل المشاعر**: تصنيف آراء العملاء (إيجابي/محايد/سلبي)  
-✅ **التوصيات**: قواعس association (الشراء X → التوصية بـ Y)  
-✅ **التقسيم**: تحليل RFM للعملاء  
-✅ **لوحة تحكم تفاعلية**: واجهة حديثة مع React + TypeScript  
+- **ML Lifecycle Details**: See [ML_LIFECYCLE.md](ML_LIFECYCLE.md)
+- **API Documentation**: http://localhost:8000/docs (Swagger UI)
+- **Frontend Guide**: [Frontend README](frontend/README.md)
 
 ---
 
-## 🤝 المساهمة
+## Key Features
 
-لإضافة ميزات جديدة:
+Here is what this system offers:
 
-1. أنشئ فرع جديد: `git checkout -b feature/your-feature`
-2. أضف التغييرات
-3. قم بالتعليق على التعديلات بشكل واضح
-4. ارفع الـ PR
-
----
-
-## 📞 الدعم
-
-للأسئلة أو المشاكل، تحقق من:
-- `logs/forecast_lifecycle.log` - سجلات النظام
-- `backend/main.py` - توثيق API
-- `ML_LIFECYCLE.md` - دورة حياة النموذج
+- **Sales Analytics**: Key performance indicators, monthly trends, and top product analysis
+- **Intelligent Forecasting**: Linear Regression model with complete lifecycle management
+- **Sentiment Analysis**: Customer review classification (positive, neutral, negative)
+- **Product Recommendations**: Association rules (customers who buy X often buy Y)
+- **Customer Segmentation**: RFM analysis for customer categorization
+- **Interactive Dashboard**: Modern interface built with React and TypeScript
 
 ---
 
-**نسخة**: 1.0.0  
-**آخر تحديث**: يناير 2026  
-**الحالة**: ✅ جاهز للإنتاج
+## Contributing
+
+If you would like to contribute to this project:
+
+1. Create a new branch: `git checkout -b feature/your-feature`
+2. Make your changes
+3. Add clear comments explaining your modifications
+4. Submit a pull request
+
+---
+
+## Support
+
+If you run into issues or have questions, check these resources:
+
+- `logs/forecast_lifecycle.log` - System logs
+- `backend/main.py` - API documentation
+- `ML_LIFECYCLE.md` - Model lifecycle details
+
+---
+
+**Version**: 1.0.0  
+**Last Updated**: January 2026  
+**Status**: Production Ready
