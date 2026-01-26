@@ -1,0 +1,21 @@
+ReviewID,CustomerID,ReviewText,ReviewDate
+R001,C001,"This product is absolutely amazing! Exceeded all my expectations. Highly recommended!",2026-01-15
+R002,C002,"Good quality, but shipping took longer than expected.",2026-01-14
+R003,C003,"Terrible! Product broke after one week. Very disappointed.",2026-01-12
+R004,C004,"It is okay. Nothing special, but does the job.",2026-01-11
+R005,C005,"Excellent customer service and fast delivery. Very happy with purchase!",2026-01-10
+R006,C001,"Waste of money. Does not work as advertised.",2026-01-08
+R007,C002,"Average product. Could be better for the price.",2026-01-07
+R008,C003,"Love it! Best purchase I have made this year!",2026-01-05
+R009,C004,"Not bad, but there are better alternatives available.",2026-01-04
+R010,C005,"Absolutely horrible experience. Will never buy again.",2026-01-02
+R011,C001,"Pretty good! Meets expectations and good value.",2025-12-30
+R012,C002,"Fantastic! Exactly what I was looking for.",2025-12-28
+R013,C003,"Meh. It is just a regular product, nothing impressive.",2025-12-26
+R014,C004,"Outstanding quality and professional support!",2025-12-24
+R015,C005,"Defective unit received. Returned it immediately.",2025-12-22
+R016,C001,"Very satisfied with this purchase. Definitely recommend!",2025-12-20
+R017,C002,"Poor quality for the price. Expected much better.",2025-12-18
+R018,C003,"Excellent product! Fast shipping and great packaging!",2025-12-16
+R019,C004,"Mediocre at best. Disappointed with quality.",2025-12-14
+R020,C005,"Fantastic experience! Will definitely buy again soon!",2025-12-12

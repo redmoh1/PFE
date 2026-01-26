@@ -1,0 +1,1103 @@
+2026-01-23 14:12:46,480 - INFO - ============================================================
+2026-01-23 14:12:46,481 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-23 14:12:46,481 - INFO - ============================================================
+2026-01-23 14:12:46,481 - INFO - Loading data files...
+2026-01-23 14:12:46,493 - INFO - Loaded 8 customers and 8 sales records
+2026-01-23 14:12:46,493 - INFO - Data validation passed
+2026-01-23 14:12:46,493 - INFO - Cleaning data...
+2026-01-23 14:12:46,515 - INFO - Data cleaning completed
+2026-01-23 14:12:46,515 - INFO - Merging datasets...
+2026-01-23 14:12:46,521 - INFO - Merged dataset contains 8 records
+2026-01-23 14:12:46,521 - INFO - Computing KPIs...
+2026-01-23 14:12:46,524 - INFO - KPIs computed successfully
+2026-01-23 14:12:46,525 - INFO - 
+============================================================
+2026-01-23 14:12:46,525 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-23 14:12:46,525 - INFO - ============================================================
+2026-01-23 14:12:46,526 - INFO - Total Sales Revenue: 3,070.00
+2026-01-23 14:12:46,526 - INFO - Total Orders: 8.00
+2026-01-23 14:12:46,526 - INFO - Total Customers: 5.00
+2026-01-23 14:12:46,526 - INFO - Average Order Value: 383.75
+2026-01-23 14:12:46,527 - INFO - Median Order Value: 130.00
+2026-01-23 14:12:46,527 - INFO - Total Products Sold: 5.00
+2026-01-23 14:12:46,527 - INFO - Performing exploratory data analysis...
+2026-01-23 14:12:46,535 - INFO - EDA completed successfully
+2026-01-23 14:12:46,535 - INFO - Generating visualizations...
+2026-01-23 14:12:48,052 - INFO - Visualizations saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-23 14:12:48,052 - INFO - Saving results...
+2026-01-23 14:12:48,058 - INFO - Merged dataset saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-23 14:12:48,060 - INFO - KPIs saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-23 14:12:48,066 - INFO - EDA results saved successfully
+2026-01-23 14:12:48,066 - INFO - ============================================================
+2026-01-23 14:12:48,071 - INFO - ============================================================
+2026-01-23 14:13:23,514 - INFO - ============================================================
+2026-01-23 14:13:23,515 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-23 14:13:23,515 - INFO - ============================================================
+2026-01-23 14:13:23,516 - INFO - Loading data files...
+2026-01-23 14:13:23,528 - INFO - Loaded 8 customers and 8 sales records
+2026-01-23 14:13:23,529 - INFO - Data validation passed
+2026-01-23 14:13:23,530 - INFO - Cleaning data...
+2026-01-23 14:13:23,536 - INFO - Data cleaning completed
+2026-01-23 14:13:23,537 - INFO - Merging datasets...
+2026-01-23 14:13:23,539 - INFO - Merged dataset contains 8 records
+2026-01-23 14:13:23,540 - INFO - Computing KPIs...
+2026-01-23 14:13:23,542 - INFO - KPIs computed successfully
+2026-01-23 14:13:23,543 - INFO - 
+============================================================
+2026-01-23 14:13:23,543 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-23 14:13:23,543 - INFO - ============================================================
+2026-01-23 14:13:23,543 - INFO - Total Sales Revenue: 3,070.00
+2026-01-23 14:13:23,544 - INFO - Total Orders: 8.00
+2026-01-23 14:13:23,544 - INFO - Total Customers: 5.00
+2026-01-23 14:13:23,545 - INFO - Average Order Value: 383.75
+2026-01-23 14:13:23,545 - INFO - Median Order Value: 130.00
+2026-01-23 14:13:23,545 - INFO - Total Products Sold: 5.00
+2026-01-23 14:13:23,545 - INFO - Performing exploratory data analysis...
+2026-01-23 14:13:23,549 - INFO - EDA completed successfully
+2026-01-23 14:13:23,549 - INFO - Generating visualizations...
+2026-01-23 14:13:24,893 - INFO - Visualizations saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-23 14:13:24,893 - INFO - Saving results...
+2026-01-23 14:13:24,897 - INFO - Merged dataset saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-23 14:13:24,899 - INFO - KPIs saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-23 14:13:24,903 - INFO - EDA results saved successfully
+2026-01-23 14:13:24,903 - INFO - ============================================================
+2026-01-23 14:13:24,903 - INFO - Phase 1: EDA Completed Successfully
+2026-01-23 14:13:24,904 - INFO - ============================================================
+2026-01-23 14:13:36,345 - INFO - ============================================================
+2026-01-23 14:13:36,345 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-23 14:13:36,346 - INFO - ============================================================
+2026-01-23 14:13:36,346 - INFO - Loading data files...
+2026-01-23 14:13:36,352 - INFO - Loaded 8 customers and 8 sales records
+2026-01-23 14:13:36,352 - INFO - Data validation passed
+2026-01-23 14:13:36,352 - INFO - Cleaning data...
+2026-01-23 14:13:36,362 - INFO - Data cleaning completed
+2026-01-23 14:13:36,362 - INFO - Merging datasets...
+2026-01-23 14:13:36,365 - INFO - Merged dataset contains 8 records
+2026-01-23 14:13:36,365 - INFO - Computing KPIs...
+2026-01-23 14:13:36,368 - INFO - KPIs computed successfully
+2026-01-23 14:13:36,368 - INFO - 
+============================================================
+2026-01-23 14:13:36,369 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-23 14:13:36,369 - INFO - ============================================================
+2026-01-23 14:13:36,369 - INFO - Total Sales Revenue: 3,070.00
+2026-01-23 14:13:36,370 - INFO - Total Orders: 8.00
+2026-01-23 14:13:36,370 - INFO - Total Customers: 5.00
+2026-01-23 14:13:36,370 - INFO - Average Order Value: 383.75
+2026-01-23 14:13:36,370 - INFO - Median Order Value: 130.00
+2026-01-23 14:13:36,370 - INFO - Total Products Sold: 5.00
+2026-01-23 14:13:36,371 - INFO - Performing exploratory data analysis...
+2026-01-23 14:13:36,377 - INFO - EDA completed successfully
+2026-01-23 14:13:36,377 - INFO - Generating visualizations...
+2026-01-23 14:13:37,756 - INFO - Visualizations saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-23 14:13:37,757 - INFO - Saving results...
+2026-01-23 14:13:37,760 - INFO - Merged dataset saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-23 14:13:37,763 - INFO - KPIs saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-23 14:13:37,770 - INFO - EDA results saved successfully
+2026-01-23 14:13:37,770 - INFO - ============================================================
+2026-01-23 14:13:37,771 - INFO - Phase 1: EDA Completed Successfully
+2026-01-23 14:13:37,771 - INFO - ============================================================
+2026-01-23 14:14:00,348 - INFO - ============================================================
+2026-01-23 14:14:00,348 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-23 14:14:00,349 - INFO - ============================================================
+2026-01-23 14:14:00,349 - INFO - Loading data files...
+2026-01-23 14:14:00,353 - INFO - Loaded 8 customers and 8 sales records
+2026-01-23 14:14:00,353 - INFO - Data validation passed
+2026-01-23 14:14:00,353 - INFO - Cleaning data...
+2026-01-23 14:14:00,360 - INFO - Data cleaning completed
+2026-01-23 14:14:00,361 - INFO - Merging datasets...
+2026-01-23 14:14:00,364 - INFO - Merged dataset contains 8 records
+2026-01-23 14:14:00,364 - INFO - Computing KPIs...
+2026-01-23 14:14:00,368 - INFO - KPIs computed successfully
+2026-01-23 14:14:00,369 - INFO - 
+============================================================
+2026-01-23 14:14:00,370 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-23 14:14:00,370 - INFO - ============================================================
+2026-01-23 14:14:00,371 - INFO - Total Sales Revenue: 3,070.00
+2026-01-23 14:14:00,371 - INFO - Total Orders: 8.00
+2026-01-23 14:14:00,372 - INFO - Total Customers: 5.00
+2026-01-23 14:14:00,372 - INFO - Average Order Value: 383.75
+2026-01-23 14:14:00,373 - INFO - Median Order Value: 130.00
+2026-01-23 14:14:00,373 - INFO - Total Products Sold: 5.00
+2026-01-23 14:14:00,373 - INFO - Performing exploratory data analysis...
+2026-01-23 14:14:00,382 - INFO - EDA completed successfully
+2026-01-23 14:14:00,383 - INFO - Generating visualizations...
+2026-01-23 14:14:01,796 - INFO - Visualizations saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-23 14:14:01,796 - INFO - Saving results...
+2026-01-23 14:14:01,799 - INFO - Merged dataset saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-23 14:14:01,801 - INFO - KPIs saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-23 14:14:01,807 - INFO - EDA results saved successfully
+2026-01-23 14:14:01,808 - INFO - ============================================================
+2026-01-23 14:14:01,808 - INFO - Phase 1: EDA Completed Successfully
+2026-01-23 14:14:01,808 - INFO - ============================================================
+2026-01-23 14:15:08,903 - INFO - ============================================================
+2026-01-23 14:15:08,904 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-23 14:15:08,904 - INFO - ============================================================
+2026-01-23 14:15:08,904 - INFO - Loading data files...
+2026-01-23 14:15:08,908 - INFO - Loaded 8 customers and 8 sales records
+2026-01-23 14:15:08,908 - INFO - Data validation passed
+2026-01-23 14:15:08,908 - INFO - Cleaning data...
+2026-01-23 14:15:08,914 - INFO - Data cleaning completed
+2026-01-23 14:15:08,914 - INFO - Merging datasets...
+2026-01-23 14:15:08,917 - INFO - Merged dataset contains 8 records
+2026-01-23 14:15:08,917 - INFO - Computing KPIs...
+2026-01-23 14:15:08,919 - INFO - KPIs computed successfully
+2026-01-23 14:15:08,919 - INFO - 
+============================================================
+2026-01-23 14:15:08,919 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-23 14:15:08,920 - INFO - ============================================================
+2026-01-23 14:15:08,920 - INFO - Total Sales Revenue: 3,070.00
+2026-01-23 14:15:08,920 - INFO - Total Orders: 8.00
+2026-01-23 14:15:08,920 - INFO - Total Customers: 5.00
+2026-01-23 14:15:08,921 - INFO - Average Order Value: 383.75
+2026-01-23 14:15:08,921 - INFO - Median Order Value: 130.00
+2026-01-23 14:15:08,921 - INFO - Total Products Sold: 5.00
+2026-01-23 14:15:08,921 - INFO - Performing exploratory data analysis...
+2026-01-23 14:15:08,925 - INFO - EDA completed successfully
+2026-01-23 14:15:08,925 - INFO - Generating visualizations...
+2026-01-23 14:15:10,297 - INFO - Visualizations saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-23 14:15:10,297 - INFO - Saving results...
+2026-01-23 14:15:10,302 - INFO - Merged dataset saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-23 14:15:10,304 - INFO - KPIs saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-23 14:15:10,309 - INFO - EDA results saved successfully
+2026-01-23 14:15:10,309 - INFO - ============================================================
+2026-01-23 14:15:10,309 - INFO - Phase 1: EDA Completed Successfully
+2026-01-23 14:15:10,310 - INFO - ============================================================
+2026-01-24 16:54:06,124 - INFO - ============================================================
+2026-01-24 16:54:06,125 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-24 16:54:06,125 - INFO - ============================================================
+2026-01-24 16:54:06,125 - INFO - Loading data files...
+2026-01-24 16:54:06,126 - ERROR - Error loading data: Customers file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv
+2026-01-24 16:54:06,126 - ERROR - Pipeline failed: Customers file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv
+2026-01-24 16:55:18,964 - INFO - ============================================================
+2026-01-24 16:55:18,964 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-24 16:55:18,964 - INFO - ============================================================
+2026-01-24 16:55:18,965 - INFO - Loading data files...
+2026-01-24 16:55:18,965 - ERROR - Error loading data: Customers file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv
+2026-01-24 16:55:18,965 - ERROR - Pipeline failed: Customers file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv
+2026-01-24 16:57:15,487 - INFO - ============================================================
+2026-01-24 16:57:15,488 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-24 16:57:15,488 - INFO - ============================================================
+2026-01-24 16:57:15,488 - INFO - Loading data files...
+2026-01-24 16:57:15,488 - ERROR - Error loading data: Customers file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv
+2026-01-24 16:57:15,489 - ERROR - Pipeline failed: Customers file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv
+2026-01-24 16:58:14,019 - INFO - ============================================================
+2026-01-24 16:58:14,019 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-24 16:58:14,020 - INFO - ============================================================
+2026-01-24 16:58:14,020 - INFO - Loading data files...
+2026-01-24 16:58:14,020 - ERROR - Error loading data: Customers file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv
+2026-01-24 16:58:14,020 - ERROR - Pipeline failed: Customers file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv
+2026-01-24 17:00:24,771 - INFO - ============================================================
+2026-01-24 17:00:24,771 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-24 17:00:24,772 - INFO - ============================================================
+2026-01-24 17:00:24,772 - INFO - Loading data files...
+2026-01-24 17:00:24,776 - INFO - Loaded 868 customers and 1000 sales records
+2026-01-24 17:00:24,780 - INFO - Data validation passed
+2026-01-24 17:00:24,781 - INFO - Cleaning data...
+2026-01-24 17:00:24,786 - INFO - Data cleaning completed
+2026-01-24 17:00:24,786 - INFO - Merging datasets...
+2026-01-24 17:00:24,790 - INFO - Merged dataset contains 1000 records
+2026-01-24 17:00:24,791 - INFO - Computing KPIs...
+2026-01-24 17:00:24,792 - INFO - KPIs computed successfully
+2026-01-24 17:00:24,793 - INFO - 
+============================================================
+2026-01-24 17:00:24,793 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 17:00:24,793 - INFO - ============================================================
+2026-01-24 17:00:24,793 - INFO - Total Sales Revenue: 5,019,265.23
+2026-01-24 17:00:24,793 - INFO - Total Orders: 1,000.00
+2026-01-24 17:00:24,793 - INFO - Total Customers: 500.00
+2026-01-24 17:00:24,793 - INFO - Average Order Value: 5,019.27
+2026-01-24 17:00:24,793 - INFO - Median Order Value: 5,019.30
+2026-01-24 17:00:24,793 - INFO - Total Products Sold: 100.00
+2026-01-24 17:00:24,794 - INFO - Performing exploratory data analysis...
+2026-01-24 17:00:24,799 - ERROR - Error performing EDA: 'City'
+2026-01-24 17:00:24,799 - ERROR - Pipeline failed: 'City'
+2026-01-24 17:04:02,252 - INFO - ============================================================
+2026-01-24 17:04:02,252 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-24 17:04:02,252 - INFO - ============================================================
+2026-01-24 17:04:02,252 - INFO - Loading data files...
+2026-01-24 17:04:02,256 - INFO - Loaded 868 customers and 1000 sales records
+2026-01-24 17:04:02,260 - INFO - Data validation passed
+2026-01-24 17:04:02,260 - INFO - Cleaning data...
+2026-01-24 17:04:02,263 - INFO - Data cleaning completed
+2026-01-24 17:04:02,263 - INFO - Merging datasets...
+2026-01-24 17:04:02,266 - INFO - Merged dataset contains 1000 records
+2026-01-24 17:04:02,266 - INFO - Computing KPIs...
+2026-01-24 17:04:02,267 - INFO - KPIs computed successfully
+2026-01-24 17:04:02,267 - INFO - 
+============================================================
+2026-01-24 17:04:02,267 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 17:04:02,268 - INFO - ============================================================
+2026-01-24 17:04:02,268 - INFO - Total Sales Revenue: 5,019,265.23
+2026-01-24 17:04:02,268 - INFO - Total Orders: 1,000.00
+2026-01-24 17:04:02,268 - INFO - Total Customers: 500.00
+2026-01-24 17:04:02,268 - INFO - Average Order Value: 5,019.27
+2026-01-24 17:04:02,269 - INFO - Median Order Value: 5,019.30
+2026-01-24 17:04:02,269 - INFO - Total Products Sold: 100.00
+2026-01-24 17:04:02,269 - INFO - Performing exploratory data analysis...
+2026-01-24 17:04:02,272 - INFO - EDA completed successfully
+2026-01-24 17:04:02,272 - INFO - Generating visualizations...
+2026-01-24 17:04:03,344 - INFO - Visualizations saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-24 17:04:03,344 - INFO - Saving results...
+2026-01-24 17:04:03,348 - INFO - Merged dataset saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 17:04:03,350 - INFO - KPIs saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-24 17:04:03,352 - INFO - EDA results saved successfully
+2026-01-24 17:04:03,353 - INFO - ============================================================
+2026-01-24 17:04:03,353 - INFO - Phase 1: EDA Completed Successfully
+2026-01-24 17:04:03,353 - INFO - ============================================================
+2026-01-24 17:08:08,711 - INFO - ============================================================
+2026-01-24 17:08:08,712 - INFO - Phase 1: Data Collection & EDA Started
+2026-01-24 17:08:08,712 - INFO - ============================================================
+2026-01-24 17:08:08,712 - INFO - Loading data files...
+2026-01-24 17:08:08,712 - ERROR - Error loading data: Customers file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv
+2026-01-24 17:08:08,712 - ERROR - Pipeline failed: Customers file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv
+2026-01-24 20:06:00,647 - INFO - ============================================================
+2026-01-24 20:06:00,647 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 20:06:00,648 - INFO - ============================================================
+2026-01-24 20:06:00,648 - INFO - ============================================================
+2026-01-24 20:06:00,648 - INFO - DATA LOADING PHASE
+2026-01-24 20:06:00,648 - INFO - ============================================================
+2026-01-24 20:06:00,648 - ERROR - CRITICAL: Mandatory file missing: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv
+2026-01-24 20:06:00,648 - ERROR - Error loading data: Sales file not found: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv. Pipeline cannot continue without sales data.
+2026-01-24 20:06:00,648 - ERROR - Pipeline failed: Sales file not found: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv. Pipeline cannot continue without sales data.
+2026-01-24 20:07:13,750 - INFO - ============================================================
+2026-01-24 20:07:13,750 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 20:07:13,750 - INFO - ============================================================
+2026-01-24 20:07:13,750 - INFO - ============================================================
+2026-01-24 20:07:13,751 - INFO - DATA LOADING PHASE
+2026-01-24 20:07:13,751 - INFO - ============================================================
+2026-01-24 20:07:13,753 - INFO - ✓ Loaded 1000 sales records (MANDATORY)
+2026-01-24 20:07:13,754 - WARNING - ⚠ customers.csv not found at C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 20:07:13,754 - WARNING - ⚠ No review files found. Sentiment analysis will be disabled.
+2026-01-24 20:07:13,754 - INFO - ============================================================
+2026-01-24 20:07:13,760 - INFO - ============================================================
+2026-01-24 20:07:13,760 - INFO - DATA VALIDATION PHASE
+2026-01-24 20:07:13,760 - INFO - ============================================================
+2026-01-24 20:07:13,761 - INFO - ✓ Sales data validated: All mandatory columns present
+2026-01-24 20:07:13,761 - INFO - ⊘ No customer data to validate (file was optional and not found)
+2026-01-24 20:07:13,761 - INFO - ============================================================
+2026-01-24 20:07:13,761 - INFO - Cleaning data...
+2026-01-24 20:07:13,765 - INFO - Data cleaning completed
+2026-01-24 20:07:13,765 - INFO - ============================================================
+2026-01-24 20:07:13,766 - INFO - DATA MERGING PHASE
+2026-01-24 20:07:13,766 - INFO - ============================================================
+2026-01-24 20:07:13,766 - INFO - ⊘ No customer data available - using sales data only
+2026-01-24 20:07:13,766 - INFO - ✓ Using sales data only: 1000 records
+2026-01-24 20:07:13,766 - INFO - ============================================================
+2026-01-24 20:07:13,766 - INFO - Computing KPIs...
+2026-01-24 20:07:13,770 - INFO - KPIs computed successfully
+2026-01-24 20:07:13,770 - INFO - 
+============================================================
+2026-01-24 20:07:13,770 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 20:07:13,770 - INFO - ============================================================
+2026-01-24 20:07:13,771 - INFO - Total Sales Revenue: 5,019,265.23
+2026-01-24 20:07:13,771 - INFO - Total Orders: 1,000.00
+2026-01-24 20:07:13,771 - INFO - Total Customers: 500.00
+2026-01-24 20:07:13,771 - INFO - Average Order Value: 5,019.27
+2026-01-24 20:07:13,771 - INFO - Median Order Value: 5,019.30
+2026-01-24 20:07:13,771 - INFO - Total Products Sold: 100.00
+2026-01-24 20:07:13,772 - INFO - Performing exploratory data analysis...
+2026-01-24 20:07:13,778 - INFO - EDA completed successfully
+2026-01-24 20:07:13,778 - INFO - Generating visualizations...
+2026-01-24 20:07:14,704 - INFO - Visualizations saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-24 20:07:14,705 - INFO - ============================================================
+2026-01-24 20:07:14,705 - INFO - SAVING RESULTS
+2026-01-24 20:07:14,705 - INFO - ============================================================
+2026-01-24 20:07:14,709 - INFO - ✓ Merged dataset saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 20:07:14,711 - INFO - ✓ KPIs saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-24 20:07:14,718 - INFO - ✓ EDA results saved
+2026-01-24 20:07:14,720 - INFO - ✓ Metadata report saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-24 20:07:14,721 - INFO - ============================================================
+2026-01-24 20:07:14,721 - INFO - ============================================================
+2026-01-24 20:07:14,721 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-24 20:07:14,722 - INFO - ============================================================
+2026-01-24 20:22:38,469 - INFO - ============================================================
+2026-01-24 20:22:38,469 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 20:22:38,470 - INFO - ============================================================
+2026-01-24 20:22:38,470 - INFO - ============================================================
+2026-01-24 20:22:38,470 - INFO - DATA LOADING PHASE
+2026-01-24 20:22:38,470 - INFO - ============================================================
+2026-01-24 20:22:38,471 - ERROR - CRITICAL: Mandatory file missing: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv
+2026-01-24 20:22:38,471 - ERROR - Error loading data: Sales file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv. Pipeline cannot continue without sales data.
+2026-01-24 20:22:38,471 - ERROR - Pipeline failed: Sales file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv. Pipeline cannot continue without sales data.
+2026-01-24 20:23:07,110 - INFO - ============================================================
+2026-01-24 20:23:07,111 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 20:23:07,111 - INFO - ============================================================
+2026-01-24 20:23:07,111 - INFO - ============================================================
+2026-01-24 20:23:07,111 - INFO - DATA LOADING PHASE
+2026-01-24 20:23:07,111 - INFO - ============================================================
+2026-01-24 20:23:07,116 - INFO - ✓ Loaded 1000 sales records (MANDATORY)
+2026-01-24 20:23:07,116 - WARNING - ⚠ customers.csv not found at c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 20:23:07,117 - WARNING - ⚠ No review files found. Sentiment analysis will be disabled.
+2026-01-24 20:23:07,117 - INFO - ============================================================
+2026-01-24 20:23:07,124 - INFO - ============================================================
+2026-01-24 20:23:07,124 - INFO - DATA VALIDATION PHASE
+2026-01-24 20:23:07,124 - INFO - ============================================================
+2026-01-24 20:23:07,125 - ERROR - ✗ Missing MANDATORY sales columns: {'OrderID'}
+2026-01-24 20:23:07,125 - ERROR - Pipeline failed: Missing required sales columns: {'OrderID'}
+2026-01-24 20:31:49,946 - INFO - ============================================================
+2026-01-24 20:31:49,947 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 20:31:49,947 - INFO - ============================================================
+2026-01-24 20:31:49,947 - INFO - ============================================================
+2026-01-24 20:31:49,947 - INFO - DATA LOADING PHASE
+2026-01-24 20:31:49,948 - INFO - ============================================================
+2026-01-24 20:31:49,955 - INFO - ✓ Loaded 1000 sales records (MANDATORY)
+2026-01-24 20:31:49,956 - WARNING - ⚠ customers.csv not found at C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 20:31:49,956 - WARNING - ⚠ No review files found. Sentiment analysis will be disabled.
+2026-01-24 20:31:49,957 - INFO - ============================================================
+2026-01-24 20:31:49,964 - ERROR - ✗ OrderID missing and cannot generate surrogate: CustomerID or OrderDate unavailable
+2026-01-24 20:31:49,965 - ERROR - Pipeline failed: OrderID missing and surrogate generation not possible (needs CustomerID and OrderDate)
+2026-01-24 20:35:35,511 - INFO - ============================================================
+2026-01-24 20:35:35,512 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 20:35:35,512 - INFO - ============================================================
+2026-01-24 20:35:35,512 - INFO - ============================================================
+2026-01-24 20:35:35,512 - INFO - DATA LOADING PHASE
+2026-01-24 20:35:35,512 - INFO - ============================================================
+2026-01-24 20:35:35,516 - INFO - ✓ Loaded 1000 sales records (MANDATORY)
+2026-01-24 20:35:35,516 - WARNING - ⚠ customers.csv not found at c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 20:35:35,517 - WARNING - ⚠ No review files found. Sentiment analysis will be disabled.
+2026-01-24 20:35:35,517 - INFO - ============================================================
+2026-01-24 20:35:35,522 - ERROR - ✗ OrderID missing and cannot generate surrogate: CustomerID or OrderDate unavailable
+2026-01-24 20:35:35,522 - ERROR - Pipeline failed: OrderID missing and surrogate generation not possible (needs CustomerID and OrderDate)
+2026-01-24 22:29:45,495 - INFO - ============================================================
+2026-01-24 22:29:45,495 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 22:29:45,495 - INFO - ============================================================
+2026-01-24 22:29:45,495 - INFO - ============================================================
+2026-01-24 22:29:45,495 - INFO - DATA LOADING PHASE
+2026-01-24 22:29:45,495 - INFO - ============================================================
+2026-01-24 22:29:45,508 - INFO - ✓ Loaded 1000 sales records (MANDATORY)
+2026-01-24 22:29:45,510 - WARNING - ⚠ customers.csv not found at c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 22:29:45,510 - WARNING - ⚠ No review files found. Sentiment analysis will be disabled.
+2026-01-24 22:29:45,511 - INFO - ============================================================
+2026-01-24 22:29:45,524 - WARNING - ⚠ OrderID STRATEGY 3 (Fallback): Generated incremental OrderIDs (ORD_000001, ORD_000002, ...) for 1000 records. Each row treated as separate order.
+2026-01-24 22:29:45,526 - INFO - ============================================================
+2026-01-24 22:29:45,526 - INFO - DATA VALIDATION PHASE
+2026-01-24 22:29:45,526 - INFO - ============================================================
+2026-01-24 22:29:45,526 - INFO - ✓ Sales data validated: All mandatory columns present
+2026-01-24 22:29:45,526 - INFO - ⊘ No customer data to validate (file was optional and not found)
+2026-01-24 22:29:45,527 - INFO - ============================================================
+2026-01-24 22:29:45,527 - INFO - Cleaning data...
+2026-01-24 22:29:45,530 - INFO - Data cleaning completed
+2026-01-24 22:29:45,531 - INFO - ============================================================
+2026-01-24 22:29:45,531 - INFO - DATA MERGING PHASE
+2026-01-24 22:29:45,531 - INFO - ============================================================
+2026-01-24 22:29:45,531 - INFO - ⊘ No customer data available - using sales data only
+2026-01-24 22:29:45,532 - INFO - ✓ Using sales data only: 1000 records
+2026-01-24 22:29:45,532 - INFO - ============================================================
+2026-01-24 22:29:45,532 - INFO - Computing KPIs...
+2026-01-24 22:29:45,534 - ERROR - Error computing KPIs: 'CustomerID'
+2026-01-24 22:29:45,534 - ERROR - Pipeline failed: 'CustomerID'
+2026-01-24 22:30:42,595 - INFO - ============================================================
+2026-01-24 22:30:42,595 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 22:30:42,595 - INFO - ============================================================
+2026-01-24 22:30:42,595 - INFO - ============================================================
+2026-01-24 22:30:42,595 - INFO - DATA LOADING PHASE
+2026-01-24 22:30:42,595 - INFO - ============================================================
+2026-01-24 22:30:42,597 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-24 22:30:42,597 - WARNING - [WARN] customers.csv not found at c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 22:30:42,597 - WARNING - [WARN] No review files found. Sentiment analysis will be disabled.
+2026-01-24 22:30:42,597 - INFO - ============================================================
+2026-01-24 22:30:42,601 - WARNING - [WARN] OrderID STRATEGY 2: Generated surrogate IDs from CustomerID+OrderDate (YYYY-MM-DD) for 8 records. Multiple products purchased by same customer on same day treated as one order.
+2026-01-24 22:30:42,601 - INFO - ============================================================
+2026-01-24 22:30:42,601 - INFO - DATA VALIDATION PHASE
+2026-01-24 22:30:42,601 - INFO - ============================================================
+2026-01-24 22:30:42,601 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 22:30:42,601 - INFO - [SKIP] No customer data to validate (file was optional and not found)
+2026-01-24 22:30:42,602 - INFO - ============================================================
+2026-01-24 22:30:42,602 - INFO - Cleaning data...
+2026-01-24 22:30:42,604 - INFO - Data cleaning completed
+2026-01-24 22:30:42,604 - INFO - ============================================================
+2026-01-24 22:30:42,604 - INFO - DATA MERGING PHASE
+2026-01-24 22:30:42,604 - INFO - ============================================================
+2026-01-24 22:30:42,604 - INFO - [SKIP] No customer data available - using sales data only
+2026-01-24 22:30:42,604 - INFO - [OK] Using sales data only: 8 records
+2026-01-24 22:30:42,604 - INFO - ============================================================
+2026-01-24 22:30:42,604 - INFO - Computing KPIs...
+2026-01-24 22:30:42,606 - INFO - KPIs computed successfully
+2026-01-24 22:30:42,606 - INFO - 
+============================================================
+2026-01-24 22:30:42,606 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 22:30:42,606 - INFO - ============================================================
+2026-01-24 22:30:42,606 - INFO - Total Sales Revenue: 1,370.00
+2026-01-24 22:30:42,606 - INFO - Total Orders: 6.00
+2026-01-24 22:30:42,606 - INFO - Total Customers: 3.00
+2026-01-24 22:30:42,606 - INFO - Average Order Value: 171.25
+2026-01-24 22:30:42,606 - INFO - Median Order Value: 177.50
+2026-01-24 22:30:42,606 - INFO - Total Products Sold: 5.00
+2026-01-24 22:30:42,606 - INFO - Performing exploratory data analysis...
+2026-01-24 22:30:42,615 - INFO - EDA completed successfully
+2026-01-24 22:30:42,615 - INFO - Generating visualizations...
+2026-01-24 22:30:43,507 - INFO - Visualizations saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-24 22:30:43,507 - INFO - ============================================================
+2026-01-24 22:30:43,507 - INFO - SAVING RESULTS
+2026-01-24 22:30:43,507 - INFO - ============================================================
+2026-01-24 22:30:43,510 - INFO - [OK] Merged dataset saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 22:30:43,512 - INFO - [OK] KPIs saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-24 22:30:43,517 - INFO - [OK] EDA results saved
+2026-01-24 22:30:43,518 - INFO - [OK] Metadata report saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-24 22:30:43,518 - INFO - ============================================================
+2026-01-24 22:30:43,518 - INFO - ============================================================
+2026-01-24 22:30:43,518 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-24 22:30:43,518 - INFO - ============================================================
+2026-01-24 22:31:32,884 - INFO - ============================================================
+2026-01-24 22:31:32,884 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 22:31:32,884 - INFO - ============================================================
+2026-01-24 22:31:32,884 - INFO - ============================================================
+2026-01-24 22:31:32,884 - INFO - DATA LOADING PHASE
+2026-01-24 22:31:32,884 - INFO - ============================================================
+2026-01-24 22:31:32,885 - INFO - [OK] Loaded 4 sales records (MANDATORY)
+2026-01-24 22:31:32,886 - WARNING - [WARN] customers.csv not found at c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 22:31:32,886 - WARNING - [WARN] No review files found. Sentiment analysis will be disabled.
+2026-01-24 22:31:32,886 - INFO - ============================================================
+2026-01-24 22:31:32,888 - WARNING - [WARN] OrderID STRATEGY 3 (Fallback): Generated incremental OrderIDs (ORD_000001, ORD_000002, ...) for 4 records. Each row treated as separate order.
+2026-01-24 22:31:32,888 - INFO - ============================================================
+2026-01-24 22:31:32,888 - INFO - DATA VALIDATION PHASE
+2026-01-24 22:31:32,888 - INFO - ============================================================
+2026-01-24 22:31:32,888 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 22:31:32,888 - INFO - [SKIP] No customer data to validate (file was optional and not found)
+2026-01-24 22:31:32,888 - INFO - ============================================================
+2026-01-24 22:31:32,888 - INFO - Cleaning data...
+2026-01-24 22:31:32,891 - INFO - Data cleaning completed
+2026-01-24 22:31:32,891 - INFO - ============================================================
+2026-01-24 22:31:32,891 - INFO - DATA MERGING PHASE
+2026-01-24 22:31:32,891 - INFO - ============================================================
+2026-01-24 22:31:32,891 - INFO - [SKIP] No customer data available - using sales data only
+2026-01-24 22:31:32,891 - INFO - [OK] Using sales data only: 4 records
+2026-01-24 22:31:32,891 - INFO - ============================================================
+2026-01-24 22:31:32,891 - INFO - Computing KPIs...
+2026-01-24 22:31:32,893 - ERROR - Error computing KPIs: 'CustomerID'
+2026-01-24 22:31:32,893 - ERROR - Pipeline failed: 'CustomerID'
+2026-01-24 22:31:48,274 - INFO - ============================================================
+2026-01-24 22:31:48,275 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 22:31:48,275 - INFO - ============================================================
+2026-01-24 22:31:48,275 - INFO - ============================================================
+2026-01-24 22:31:48,275 - INFO - DATA LOADING PHASE
+2026-01-24 22:31:48,275 - INFO - ============================================================
+2026-01-24 22:31:48,277 - INFO - [OK] Loaded 4 sales records (MANDATORY)
+2026-01-24 22:31:48,277 - WARNING - [WARN] customers.csv not found at c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 22:31:48,278 - WARNING - [WARN] No review files found. Sentiment analysis will be disabled.
+2026-01-24 22:31:48,278 - INFO - ============================================================
+2026-01-24 22:31:48,280 - WARNING - [WARN] OrderID STRATEGY 3 (Fallback): Generated incremental OrderIDs (ORD_000001, ORD_000002, ...) for 4 records. Each row treated as separate order.
+2026-01-24 22:31:48,281 - INFO - ============================================================
+2026-01-24 22:31:48,281 - INFO - DATA VALIDATION PHASE
+2026-01-24 22:31:48,281 - INFO - ============================================================
+2026-01-24 22:31:48,281 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 22:31:48,281 - INFO - [SKIP] No customer data to validate (file was optional and not found)
+2026-01-24 22:31:48,282 - INFO - ============================================================
+2026-01-24 22:31:48,282 - INFO - Cleaning data...
+2026-01-24 22:31:48,285 - INFO - Data cleaning completed
+2026-01-24 22:31:48,286 - INFO - ============================================================
+2026-01-24 22:31:48,286 - INFO - DATA MERGING PHASE
+2026-01-24 22:31:48,286 - INFO - ============================================================
+2026-01-24 22:31:48,286 - INFO - [SKIP] No customer data available - using sales data only
+2026-01-24 22:31:48,286 - INFO - [OK] Using sales data only: 4 records
+2026-01-24 22:31:48,286 - INFO - ============================================================
+2026-01-24 22:31:48,286 - INFO - Computing KPIs...
+2026-01-24 22:31:48,287 - ERROR - Error computing KPIs: 'CustomerID'
+2026-01-24 22:31:48,287 - ERROR - Pipeline failed: 'CustomerID'
+2026-01-24 22:32:33,262 - INFO - ============================================================
+2026-01-24 22:32:33,262 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 22:32:33,262 - INFO - ============================================================
+2026-01-24 22:32:33,262 - INFO - ============================================================
+2026-01-24 22:32:33,262 - INFO - DATA LOADING PHASE
+2026-01-24 22:32:33,262 - INFO - ============================================================
+2026-01-24 22:32:33,274 - INFO - [OK] Loaded 4 sales records (MANDATORY)
+2026-01-24 22:32:33,274 - WARNING - [WARN] customers.csv not found at c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 22:32:33,274 - WARNING - [WARN] No review files found. Sentiment analysis will be disabled.
+2026-01-24 22:32:33,274 - INFO - ============================================================
+2026-01-24 22:32:33,284 - WARNING - [WARN] OrderID STRATEGY 3 (Fallback): Generated incremental OrderIDs (ORD_000001, ORD_000002, ...) for 4 records. Each row treated as separate order.
+2026-01-24 22:32:33,285 - INFO - ============================================================
+2026-01-24 22:32:33,285 - INFO - DATA VALIDATION PHASE
+2026-01-24 22:32:33,285 - INFO - ============================================================
+2026-01-24 22:32:33,285 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 22:32:33,285 - INFO - [SKIP] No customer data to validate (file was optional and not found)
+2026-01-24 22:32:33,285 - INFO - ============================================================
+2026-01-24 22:32:33,285 - INFO - Cleaning data...
+2026-01-24 22:32:33,289 - INFO - Data cleaning completed
+2026-01-24 22:32:33,289 - INFO - ============================================================
+2026-01-24 22:32:33,290 - INFO - DATA MERGING PHASE
+2026-01-24 22:32:33,290 - INFO - ============================================================
+2026-01-24 22:32:33,290 - INFO - [SKIP] No customer data available - using sales data only
+2026-01-24 22:32:33,290 - INFO - [OK] Using sales data only: 4 records
+2026-01-24 22:32:33,290 - INFO - ============================================================
+2026-01-24 22:32:33,290 - INFO - Computing KPIs...
+2026-01-24 22:32:33,291 - ERROR - Error computing KPIs: 'CustomerID'
+2026-01-24 22:32:33,291 - ERROR - Pipeline failed: 'CustomerID'
+2026-01-24 22:36:08,980 - INFO - ============================================================
+2026-01-24 22:36:08,980 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 22:36:08,981 - INFO - ============================================================
+2026-01-24 22:36:08,981 - INFO - ============================================================
+2026-01-24 22:36:08,981 - INFO - DATA LOADING PHASE
+2026-01-24 22:36:08,981 - INFO - ============================================================
+2026-01-24 22:36:08,983 - INFO - [OK] Loaded 4 sales records (MANDATORY)
+2026-01-24 22:36:08,983 - WARNING - [WARN] customers.csv not found at c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 22:36:08,984 - WARNING - [WARN] No review files found. Sentiment analysis will be disabled.
+2026-01-24 22:36:08,984 - INFO - ============================================================
+2026-01-24 22:36:08,988 - WARNING - [WARN] OrderID STRATEGY 3 (Fallback): Generated incremental OrderIDs (ORD_000001, ORD_000002, ...) for 4 records. Each row treated as separate order.
+2026-01-24 22:36:08,989 - INFO - ============================================================
+2026-01-24 22:36:08,989 - INFO - DATA VALIDATION PHASE
+2026-01-24 22:36:08,989 - INFO - ============================================================
+2026-01-24 22:36:08,990 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 22:36:08,990 - INFO - [SKIP] No customer data to validate (file was optional and not found)
+2026-01-24 22:36:08,990 - INFO - ============================================================
+2026-01-24 22:36:08,990 - INFO - Cleaning data...
+2026-01-24 22:36:08,994 - INFO - Data cleaning completed
+2026-01-24 22:36:08,995 - INFO - ============================================================
+2026-01-24 22:36:08,995 - INFO - DATA MERGING PHASE
+2026-01-24 22:36:08,995 - INFO - ============================================================
+2026-01-24 22:36:08,995 - INFO - [SKIP] No customer data available - using sales data only
+2026-01-24 22:36:08,995 - INFO - [OK] Using sales data only: 4 records
+2026-01-24 22:36:08,995 - INFO - ============================================================
+2026-01-24 22:36:08,995 - INFO - Computing KPIs...
+2026-01-24 22:36:08,998 - INFO - KPIs computed successfully
+2026-01-24 22:36:08,999 - INFO - 
+============================================================
+2026-01-24 22:36:08,999 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 22:36:08,999 - INFO - ============================================================
+2026-01-24 22:36:08,999 - INFO - Total Sales Revenue: 650.00
+2026-01-24 22:36:08,999 - INFO - Total Orders: 4.00
+2026-01-24 22:36:08,999 - INFO - Total Customers: 0.00
+2026-01-24 22:36:08,999 - INFO - Average Order Value: 162.50
+2026-01-24 22:36:08,999 - INFO - Median Order Value: 165.00
+2026-01-24 22:36:08,999 - INFO - Total Products Sold: 3.00
+2026-01-24 22:36:09,000 - INFO - Performing exploratory data analysis...
+2026-01-24 22:36:09,008 - INFO - EDA completed successfully
+2026-01-24 22:36:09,009 - INFO - Generating visualizations...
+2026-01-24 22:36:09,916 - INFO - Visualizations saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-24 22:36:09,916 - INFO - ============================================================
+2026-01-24 22:36:09,916 - INFO - SAVING RESULTS
+2026-01-24 22:36:09,916 - INFO - ============================================================
+2026-01-24 22:36:09,922 - INFO - [OK] Merged dataset saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 22:36:09,923 - INFO - [OK] KPIs saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-24 22:36:09,926 - INFO - [OK] EDA results saved
+2026-01-24 22:36:09,927 - INFO - [OK] Metadata report saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-24 22:36:09,927 - INFO - ============================================================
+2026-01-24 22:36:09,928 - INFO - ============================================================
+2026-01-24 22:36:09,928 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-24 22:36:09,928 - INFO - ============================================================
+2026-01-24 22:36:39,573 - INFO - ============================================================
+2026-01-24 22:36:39,574 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 22:36:39,574 - INFO - ============================================================
+2026-01-24 22:36:39,575 - INFO - ============================================================
+2026-01-24 22:36:39,576 - INFO - DATA LOADING PHASE
+2026-01-24 22:36:39,576 - INFO - ============================================================
+2026-01-24 22:36:39,580 - INFO - [OK] Loaded 1000 sales records (MANDATORY)
+2026-01-24 22:36:39,581 - WARNING - [WARN] customers.csv not found at c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 22:36:39,581 - WARNING - [WARN] No review files found. Sentiment analysis will be disabled.
+2026-01-24 22:36:39,581 - INFO - ============================================================
+2026-01-24 22:36:39,586 - WARNING - [WARN] OrderID STRATEGY 3 (Fallback): Generated incremental OrderIDs (ORD_000001, ORD_000002, ...) for 1000 records. Each row treated as separate order.
+2026-01-24 22:36:39,588 - INFO - ============================================================
+2026-01-24 22:36:39,588 - INFO - DATA VALIDATION PHASE
+2026-01-24 22:36:39,588 - INFO - ============================================================
+2026-01-24 22:36:39,588 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 22:36:39,589 - INFO - [SKIP] No customer data to validate (file was optional and not found)
+2026-01-24 22:36:39,589 - INFO - ============================================================
+2026-01-24 22:36:39,589 - INFO - Cleaning data...
+2026-01-24 22:36:39,593 - INFO - Data cleaning completed
+2026-01-24 22:36:39,593 - INFO - ============================================================
+2026-01-24 22:36:39,593 - INFO - DATA MERGING PHASE
+2026-01-24 22:36:39,593 - INFO - ============================================================
+2026-01-24 22:36:39,594 - INFO - [SKIP] No customer data available - using sales data only
+2026-01-24 22:36:39,594 - INFO - [OK] Using sales data only: 1000 records
+2026-01-24 22:36:39,594 - INFO - ============================================================
+2026-01-24 22:36:39,594 - INFO - Computing KPIs...
+2026-01-24 22:36:39,596 - INFO - KPIs computed successfully
+2026-01-24 22:36:39,596 - INFO - 
+============================================================
+2026-01-24 22:36:39,596 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 22:36:39,597 - INFO - ============================================================
+2026-01-24 22:36:39,597 - INFO - Total Sales Revenue: 5,019,265.23
+2026-01-24 22:36:39,597 - INFO - Total Orders: 1,000.00
+2026-01-24 22:36:39,597 - INFO - Total Customers: 0.00
+2026-01-24 22:36:39,597 - INFO - Average Order Value: 5,019.27
+2026-01-24 22:36:39,597 - INFO - Median Order Value: 5,019.30
+2026-01-24 22:36:39,597 - INFO - Total Products Sold: 100.00
+2026-01-24 22:36:39,597 - INFO - Performing exploratory data analysis...
+2026-01-24 22:36:39,601 - INFO - EDA completed successfully
+2026-01-24 22:36:39,602 - INFO - Generating visualizations...
+2026-01-24 22:36:40,405 - INFO - Visualizations saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-24 22:36:40,405 - INFO - ============================================================
+2026-01-24 22:36:40,405 - INFO - SAVING RESULTS
+2026-01-24 22:36:40,405 - INFO - ============================================================
+2026-01-24 22:36:40,419 - INFO - [OK] Merged dataset saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 22:36:40,422 - INFO - [OK] KPIs saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-24 22:36:40,429 - INFO - [OK] EDA results saved
+2026-01-24 22:36:40,430 - INFO - [OK] Metadata report saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-24 22:36:40,431 - INFO - ============================================================
+2026-01-24 22:36:40,431 - INFO - ============================================================
+2026-01-24 22:36:40,431 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-24 22:36:40,431 - INFO - ============================================================
+2026-01-24 23:04:53,518 - INFO - ============================================================
+2026-01-24 23:04:53,519 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 23:04:53,519 - INFO - ============================================================
+2026-01-24 23:04:53,519 - INFO - ============================================================
+2026-01-24 23:04:53,519 - INFO - DATA LOADING PHASE
+2026-01-24 23:04:53,519 - INFO - ============================================================
+2026-01-24 23:04:53,519 - ERROR - CRITICAL: Mandatory file missing: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv
+2026-01-24 23:04:53,519 - ERROR - Error loading data: Sales file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv. Pipeline cannot continue without sales data.
+2026-01-24 23:04:53,519 - ERROR - Pipeline failed: Sales file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv. Pipeline cannot continue without sales data.
+2026-01-24 23:28:31,362 - INFO - ============================================================
+2026-01-24 23:28:31,362 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 23:28:31,363 - INFO - ============================================================
+2026-01-24 23:28:31,363 - INFO - ============================================================
+2026-01-24 23:28:31,363 - INFO - DATA LOADING PHASE
+2026-01-24 23:28:31,363 - INFO - ============================================================
+2026-01-24 23:28:31,372 - INFO - [OK] Loaded 44 sales records (MANDATORY)
+2026-01-24 23:28:31,373 - WARNING - [WARN] customers.csv not found at C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-24 23:28:31,373 - WARNING - [WARN] No review files found. Sentiment analysis will be disabled.
+2026-01-24 23:28:31,373 - INFO - ============================================================
+2026-01-24 23:28:31,381 - INFO - [OK] OrderID STRATEGY 1: Using existing OrderID column (44 records)
+2026-01-24 23:28:31,381 - INFO - ============================================================
+2026-01-24 23:28:31,382 - INFO - DATA VALIDATION PHASE
+2026-01-24 23:28:31,382 - INFO - ============================================================
+2026-01-24 23:28:31,382 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 23:28:31,382 - INFO - [SKIP] No customer data to validate (file was optional and not found)
+2026-01-24 23:28:31,383 - INFO - ============================================================
+2026-01-24 23:28:31,383 - INFO - Cleaning data...
+2026-01-24 23:28:31,390 - INFO - Data cleaning completed
+2026-01-24 23:28:31,390 - INFO - ============================================================
+2026-01-24 23:28:31,390 - INFO - DATA MERGING PHASE
+2026-01-24 23:28:31,391 - INFO - ============================================================
+2026-01-24 23:28:31,391 - INFO - [SKIP] No customer data available - using sales data only
+2026-01-24 23:28:31,391 - INFO - [OK] Using sales data only: 44 records
+2026-01-24 23:28:31,391 - INFO - ============================================================
+2026-01-24 23:28:31,392 - INFO - Computing KPIs...
+2026-01-24 23:28:31,397 - INFO - KPIs computed successfully
+2026-01-24 23:28:31,397 - INFO - 
+============================================================
+2026-01-24 23:28:31,397 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 23:28:31,397 - INFO - ============================================================
+2026-01-24 23:28:31,397 - INFO - Total Sales Revenue: 15,268.00
+2026-01-24 23:28:31,398 - INFO - Total Orders: 20.00
+2026-01-24 23:28:31,398 - INFO - Total Customers: 10.00
+2026-01-24 23:28:31,398 - INFO - Average Order Value: 347.00
+2026-01-24 23:28:31,398 - INFO - Median Order Value: 95.00
+2026-01-24 23:28:31,398 - INFO - Total Products Sold: 23.00
+2026-01-24 23:28:31,398 - INFO - Performing exploratory data analysis...
+2026-01-24 23:28:31,407 - INFO - EDA completed successfully
+2026-01-24 23:28:31,407 - INFO - Generating visualizations...
+2026-01-24 23:28:32,346 - INFO - Visualizations saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-24 23:28:32,346 - INFO - ============================================================
+2026-01-24 23:28:32,346 - INFO - SAVING RESULTS
+2026-01-24 23:28:32,347 - INFO - ============================================================
+2026-01-24 23:28:32,351 - INFO - [OK] Merged dataset saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 23:28:32,353 - INFO - [OK] KPIs saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-24 23:28:32,355 - INFO - [OK] EDA results saved
+2026-01-24 23:28:32,356 - INFO - [OK] Metadata report saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-24 23:28:32,357 - INFO - ============================================================
+2026-01-24 23:28:32,357 - INFO - ============================================================
+2026-01-24 23:28:32,357 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-24 23:28:32,357 - INFO - ============================================================
+2026-01-24 23:34:45,693 - INFO - ============================================================
+2026-01-24 23:34:45,694 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 23:34:45,694 - INFO - ============================================================
+2026-01-24 23:34:45,694 - INFO - ============================================================
+2026-01-24 23:34:45,695 - INFO - DATA LOADING PHASE
+2026-01-24 23:34:45,695 - INFO - ============================================================
+2026-01-24 23:34:45,696 - INFO - [OK] Loaded 58 sales records (MANDATORY)
+2026-01-24 23:34:45,697 - INFO - [OK] Loaded 8 customer records (OPTIONAL)
+2026-01-24 23:34:45,698 - INFO - [OK] Loaded 20 review records from reviews.csv (OPTIONAL)
+2026-01-24 23:34:45,699 - INFO - ============================================================
+2026-01-24 23:34:45,704 - INFO - [OK] OrderID STRATEGY 1: Using existing OrderID column (58 records)
+2026-01-24 23:34:45,705 - INFO - ============================================================
+2026-01-24 23:34:45,705 - INFO - DATA VALIDATION PHASE
+2026-01-24 23:34:45,705 - INFO - ============================================================
+2026-01-24 23:34:45,706 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 23:34:45,706 - INFO - [OK] Customer data validated: All expected columns present
+2026-01-24 23:34:45,706 - INFO - ============================================================
+2026-01-24 23:34:45,706 - INFO - Cleaning data...
+2026-01-24 23:34:45,712 - INFO - Data cleaning completed
+2026-01-24 23:34:45,713 - INFO - ============================================================
+2026-01-24 23:34:45,713 - INFO - DATA MERGING PHASE
+2026-01-24 23:34:45,713 - INFO - ============================================================
+2026-01-24 23:34:45,713 - INFO - Performing LEFT JOIN: 58 sales with 8 customers...
+2026-01-24 23:34:45,715 - ERROR - Error merging data: You are trying to merge on str and int64 columns for key 'CustomerID'. If you wish to proceed you should use pd.concat
+2026-01-24 23:34:45,715 - ERROR - Pipeline failed: You are trying to merge on str and int64 columns for key 'CustomerID'. If you wish to proceed you should use pd.concat
+2026-01-24 23:35:30,899 - INFO - ============================================================
+2026-01-24 23:35:30,899 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 23:35:30,900 - INFO - ============================================================
+2026-01-24 23:35:30,900 - INFO - ============================================================
+2026-01-24 23:35:30,900 - INFO - DATA LOADING PHASE
+2026-01-24 23:35:30,901 - INFO - ============================================================
+2026-01-24 23:35:30,903 - INFO - [OK] Loaded 58 sales records (MANDATORY)
+2026-01-24 23:35:30,903 - INFO - [OK] Loaded 10 customer records (OPTIONAL)
+2026-01-24 23:35:30,905 - INFO - [OK] Loaded 20 review records from reviews.csv (OPTIONAL)
+2026-01-24 23:35:30,905 - INFO - ============================================================
+2026-01-24 23:35:30,910 - INFO - [OK] OrderID STRATEGY 1: Using existing OrderID column (58 records)
+2026-01-24 23:35:30,910 - INFO - ============================================================
+2026-01-24 23:35:30,911 - INFO - DATA VALIDATION PHASE
+2026-01-24 23:35:30,911 - INFO - ============================================================
+2026-01-24 23:35:30,911 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 23:35:30,911 - INFO - [OK] Customer data validated: All expected columns present
+2026-01-24 23:35:30,911 - INFO - ============================================================
+2026-01-24 23:35:30,911 - INFO - Cleaning data...
+2026-01-24 23:35:30,914 - INFO - Data cleaning completed
+2026-01-24 23:35:30,914 - INFO - ============================================================
+2026-01-24 23:35:30,914 - INFO - DATA MERGING PHASE
+2026-01-24 23:35:30,914 - INFO - ============================================================
+2026-01-24 23:35:30,914 - INFO - Performing LEFT JOIN: 58 sales with 10 customers...
+2026-01-24 23:35:30,915 - ERROR - Error merging data: You are trying to merge on str and int64 columns for key 'CustomerID'. If you wish to proceed you should use pd.concat
+2026-01-24 23:35:30,915 - ERROR - Pipeline failed: You are trying to merge on str and int64 columns for key 'CustomerID'. If you wish to proceed you should use pd.concat
+2026-01-24 23:35:59,749 - INFO - ============================================================
+2026-01-24 23:35:59,750 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 23:35:59,750 - INFO - ============================================================
+2026-01-24 23:35:59,750 - INFO - ============================================================
+2026-01-24 23:35:59,750 - INFO - DATA LOADING PHASE
+2026-01-24 23:35:59,750 - INFO - ============================================================
+2026-01-24 23:35:59,752 - INFO - [OK] Loaded 58 sales records (MANDATORY)
+2026-01-24 23:35:59,753 - INFO - [OK] Loaded 10 customer records (OPTIONAL)
+2026-01-24 23:35:59,754 - INFO - [OK] Loaded 20 review records from reviews.csv (OPTIONAL)
+2026-01-24 23:35:59,754 - INFO - ============================================================
+2026-01-24 23:35:59,758 - INFO - [OK] OrderID STRATEGY 1: Using existing OrderID column (58 records)
+2026-01-24 23:35:59,759 - INFO - ============================================================
+2026-01-24 23:35:59,759 - INFO - DATA VALIDATION PHASE
+2026-01-24 23:35:59,760 - INFO - ============================================================
+2026-01-24 23:35:59,760 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 23:35:59,760 - INFO - [OK] Customer data validated: All expected columns present
+2026-01-24 23:35:59,760 - INFO - ============================================================
+2026-01-24 23:35:59,760 - INFO - Cleaning data...
+2026-01-24 23:35:59,762 - INFO - Data cleaning completed
+2026-01-24 23:35:59,763 - INFO - ============================================================
+2026-01-24 23:35:59,763 - INFO - DATA MERGING PHASE
+2026-01-24 23:35:59,763 - INFO - ============================================================
+2026-01-24 23:35:59,764 - INFO - Performing LEFT JOIN: 58 sales with 10 customers...
+2026-01-24 23:35:59,772 - INFO - [OK] Merge complete: 58 records (all sales preserved)
+2026-01-24 23:35:59,773 - INFO - ============================================================
+2026-01-24 23:35:59,773 - INFO - Computing KPIs...
+2026-01-24 23:35:59,774 - INFO - KPIs computed successfully
+2026-01-24 23:35:59,774 - INFO - 
+============================================================
+2026-01-24 23:35:59,774 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 23:35:59,774 - INFO - ============================================================
+2026-01-24 23:35:59,775 - INFO - Total Sales Revenue: 18,425.00
+2026-01-24 23:35:59,775 - INFO - Total Orders: 25.00
+2026-01-24 23:35:59,775 - INFO - Total Customers: 10.00
+2026-01-24 23:35:59,775 - INFO - Average Order Value: 317.67
+2026-01-24 23:35:59,775 - INFO - Median Order Value: 100.00
+2026-01-24 23:35:59,775 - INFO - Total Products Sold: 8.00
+2026-01-24 23:35:59,775 - INFO - Performing exploratory data analysis...
+2026-01-24 23:35:59,779 - INFO - EDA completed successfully
+2026-01-24 23:35:59,779 - INFO - Generating visualizations...
+2026-01-24 23:36:00,640 - INFO - Visualizations saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-24 23:36:00,642 - INFO - ============================================================
+2026-01-24 23:36:00,642 - INFO - SAVING RESULTS
+2026-01-24 23:36:00,643 - INFO - ============================================================
+2026-01-24 23:36:00,648 - INFO - [OK] Merged dataset saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 23:36:00,650 - INFO - [OK] KPIs saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-24 23:36:00,654 - INFO - [OK] EDA results saved
+2026-01-24 23:36:00,655 - INFO - [OK] Metadata report saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-24 23:36:00,656 - INFO - ============================================================
+2026-01-24 23:36:00,656 - INFO - ============================================================
+2026-01-24 23:36:00,656 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-24 23:36:00,656 - INFO - ============================================================
+2026-01-24 23:43:00,745 - INFO - ============================================================
+2026-01-24 23:43:00,745 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 23:43:00,745 - INFO - ============================================================
+2026-01-24 23:43:00,745 - INFO - ============================================================
+2026-01-24 23:43:00,746 - INFO - DATA LOADING PHASE
+2026-01-24 23:43:00,746 - INFO - ============================================================
+2026-01-24 23:43:00,748 - INFO - [OK] Loaded 1000 sales records (MANDATORY)
+2026-01-24 23:43:00,749 - INFO - [OK] Loaded 10 customer records (OPTIONAL)
+2026-01-24 23:43:00,749 - INFO - [OK] Loaded 20 review records from reviews.csv (OPTIONAL)
+2026-01-24 23:43:00,749 - INFO - ============================================================
+2026-01-24 23:43:00,753 - INFO - [OK] OrderID STRATEGY 1: Using existing OrderID column (1000 records)
+2026-01-24 23:43:00,754 - INFO - ============================================================
+2026-01-24 23:43:00,754 - INFO - DATA VALIDATION PHASE
+2026-01-24 23:43:00,754 - INFO - ============================================================
+2026-01-24 23:43:00,754 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 23:43:00,754 - INFO - [OK] Customer data validated: All expected columns present
+2026-01-24 23:43:00,754 - INFO - ============================================================
+2026-01-24 23:43:00,754 - INFO - Cleaning data...
+2026-01-24 23:43:00,756 - INFO - Data cleaning completed
+2026-01-24 23:43:00,756 - INFO - ============================================================
+2026-01-24 23:43:00,757 - INFO - DATA MERGING PHASE
+2026-01-24 23:43:00,757 - INFO - ============================================================
+2026-01-24 23:43:00,757 - WARNING - [WARN] CustomerID missing in sales - cannot join with customers
+2026-01-24 23:43:00,757 - INFO - [OK] Using sales data only: 1000 records
+2026-01-24 23:43:00,757 - INFO - ============================================================
+2026-01-24 23:43:00,757 - INFO - Computing KPIs...
+2026-01-24 23:43:00,757 - INFO - KPIs computed successfully
+2026-01-24 23:43:00,757 - INFO - 
+============================================================
+2026-01-24 23:43:00,757 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 23:43:00,757 - INFO - ============================================================
+2026-01-24 23:43:00,757 - INFO - Total Sales Revenue: 5,019,265.23
+2026-01-24 23:43:00,758 - INFO - Total Orders: 1,000.00
+2026-01-24 23:43:00,758 - INFO - Total Customers: 0.00
+2026-01-24 23:43:00,758 - INFO - Average Order Value: 5,019.27
+2026-01-24 23:43:00,758 - INFO - Median Order Value: 5,019.30
+2026-01-24 23:43:00,758 - INFO - Total Products Sold: 100.00
+2026-01-24 23:43:00,758 - INFO - Performing exploratory data analysis...
+2026-01-24 23:43:00,760 - INFO - EDA completed successfully
+2026-01-24 23:43:00,760 - INFO - Generating visualizations...
+2026-01-24 23:43:01,501 - INFO - Visualizations saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-24 23:43:01,501 - INFO - ============================================================
+2026-01-24 23:43:01,501 - INFO - SAVING RESULTS
+2026-01-24 23:43:01,501 - INFO - ============================================================
+2026-01-24 23:43:01,505 - INFO - [OK] Merged dataset saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 23:43:01,507 - INFO - [OK] KPIs saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-24 23:43:01,509 - INFO - [OK] EDA results saved
+2026-01-24 23:43:01,510 - INFO - [OK] Metadata report saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-24 23:43:01,510 - INFO - ============================================================
+2026-01-24 23:43:01,510 - INFO - ============================================================
+2026-01-24 23:43:01,510 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-24 23:43:01,510 - INFO - ============================================================
+2026-01-24 23:54:44,894 - INFO - ============================================================
+2026-01-24 23:54:44,894 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 23:54:44,894 - INFO - ============================================================
+2026-01-24 23:54:44,894 - INFO - ============================================================
+2026-01-24 23:54:44,894 - INFO - DATA LOADING PHASE
+2026-01-24 23:54:44,894 - INFO - ============================================================
+2026-01-24 23:54:44,897 - INFO - [OK] Loaded 1000 sales records (MANDATORY)
+2026-01-24 23:54:44,897 - INFO - [OK] Loaded 10 customer records (OPTIONAL)
+2026-01-24 23:54:44,898 - INFO - [OK] Loaded 20 review records from reviews.csv (OPTIONAL)
+2026-01-24 23:54:44,898 - INFO - ============================================================
+2026-01-24 23:54:44,902 - INFO - [OK] OrderID STRATEGY 1: Using existing OrderID column (1000 records)
+2026-01-24 23:54:44,903 - INFO - ============================================================
+2026-01-24 23:54:44,903 - INFO - DATA VALIDATION PHASE
+2026-01-24 23:54:44,903 - INFO - ============================================================
+2026-01-24 23:54:44,903 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 23:54:44,903 - INFO - [OK] Customer data validated: All expected columns present
+2026-01-24 23:54:44,903 - INFO - ============================================================
+2026-01-24 23:54:44,903 - INFO - Cleaning data...
+2026-01-24 23:54:44,905 - INFO - Data cleaning completed
+2026-01-24 23:54:44,906 - INFO - ============================================================
+2026-01-24 23:54:44,906 - INFO - DATA MERGING PHASE
+2026-01-24 23:54:44,906 - INFO - ============================================================
+2026-01-24 23:54:44,906 - WARNING - [WARN] CustomerID missing in sales - cannot join with customers
+2026-01-24 23:54:44,906 - INFO - [OK] Using sales data only: 1000 records
+2026-01-24 23:54:44,906 - INFO - ============================================================
+2026-01-24 23:54:44,906 - INFO - Computing KPIs...
+2026-01-24 23:54:44,906 - INFO - KPIs computed successfully
+2026-01-24 23:54:44,906 - INFO - 
+============================================================
+2026-01-24 23:54:44,906 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 23:54:44,907 - INFO - ============================================================
+2026-01-24 23:54:44,907 - INFO - Total Sales Revenue: 5,019,265.23
+2026-01-24 23:54:44,907 - INFO - Total Orders: 1,000.00
+2026-01-24 23:54:44,907 - INFO - Total Customers: 0.00
+2026-01-24 23:54:44,907 - INFO - Average Order Value: 5,019.27
+2026-01-24 23:54:44,907 - INFO - Median Order Value: 5,019.30
+2026-01-24 23:54:44,907 - INFO - Total Products Sold: 100.00
+2026-01-24 23:54:44,907 - INFO - Performing exploratory data analysis...
+2026-01-24 23:54:44,909 - INFO - EDA completed successfully
+2026-01-24 23:54:44,909 - INFO - Generating visualizations...
+2026-01-24 23:54:45,776 - INFO - Visualizations saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-24 23:54:45,776 - INFO - ============================================================
+2026-01-24 23:54:45,776 - INFO - SAVING RESULTS
+2026-01-24 23:54:45,776 - INFO - ============================================================
+2026-01-24 23:54:45,781 - INFO - [OK] Merged dataset saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 23:54:45,784 - INFO - [OK] KPIs saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-24 23:54:45,787 - INFO - [OK] EDA results saved
+2026-01-24 23:54:45,788 - INFO - [OK] Metadata report saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-24 23:54:45,788 - INFO - ============================================================
+2026-01-24 23:54:45,788 - INFO - ============================================================
+2026-01-24 23:54:45,788 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-24 23:54:45,788 - INFO - ============================================================
+2026-01-24 23:58:10,451 - INFO - ============================================================
+2026-01-24 23:58:10,451 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-24 23:58:10,451 - INFO - ============================================================
+2026-01-24 23:58:10,451 - INFO - ============================================================
+2026-01-24 23:58:10,451 - INFO - DATA LOADING PHASE
+2026-01-24 23:58:10,451 - INFO - ============================================================
+2026-01-24 23:58:10,452 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-24 23:58:10,453 - INFO - [OK] Loaded 10 customer records (OPTIONAL)
+2026-01-24 23:58:10,455 - INFO - [OK] Loaded 20 review records from reviews.csv (OPTIONAL)
+2026-01-24 23:58:10,455 - INFO - ============================================================
+2026-01-24 23:58:10,458 - INFO - [OK] OrderID STRATEGY 1: Using existing OrderID column (8 records)
+2026-01-24 23:58:10,459 - INFO - ============================================================
+2026-01-24 23:58:10,459 - INFO - DATA VALIDATION PHASE
+2026-01-24 23:58:10,459 - INFO - ============================================================
+2026-01-24 23:58:10,459 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-24 23:58:10,459 - INFO - [OK] Customer data validated: All expected columns present
+2026-01-24 23:58:10,459 - INFO - ============================================================
+2026-01-24 23:58:10,459 - INFO - Cleaning data...
+2026-01-24 23:58:10,461 - INFO - Data cleaning completed
+2026-01-24 23:58:10,461 - INFO - ============================================================
+2026-01-24 23:58:10,461 - INFO - DATA MERGING PHASE
+2026-01-24 23:58:10,461 - INFO - ============================================================
+2026-01-24 23:58:10,461 - INFO - Performing LEFT JOIN: 8 sales with 10 customers...
+2026-01-24 23:58:10,465 - INFO - [OK] Merge complete: 8 records (all sales preserved)
+2026-01-24 23:58:10,465 - INFO - ============================================================
+2026-01-24 23:58:10,465 - INFO - Computing KPIs...
+2026-01-24 23:58:10,466 - INFO - KPIs computed successfully
+2026-01-24 23:58:10,466 - INFO - 
+============================================================
+2026-01-24 23:58:10,466 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-24 23:58:10,466 - INFO - ============================================================
+2026-01-24 23:58:10,466 - INFO - Total Sales Revenue: 3,070.00
+2026-01-24 23:58:10,466 - INFO - Total Orders: 8.00
+2026-01-24 23:58:10,466 - INFO - Total Customers: 5.00
+2026-01-24 23:58:10,466 - INFO - Average Order Value: 383.75
+2026-01-24 23:58:10,466 - INFO - Median Order Value: 130.00
+2026-01-24 23:58:10,466 - INFO - Total Products Sold: 5.00
+2026-01-24 23:58:10,466 - INFO - Performing exploratory data analysis...
+2026-01-24 23:58:10,469 - INFO - EDA completed successfully
+2026-01-24 23:58:10,469 - INFO - Generating visualizations...
+2026-01-24 23:58:11,229 - INFO - Visualizations saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-24 23:58:11,229 - INFO - ============================================================
+2026-01-24 23:58:11,229 - INFO - SAVING RESULTS
+2026-01-24 23:58:11,229 - INFO - ============================================================
+2026-01-24 23:58:11,232 - INFO - [OK] Merged dataset saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 23:58:11,233 - INFO - [OK] KPIs saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-24 23:58:11,235 - INFO - [OK] EDA results saved
+2026-01-24 23:58:11,236 - INFO - [OK] Metadata report saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-24 23:58:11,236 - INFO - ============================================================
+2026-01-24 23:58:11,236 - INFO - ============================================================
+2026-01-24 23:58:11,236 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-24 23:58:11,236 - INFO - ============================================================
+2026-01-25 00:04:03,329 - INFO - ============================================================
+2026-01-25 00:04:03,329 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-25 00:04:03,329 - INFO - ============================================================
+2026-01-25 00:04:03,329 - INFO - ============================================================
+2026-01-25 00:04:03,329 - INFO - DATA LOADING PHASE
+2026-01-25 00:04:03,329 - INFO - ============================================================
+2026-01-25 00:04:03,331 - INFO - [OK] Loaded 1000 sales records (MANDATORY)
+2026-01-25 00:04:03,332 - INFO - [OK] Loaded 8 customer records (OPTIONAL)
+2026-01-25 00:04:03,333 - INFO - [OK] Loaded 20 review records from customer_reviews.csv (OPTIONAL)
+2026-01-25 00:04:03,333 - INFO - ============================================================
+2026-01-25 00:04:03,337 - INFO - [OK] OrderID STRATEGY 1: Using existing OrderID column (1000 records)
+2026-01-25 00:04:03,338 - INFO - ============================================================
+2026-01-25 00:04:03,338 - INFO - DATA VALIDATION PHASE
+2026-01-25 00:04:03,338 - INFO - ============================================================
+2026-01-25 00:04:03,338 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-25 00:04:03,338 - INFO - [OK] Customer data validated: All expected columns present
+2026-01-25 00:04:03,338 - INFO - ============================================================
+2026-01-25 00:04:03,338 - INFO - Cleaning data...
+2026-01-25 00:04:03,340 - INFO - Data cleaning completed
+2026-01-25 00:04:03,340 - INFO - ============================================================
+2026-01-25 00:04:03,340 - INFO - DATA MERGING PHASE
+2026-01-25 00:04:03,340 - INFO - ============================================================
+2026-01-25 00:04:03,340 - WARNING - [WARN] CustomerID missing in sales - cannot join with customers
+2026-01-25 00:04:03,340 - INFO - [OK] Using sales data only: 1000 records
+2026-01-25 00:04:03,340 - INFO - ============================================================
+2026-01-25 00:04:03,340 - INFO - Computing KPIs...
+2026-01-25 00:04:03,341 - INFO - KPIs computed successfully
+2026-01-25 00:04:03,341 - INFO - 
+============================================================
+2026-01-25 00:04:03,341 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-25 00:04:03,341 - INFO - ============================================================
+2026-01-25 00:04:03,341 - INFO - Total Sales Revenue: 5,019,265.23
+2026-01-25 00:04:03,341 - INFO - Total Orders: 1,000.00
+2026-01-25 00:04:03,341 - INFO - Total Customers: 0.00
+2026-01-25 00:04:03,341 - INFO - Average Order Value: 5,019.27
+2026-01-25 00:04:03,341 - INFO - Median Order Value: 5,019.30
+2026-01-25 00:04:03,341 - INFO - Total Products Sold: 100.00
+2026-01-25 00:04:03,341 - INFO - Performing exploratory data analysis...
+2026-01-25 00:04:03,343 - INFO - EDA completed successfully
+2026-01-25 00:04:03,343 - INFO - Generating visualizations...
+2026-01-25 00:04:04,126 - INFO - Visualizations saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-25 00:04:04,126 - INFO - ============================================================
+2026-01-25 00:04:04,126 - INFO - SAVING RESULTS
+2026-01-25 00:04:04,126 - INFO - ============================================================
+2026-01-25 00:04:04,130 - INFO - [OK] Merged dataset saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-25 00:04:04,132 - INFO - [OK] KPIs saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-25 00:04:04,135 - INFO - [OK] EDA results saved
+2026-01-25 00:04:04,135 - INFO - [OK] Metadata report saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-25 00:04:04,135 - INFO - ============================================================
+2026-01-25 00:04:04,135 - INFO - ============================================================
+2026-01-25 00:04:04,135 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-25 00:04:04,135 - INFO - ============================================================
+2026-01-25 00:04:39,009 - INFO - ============================================================
+2026-01-25 00:04:39,010 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-25 00:04:39,010 - INFO - ============================================================
+2026-01-25 00:04:39,010 - INFO - ============================================================
+2026-01-25 00:04:39,010 - INFO - DATA LOADING PHASE
+2026-01-25 00:04:39,010 - INFO - ============================================================
+2026-01-25 00:04:39,012 - INFO - [OK] Loaded 1000 sales records (MANDATORY)
+2026-01-25 00:04:39,012 - WARNING - [WARN] customers.csv not found at C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customers.csv. Continuing without customer data.
+2026-01-25 00:04:39,013 - INFO - [OK] Loaded 20 review records from reviews.csv (OPTIONAL)
+2026-01-25 00:04:39,013 - INFO - ============================================================
+2026-01-25 00:04:39,017 - INFO - [OK] OrderID STRATEGY 1: Using existing OrderID column (1000 records)
+2026-01-25 00:04:39,018 - INFO - ============================================================
+2026-01-25 00:04:39,018 - INFO - DATA VALIDATION PHASE
+2026-01-25 00:04:39,018 - INFO - ============================================================
+2026-01-25 00:04:39,018 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-25 00:04:39,018 - INFO - [SKIP] No customer data to validate (file was optional and not found)
+2026-01-25 00:04:39,018 - INFO - ============================================================
+2026-01-25 00:04:39,018 - INFO - Cleaning data...
+2026-01-25 00:04:39,022 - INFO - Data cleaning completed
+2026-01-25 00:04:39,022 - INFO - ============================================================
+2026-01-25 00:04:39,022 - INFO - DATA MERGING PHASE
+2026-01-25 00:04:39,022 - INFO - ============================================================
+2026-01-25 00:04:39,022 - INFO - [SKIP] No customer data available - using sales data only
+2026-01-25 00:04:39,022 - INFO - [OK] Using sales data only: 1000 records
+2026-01-25 00:04:39,022 - INFO - ============================================================
+2026-01-25 00:04:39,022 - INFO - Computing KPIs...
+2026-01-25 00:04:39,023 - INFO - KPIs computed successfully
+2026-01-25 00:04:39,023 - INFO - 
+============================================================
+2026-01-25 00:04:39,023 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-25 00:04:39,023 - INFO - ============================================================
+2026-01-25 00:04:39,023 - INFO - Total Sales Revenue: 5,019,265.23
+2026-01-25 00:04:39,023 - INFO - Total Orders: 1,000.00
+2026-01-25 00:04:39,023 - INFO - Total Customers: 0.00
+2026-01-25 00:04:39,023 - INFO - Average Order Value: 5,019.27
+2026-01-25 00:04:39,023 - INFO - Median Order Value: 5,019.30
+2026-01-25 00:04:39,023 - INFO - Total Products Sold: 100.00
+2026-01-25 00:04:39,023 - INFO - Performing exploratory data analysis...
+2026-01-25 00:04:39,025 - INFO - EDA completed successfully
+2026-01-25 00:04:39,026 - INFO - Generating visualizations...
+2026-01-25 00:04:39,792 - INFO - Visualizations saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-25 00:04:39,792 - INFO - ============================================================
+2026-01-25 00:04:39,792 - INFO - SAVING RESULTS
+2026-01-25 00:04:39,792 - INFO - ============================================================
+2026-01-25 00:04:39,795 - INFO - [OK] Merged dataset saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-25 00:04:39,796 - INFO - [OK] KPIs saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-25 00:04:39,798 - INFO - [OK] EDA results saved
+2026-01-25 00:04:39,799 - INFO - [OK] Metadata report saved: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-25 00:04:39,799 - INFO - ============================================================
+2026-01-25 00:04:39,799 - INFO - ============================================================
+2026-01-25 00:04:39,799 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-25 00:04:39,799 - INFO - ============================================================
+2026-01-25 00:13:02,469 - INFO - ============================================================
+2026-01-25 00:13:02,469 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-25 00:13:02,470 - INFO - ============================================================
+2026-01-25 00:13:02,470 - INFO - ============================================================
+2026-01-25 00:13:02,470 - INFO - DATA LOADING PHASE
+2026-01-25 00:13:02,470 - INFO - ============================================================
+2026-01-25 00:13:02,472 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-25 00:13:02,473 - INFO - [OK] Loaded 8 customer records (OPTIONAL)
+2026-01-25 00:13:02,474 - INFO - [OK] Loaded 20 review records from customer_reviews.csv (OPTIONAL)
+2026-01-25 00:13:02,475 - INFO - ============================================================
+2026-01-25 00:13:02,479 - INFO - [OK] OrderID STRATEGY 1: Using existing OrderID column (8 records)
+2026-01-25 00:13:02,480 - INFO - ============================================================
+2026-01-25 00:13:02,480 - INFO - DATA VALIDATION PHASE
+2026-01-25 00:13:02,480 - INFO - ============================================================
+2026-01-25 00:13:02,480 - INFO - [OK] Sales data validated: All mandatory columns present
+2026-01-25 00:13:02,480 - INFO - [OK] Customer data validated: All expected columns present
+2026-01-25 00:13:02,481 - INFO - ============================================================
+2026-01-25 00:13:02,481 - INFO - Cleaning data...
+2026-01-25 00:13:02,484 - INFO - Data cleaning completed
+2026-01-25 00:13:02,484 - INFO - ============================================================
+2026-01-25 00:13:02,484 - INFO - DATA MERGING PHASE
+2026-01-25 00:13:02,484 - INFO - ============================================================
+2026-01-25 00:13:02,484 - INFO - Performing LEFT JOIN: 8 sales with 8 customers...
+2026-01-25 00:13:02,488 - INFO - [OK] Merge complete: 8 records (all sales preserved)
+2026-01-25 00:13:02,488 - INFO - ============================================================
+2026-01-25 00:13:02,489 - INFO - Computing KPIs...
+2026-01-25 00:13:02,490 - INFO - KPIs computed successfully
+2026-01-25 00:13:02,490 - INFO - 
+============================================================
+2026-01-25 00:13:02,490 - INFO - KEY PERFORMANCE INDICATORS
+2026-01-25 00:13:02,490 - INFO - ============================================================
+2026-01-25 00:13:02,491 - INFO - Total Sales Revenue: 3,070.00
+2026-01-25 00:13:02,491 - INFO - Total Orders: 8.00
+2026-01-25 00:13:02,491 - INFO - Total Customers: 5.00
+2026-01-25 00:13:02,491 - INFO - Average Order Value: 383.75
+2026-01-25 00:13:02,491 - INFO - Median Order Value: 130.00
+2026-01-25 00:13:02,491 - INFO - Total Products Sold: 5.00
+2026-01-25 00:13:02,491 - INFO - Performing exploratory data analysis...
+2026-01-25 00:13:02,495 - INFO - EDA completed successfully
+2026-01-25 00:13:02,495 - INFO - Generating visualizations...
+2026-01-25 00:13:03,404 - INFO - Visualizations saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots
+2026-01-25 00:13:03,404 - INFO - ============================================================
+2026-01-25 00:13:03,404 - INFO - SAVING RESULTS
+2026-01-25 00:13:03,404 - INFO - ============================================================
+2026-01-25 00:13:03,407 - INFO - [OK] Merged dataset saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-25 00:13:03,409 - INFO - [OK] KPIs saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\kpis.csv
+2026-01-25 00:13:03,413 - INFO - [OK] EDA results saved
+2026-01-25 00:13:03,415 - INFO - [OK] Metadata report saved: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\eda_report.json
+2026-01-25 00:13:03,416 - INFO - ============================================================
+2026-01-25 00:13:03,416 - INFO - ============================================================
+2026-01-25 00:13:03,416 - INFO - PHASE 1: EDA COMPLETED SUCCESSFULLY
+2026-01-25 00:13:03,416 - INFO - ============================================================

@@ -1,0 +1,59 @@
+⚡ QUICK REFERENCE - ملخص سريع
+
+════════════════════════════════════════════════════════════════
+
+المشكلة:
+❌ Missing required columns: [id, date, amount, product, city]
+
+الحل:
+✅ تم إصلاح الملفات والكود وإضافة توثيق شامل
+
+════════════════════════════════════════════════════════════════
+
+3 أسطر لتشغيل المشروع:
+
+1️⃣ Backend:
+   python -m uvicorn backend.main:app --reload --port 8000
+
+2️⃣ Frontend:
+   cd frontend && npm run dev
+
+3️⃣ افتح:
+   http://localhost:5173
+
+════════════════════════════════════════════════════════════════
+
+الأعمدة المطلوبة:
+• id (أو: orderid, transactionid)
+• date (أو: orderdate, order_date)
+• amount (أو: totalprice, total_price, price)
+• product (أو: productname, product_name, item)
+• city (أو: location, region)
+
+════════════════════════════════════════════════════════════════
+
+ملفات للاختبار (جاهزة):
+✅ data/sales.csv (8 record)
+✅ data/sample_sales.csv (20 record) ← الأفضل
+✅ data/cleaned_dataset.csv (8 record)
+✅ data/minimal_example.csv (10 record)
+
+════════════════════════════════════════════════════════════════
+
+ملفات مهمة:
+📄 START_HERE.txt ← ابدأ هنا
+📄 QUICK_START.md ← تشغيل سريع
+📄 DATA_FORMAT.md ← البيانات
+📄 INDEX.md ← فهرس كامل
+
+════════════════════════════════════════════════════════════════
+
+اختبار البيانات:
+python test_data_upload.py
+
+════════════════════════════════════════════════════════════════
+
+الحالة:
+✅ جاهز للاستخدام الفوري
+
+════════════════════════════════════════════════════════════════

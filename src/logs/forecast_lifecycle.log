@@ -1,0 +1,2 @@
+2026-01-23 15:21:31,889 - INFO - ===== ML Lifecycle: Train -> Evaluate -> Persist =====
+2026-01-23 15:21:31,890 - ERROR - Validation error: Input file not found: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\data\cleaned_dataset.csv

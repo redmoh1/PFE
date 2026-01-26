@@ -1,0 +1,488 @@
+2026-01-23 14:37:48,587 - INFO - ============================================================
+2026-01-23 14:37:48,587 - INFO - Phase 5: Market Basket Analysis & Recommendations
+2026-01-23 14:37:48,588 - INFO - ============================================================
+2026-01-23 14:37:48,595 - INFO - Loaded 8 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-23 14:37:48,595 - INFO - Validated 8 records for market basket analysis
+2026-01-23 14:37:48,596 - INFO - Analyzing basket composition...
+2026-01-23 14:37:48,601 - INFO - Total Orders: 8
+2026-01-23 14:37:48,603 - INFO - Unique Products: 5
+2026-01-23 14:37:48,603 - INFO - Average Basket Size: 1.00 items
+2026-01-23 14:37:48,604 - INFO - Basket Size Range: 1-1 items
+2026-01-23 14:37:48,604 - INFO - Multi-product Orders: 0 (0.0%)
+2026-01-23 14:37:48,604 - INFO - Encoding baskets for analysis...
+2026-01-23 14:37:48,609 - INFO - Created basket matrix: 8 orders x 5 products
+2026-01-23 14:37:48,610 - INFO - Mining frequent itemsets...
+2026-01-23 14:37:48,616 - INFO - Frequent itemsets found: 5
+2026-01-23 14:37:48,617 - INFO - Support range: 0.1250-0.2500
+2026-01-23 14:37:48,617 - INFO - Generating association rules...
+2026-01-23 14:37:48,620 - WARNING - Apriori mining failed: No rules found. Try lowering min_confidence.
+2026-01-23 14:37:48,621 - WARNING - Dataset may be too small for meaningful recommendations
+2026-01-23 14:37:48,621 - INFO - ============================================================
+2026-01-23 14:37:48,621 - INFO - Phase 5: Completed (No rules found)
+2026-01-23 14:37:48,622 - INFO - ============================================================
+2026-01-23 14:38:19,570 - INFO - ============================================================
+2026-01-23 14:38:19,571 - INFO - Phase 5: Market Basket Analysis & Recommendations
+2026-01-23 14:38:19,571 - INFO - ============================================================
+2026-01-23 14:38:19,574 - INFO - Loaded 8 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-23 14:38:19,575 - INFO - Validated 8 records for market basket analysis
+2026-01-23 14:38:19,575 - INFO - Analyzing basket composition...
+2026-01-23 14:38:19,577 - INFO - Total Orders: 8
+2026-01-23 14:38:19,577 - INFO - Unique Products: 5
+2026-01-23 14:38:19,578 - INFO - Average Basket Size: 1.00 items
+2026-01-23 14:38:19,578 - INFO - Basket Size Range: 1-1 items
+2026-01-23 14:38:19,578 - INFO - Multi-product Orders: 0 (0.0%)
+2026-01-23 14:38:19,579 - INFO - Encoding baskets for analysis...
+2026-01-23 14:38:19,581 - INFO - Created basket matrix: 8 orders x 5 products
+2026-01-23 14:38:19,581 - INFO - Mining frequent itemsets...
+2026-01-23 14:38:19,586 - INFO - Frequent itemsets found: 5
+2026-01-23 14:38:19,587 - INFO - Support range: 0.1250-0.2500
+2026-01-23 14:38:19,588 - INFO - Generating association rules...
+2026-01-23 14:38:19,590 - WARNING - Apriori mining failed: No rules found. Try lowering min_confidence.
+2026-01-23 14:38:19,590 - WARNING - Dataset may be too small for meaningful recommendations
+2026-01-23 14:38:19,590 - INFO - ============================================================
+2026-01-23 14:38:19,591 - INFO - Phase 5: Completed (No rules found)
+2026-01-23 14:38:19,591 - INFO - ============================================================
+2026-01-23 15:05:42,605 - INFO - ======================================================================
+2026-01-23 15:05:42,605 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-01-23 15:05:42,606 - INFO - ======================================================================
+2026-01-23 15:05:42,606 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-01-23 15:05:42,610 - INFO - Loaded 8 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-23 15:05:42,614 - INFO - Validated 8 records for market basket analysis
+2026-01-23 15:05:42,614 - INFO -   Status: Loaded 8 transaction records
+2026-01-23 15:05:42,615 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-01-23 15:05:42,615 - INFO - Analyzing basket composition...
+2026-01-23 15:05:42,618 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-01-23 15:05:42,618 - INFO - Total Orders: 8
+2026-01-23 15:05:42,619 - INFO - Unique Products: 5
+2026-01-23 15:05:42,619 - INFO - Average Basket Size: 1.00 items
+2026-01-23 15:05:42,620 - INFO - Basket Size Range: 1-1 items
+2026-01-23 15:05:42,620 - INFO - Multi-product Orders: 0 (0.0%)
+2026-01-23 15:05:42,621 - WARNING - Very few multi-product orders detected. Association rules may not be meaningful.
+2026-01-23 15:05:42,621 - WARNING - 
+  WARNING: Very few multi-product baskets detected!
+2026-01-23 15:05:42,622 - WARNING -   Association rules may be sparse or unreliable.
+2026-01-23 15:05:42,622 - WARNING -   Consider collecting more data or adjusting parameters.
+2026-01-23 15:05:42,622 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-01-23 15:05:42,623 - INFO - Encoding baskets for analysis...
+2026-01-23 15:05:42,626 - INFO - Created basket matrix: 8 orders x 5 products
+2026-01-23 15:05:42,627 - INFO - Matrix sparsity: 80.0%
+2026-01-23 15:05:42,627 - INFO -   Status: Encoded 8 orders with 5 products
+2026-01-23 15:05:42,627 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-01-23 15:05:42,628 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-01-23 15:05:42,634 - INFO - Frequent itemsets found: 5
+2026-01-23 15:05:42,635 - INFO - Support range: 0.1250-0.2500
+2026-01-23 15:05:42,635 - INFO - Generating association rules (min_confidence=0.1)...
+2026-01-23 15:05:42,638 - WARNING -   Apriori mining failed: Error generating association rules: No rules found with min_confidence=0.1. Try lowering min_confidence or improving data quality.
+2026-01-23 15:05:42,639 - WARNING -   *** Dataset may be too small for meaningful recommendations ***
+2026-01-23 15:05:42,639 - INFO - 
+======================================================================
+2026-01-23 15:05:42,639 - INFO - Phase 5: Completed (No association rules found)
+2026-01-23 15:05:42,640 - INFO - ======================================================================
+2026-01-24 17:05:18,825 - INFO - ======================================================================
+2026-01-24 17:05:18,826 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-01-24 17:05:18,826 - INFO - ======================================================================
+2026-01-24 17:05:18,826 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-01-24 17:05:18,833 - INFO - Loaded 1000 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-24 17:05:18,836 - INFO - Validated 1000 records for market basket analysis
+2026-01-24 17:05:18,836 - INFO -   Status: Loaded 1000 transaction records
+2026-01-24 17:05:18,837 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-01-24 17:05:18,837 - INFO - Analyzing basket composition...
+2026-01-24 17:05:18,839 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-01-24 17:05:18,840 - INFO - Total Orders: 1000
+2026-01-24 17:05:18,840 - INFO - Unique Products: 100
+2026-01-24 17:05:18,840 - INFO - Average Basket Size: 1.00 items
+2026-01-24 17:05:18,841 - INFO - Basket Size Range: 1-1 items
+2026-01-24 17:05:18,841 - INFO - Multi-product Orders: 0 (0.0%)
+2026-01-24 17:05:18,841 - WARNING - Very few multi-product orders detected. Association rules may not be meaningful.
+2026-01-24 17:05:18,841 - WARNING - 
+  WARNING: Very few multi-product baskets detected!
+2026-01-24 17:05:18,841 - WARNING -   Association rules may be sparse or unreliable.
+2026-01-24 17:05:18,841 - WARNING -   Consider collecting more data or adjusting parameters.
+2026-01-24 17:05:18,841 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-01-24 17:05:18,842 - INFO - Encoding baskets for analysis...
+2026-01-24 17:05:18,854 - INFO - Created basket matrix: 1000 orders x 100 products
+2026-01-24 17:05:18,854 - INFO - Matrix sparsity: 99.0%
+2026-01-24 17:05:18,855 - INFO -   Status: Encoded 1000 orders with 100 products
+2026-01-24 17:05:18,855 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-01-24 17:05:18,855 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-01-24 17:05:18,870 - INFO - Frequent itemsets found: 53
+2026-01-24 17:05:18,870 - INFO - Support range: 0.0100-0.0200
+2026-01-24 17:05:18,870 - INFO - Generating association rules (min_confidence=0.1)...
+2026-01-24 17:05:18,871 - WARNING -   Apriori mining failed: Error generating association rules: No rules found with min_confidence=0.1. Try lowering min_confidence or improving data quality.
+2026-01-24 17:05:18,871 - WARNING -   *** Dataset may be too small for meaningful recommendations ***
+2026-01-24 17:05:18,872 - INFO - 
+======================================================================
+2026-01-24 17:05:18,872 - INFO - Phase 5: Completed (No association rules found)
+2026-01-24 17:05:18,872 - INFO - ======================================================================
+2026-01-24 20:11:59,138 - INFO - ======================================================================
+2026-01-24 20:11:59,139 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-01-24 20:11:59,139 - INFO - ======================================================================
+2026-01-24 20:11:59,139 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-01-24 20:11:59,143 - INFO - Loaded 1000 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-24 20:11:59,144 - INFO - Validated 1000 records for market basket analysis
+2026-01-24 20:11:59,144 - INFO -   Status: Loaded 1000 transaction records
+2026-01-24 20:11:59,144 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-01-24 20:11:59,145 - INFO - Analyzing basket composition...
+2026-01-24 20:11:59,146 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-01-24 20:11:59,146 - INFO - Total Orders: 1000
+2026-01-24 20:11:59,146 - INFO - Unique Products: 100
+2026-01-24 20:11:59,146 - INFO - Average Basket Size: 1.00 items
+2026-01-24 20:11:59,146 - INFO - Basket Size Range: 1-1 items
+2026-01-24 20:11:59,146 - INFO - Multi-product Orders: 0 (0.0%)
+2026-01-24 20:11:59,146 - WARNING - Very few multi-product orders detected. Association rules may not be meaningful.
+2026-01-24 20:11:59,147 - WARNING - 
+  WARNING: Very few multi-product baskets detected!
+2026-01-24 20:11:59,147 - WARNING -   Association rules may be sparse or unreliable.
+2026-01-24 20:11:59,147 - WARNING -   Consider collecting more data or adjusting parameters.
+2026-01-24 20:11:59,147 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-01-24 20:11:59,147 - INFO - Encoding baskets for analysis...
+2026-01-24 20:11:59,167 - INFO - Created basket matrix: 1000 orders x 100 products
+2026-01-24 20:11:59,167 - INFO - Matrix sparsity: 99.0%
+2026-01-24 20:11:59,168 - INFO -   Status: Encoded 1000 orders with 100 products
+2026-01-24 20:11:59,168 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-01-24 20:11:59,168 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-01-24 20:11:59,180 - INFO - Frequent itemsets found: 53
+2026-01-24 20:11:59,180 - INFO - Support range: 0.0100-0.0200
+2026-01-24 20:11:59,180 - INFO - Generating association rules (min_confidence=0.1)...
+2026-01-24 20:11:59,181 - WARNING -   Apriori mining failed: Error generating association rules: No rules found with min_confidence=0.1. Try lowering min_confidence or improving data quality.
+2026-01-24 20:11:59,182 - WARNING -   *** Dataset may be too small for meaningful recommendations ***
+2026-01-24 20:11:59,182 - INFO - 
+======================================================================
+2026-01-24 20:11:59,182 - INFO - Phase 5: Completed (No association rules found)
+2026-01-24 20:11:59,182 - INFO - ======================================================================
+2026-01-24 23:29:01,972 - INFO - ======================================================================
+2026-01-24 23:29:01,972 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-01-24 23:29:01,972 - INFO - ======================================================================
+2026-01-24 23:29:01,973 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-01-24 23:29:01,975 - INFO - Loaded 44 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-24 23:29:01,976 - INFO - Validated 44 records for market basket analysis
+2026-01-24 23:29:01,976 - INFO -   Status: Loaded 44 transaction records
+2026-01-24 23:29:01,976 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-01-24 23:29:01,976 - INFO - Analyzing basket composition...
+2026-01-24 23:29:01,978 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-01-24 23:29:01,978 - INFO - Total Orders: 20
+2026-01-24 23:29:01,978 - INFO - Unique Products: 23
+2026-01-24 23:29:01,978 - INFO - Average Basket Size: 2.20 items
+2026-01-24 23:29:01,978 - INFO - Basket Size Range: 1-3 items
+2026-01-24 23:29:01,978 - INFO - Multi-product Orders: 18 (90.0%)
+2026-01-24 23:29:01,978 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-01-24 23:29:01,978 - INFO - Encoding baskets for analysis...
+2026-01-24 23:29:01,981 - INFO - Created basket matrix: 20 orders x 23 products
+2026-01-24 23:29:01,981 - INFO - Matrix sparsity: 90.4%
+2026-01-24 23:29:01,981 - INFO -   Status: Encoded 20 orders with 23 products
+2026-01-24 23:29:01,982 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-01-24 23:29:01,982 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-01-24 23:29:01,986 - INFO - Frequent itemsets found: 47
+2026-01-24 23:29:01,987 - INFO - Support range: 0.0500-0.2500
+2026-01-24 23:29:01,987 - INFO - Generating association rules (min_confidence=0.1)...
+2026-01-24 23:29:01,990 - INFO - Generated 68 association rules
+2026-01-24 23:29:01,991 - INFO - Confidence range: 0.4000-1.0000
+2026-01-24 23:29:01,991 - INFO - Lift range: 3.3333-20.0000
+2026-01-24 23:29:01,991 - INFO - Average confidence: 0.7838
+2026-01-24 23:29:01,992 - INFO - Average lift: 9.1765
+2026-01-24 23:29:01,992 - INFO -   Status: Generated 68 rules
+2026-01-24 23:29:01,992 - INFO - 
+[STEP 5/6] Formatting recommendations...
+2026-01-24 23:29:01,993 - INFO -   Status: Formatted 68 rules for output
+2026-01-24 23:29:01,994 - INFO - 
+--- TOP 5 RECOMMENDATIONS ---
+2026-01-24 23:29:01,994 - INFO -   Rule 1: Printer -> Ink Cartridge (Conf: 100.0%, Lift: 20.00)
+2026-01-24 23:29:01,994 - INFO -   Rule 2: Ink Cartridge -> Printer (Conf: 100.0%, Lift: 20.00)
+2026-01-24 23:29:01,995 - INFO -   Rule 3: Camera -> Camera Bag (Conf: 100.0%, Lift: 10.00)
+2026-01-24 23:29:01,995 - INFO -   Rule 4: Camera Bag -> Camera (Conf: 100.0%, Lift: 10.00)
+2026-01-24 23:29:01,995 - INFO -   Rule 5: Memory Card -> Camera (Conf: 100.0%, Lift: 10.00)
+2026-01-24 23:29:01,995 - INFO - 
+[STEP 6/6] Generating visualizations and saving results...
+2026-01-24 23:29:01,995 - INFO - Generating rule visualizations...
+2026-01-24 23:29:02,354 - INFO - Confidence-Lift plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rules_confidence_lift.png
+2026-01-24 23:29:02,647 - INFO - Top rules plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\top_rules_by_lift.png
+2026-01-24 23:29:03,134 - INFO - Metrics distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rules_metrics_distribution.png
+2026-01-24 23:29:03,135 - INFO -   Status: Generated 3 visualizations
+2026-01-24 23:29:03,138 - INFO - Recommendation rules saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv (68 rules, 8 columns)
+2026-01-24 23:29:03,139 - INFO - 
+======================================================================
+2026-01-24 23:29:03,139 - INFO - SUCCESS: Phase 5: Market Basket Analysis Completed
+2026-01-24 23:29:03,139 - INFO - ======================================================================
+2026-01-24 23:29:03,139 - INFO - 
+Outputs:
+2026-01-24 23:29:03,139 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-24 23:29:03,140 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\recommendation.log
+2026-01-24 23:29:03,140 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-24 23:36:52,393 - INFO - ======================================================================
+2026-01-24 23:36:52,393 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-01-24 23:36:52,393 - INFO - ======================================================================
+2026-01-24 23:36:52,394 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-01-24 23:36:52,396 - INFO - Loaded 58 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-24 23:36:52,397 - INFO - Validated 58 records for market basket analysis
+2026-01-24 23:36:52,397 - INFO -   Status: Loaded 58 transaction records
+2026-01-24 23:36:52,398 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-01-24 23:36:52,398 - INFO - Analyzing basket composition...
+2026-01-24 23:36:52,399 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-01-24 23:36:52,399 - INFO - Total Orders: 25
+2026-01-24 23:36:52,399 - INFO - Unique Products: 8
+2026-01-24 23:36:52,399 - INFO - Average Basket Size: 2.32 items
+2026-01-24 23:36:52,399 - INFO - Basket Size Range: 2-4 items
+2026-01-24 23:36:52,399 - INFO - Multi-product Orders: 25 (100.0%)
+2026-01-24 23:36:52,399 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-01-24 23:36:52,400 - INFO - Encoding baskets for analysis...
+2026-01-24 23:36:52,402 - INFO - Created basket matrix: 25 orders x 8 products
+2026-01-24 23:36:52,402 - INFO - Matrix sparsity: 71.0%
+2026-01-24 23:36:52,402 - INFO -   Status: Encoded 25 orders with 8 products
+2026-01-24 23:36:52,403 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-01-24 23:36:52,403 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-01-24 23:36:52,406 - INFO - Frequent itemsets found: 31
+2026-01-24 23:36:52,406 - INFO - Support range: 0.0400-0.4400
+2026-01-24 23:36:52,407 - INFO - Generating association rules (min_confidence=0.1)...
+2026-01-24 23:36:52,410 - INFO - Generated 83 association rules
+2026-01-24 23:36:52,410 - INFO - Confidence range: 0.1250-1.0000
+2026-01-24 23:36:52,410 - INFO - Lift range: 0.2841-4.6875
+2026-01-24 23:36:52,411 - INFO - Average confidence: 0.4617
+2026-01-24 23:36:52,411 - INFO - Average lift: 1.7387
+2026-01-24 23:36:52,411 - INFO -   Status: Generated 83 rules
+2026-01-24 23:36:52,411 - INFO - 
+[STEP 5/6] Formatting recommendations...
+2026-01-24 23:36:52,413 - INFO -   Status: Formatted 83 rules for output
+2026-01-24 23:36:52,413 - INFO - 
+--- TOP 5 RECOMMENDATIONS ---
+2026-01-24 23:36:52,414 - INFO -   Rule 1: Monitor, Mouse -> Keyboard, Laptop (Conf: 100.0%, Lift: 4.17)
+2026-01-24 23:36:52,414 - INFO -   Rule 2: Laptop, Monitor -> Keyboard, Mouse (Conf: 100.0%, Lift: 3.57)
+2026-01-24 23:36:52,414 - INFO -   Rule 3: Laptop, Monitor -> Keyboard (Conf: 100.0%, Lift: 3.12)
+2026-01-24 23:36:52,415 - INFO -   Rule 4: Monitor, Mouse -> Keyboard (Conf: 100.0%, Lift: 3.12)
+2026-01-24 23:36:52,415 - INFO -   Rule 5: Headphones, Laptop, Mouse -> Keyboard (Conf: 100.0%, Lift: 3.12)
+2026-01-24 23:36:52,415 - INFO - 
+[STEP 6/6] Generating visualizations and saving results...
+2026-01-24 23:36:52,415 - INFO - Generating rule visualizations...
+2026-01-24 23:36:52,744 - INFO - Confidence-Lift plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rules_confidence_lift.png
+2026-01-24 23:36:53,041 - INFO - Top rules plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\top_rules_by_lift.png
+2026-01-24 23:36:53,548 - INFO - Metrics distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rules_metrics_distribution.png
+2026-01-24 23:36:53,549 - INFO -   Status: Generated 3 visualizations
+2026-01-24 23:36:53,552 - INFO - Recommendation rules saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv (83 rules, 8 columns)
+2026-01-24 23:36:53,552 - INFO - 
+======================================================================
+2026-01-24 23:36:53,553 - INFO - SUCCESS: Phase 5: Market Basket Analysis Completed
+2026-01-24 23:36:53,553 - INFO - ======================================================================
+2026-01-24 23:36:53,553 - INFO - 
+Outputs:
+2026-01-24 23:36:53,553 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-24 23:36:53,554 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\recommendation.log
+2026-01-24 23:36:53,554 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-24 23:43:04,005 - INFO - ======================================================================
+2026-01-24 23:43:04,005 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-01-24 23:43:04,005 - INFO - ======================================================================
+2026-01-24 23:43:04,005 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-01-24 23:43:04,008 - INFO - Loaded 1000 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-24 23:43:04,009 - INFO - Validated 1000 records for market basket analysis
+2026-01-24 23:43:04,009 - INFO -   Status: Loaded 1000 transaction records
+2026-01-24 23:43:04,009 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-01-24 23:43:04,009 - INFO - Analyzing basket composition...
+2026-01-24 23:43:04,010 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-01-24 23:43:04,010 - INFO - Total Orders: 1000
+2026-01-24 23:43:04,010 - INFO - Unique Products: 100
+2026-01-24 23:43:04,010 - INFO - Average Basket Size: 1.00 items
+2026-01-24 23:43:04,010 - INFO - Basket Size Range: 1-1 items
+2026-01-24 23:43:04,010 - INFO - Multi-product Orders: 0 (0.0%)
+2026-01-24 23:43:04,010 - WARNING - Very few multi-product orders detected. Association rules may not be meaningful.
+2026-01-24 23:43:04,010 - WARNING - 
+  WARNING: Very few multi-product baskets detected!
+2026-01-24 23:43:04,010 - WARNING -   Association rules may be sparse or unreliable.
+2026-01-24 23:43:04,010 - WARNING -   Consider collecting more data or adjusting parameters.
+2026-01-24 23:43:04,010 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-01-24 23:43:04,010 - INFO - Encoding baskets for analysis...
+2026-01-24 23:43:04,020 - INFO - Created basket matrix: 1000 orders x 100 products
+2026-01-24 23:43:04,020 - INFO - Matrix sparsity: 99.0%
+2026-01-24 23:43:04,020 - INFO -   Status: Encoded 1000 orders with 100 products
+2026-01-24 23:43:04,021 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-01-24 23:43:04,021 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-01-24 23:43:04,033 - INFO - Frequent itemsets found: 53
+2026-01-24 23:43:04,033 - INFO - Support range: 0.0100-0.0200
+2026-01-24 23:43:04,033 - INFO - Generating association rules (min_confidence=0.1)...
+2026-01-24 23:43:04,034 - WARNING -   Apriori mining failed: Error generating association rules: No rules found with min_confidence=0.1. Try lowering min_confidence or improving data quality.
+2026-01-24 23:43:04,034 - WARNING -   *** Dataset may be too small for meaningful recommendations ***
+2026-01-24 23:43:04,034 - INFO - 
+======================================================================
+2026-01-24 23:43:04,034 - INFO - Phase 5: Completed (No association rules found)
+2026-01-24 23:43:04,034 - INFO - ======================================================================
+2026-01-24 23:54:48,413 - INFO - ======================================================================
+2026-01-24 23:54:48,413 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-01-24 23:54:48,413 - INFO - ======================================================================
+2026-01-24 23:54:48,413 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-01-24 23:54:48,416 - INFO - Loaded 1000 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-24 23:54:48,417 - INFO - Validated 1000 records for market basket analysis
+2026-01-24 23:54:48,417 - INFO -   Status: Loaded 1000 transaction records
+2026-01-24 23:54:48,417 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-01-24 23:54:48,417 - INFO - Analyzing basket composition...
+2026-01-24 23:54:48,418 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-01-24 23:54:48,418 - INFO - Total Orders: 1000
+2026-01-24 23:54:48,418 - INFO - Unique Products: 100
+2026-01-24 23:54:48,418 - INFO - Average Basket Size: 1.00 items
+2026-01-24 23:54:48,418 - INFO - Basket Size Range: 1-1 items
+2026-01-24 23:54:48,418 - INFO - Multi-product Orders: 0 (0.0%)
+2026-01-24 23:54:48,418 - WARNING - Very few multi-product orders detected. Association rules may not be meaningful.
+2026-01-24 23:54:48,418 - WARNING - 
+  WARNING: Very few multi-product baskets detected!
+2026-01-24 23:54:48,418 - WARNING -   Association rules may be sparse or unreliable.
+2026-01-24 23:54:48,418 - WARNING -   Consider collecting more data or adjusting parameters.
+2026-01-24 23:54:48,418 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-01-24 23:54:48,418 - INFO - Encoding baskets for analysis...
+2026-01-24 23:54:48,429 - INFO - Created basket matrix: 1000 orders x 100 products
+2026-01-24 23:54:48,429 - INFO - Matrix sparsity: 99.0%
+2026-01-24 23:54:48,429 - INFO -   Status: Encoded 1000 orders with 100 products
+2026-01-24 23:54:48,429 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-01-24 23:54:48,429 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-01-24 23:54:48,442 - INFO - Frequent itemsets found: 53
+2026-01-24 23:54:48,443 - INFO - Support range: 0.0100-0.0200
+2026-01-24 23:54:48,443 - INFO - Generating association rules (min_confidence=0.1)...
+2026-01-24 23:54:48,444 - WARNING -   Apriori mining failed: Error generating association rules: No rules found with min_confidence=0.1. Try lowering min_confidence or improving data quality.
+2026-01-24 23:54:48,444 - WARNING -   *** Dataset may be too small for meaningful recommendations ***
+2026-01-24 23:54:48,444 - INFO - 
+======================================================================
+2026-01-24 23:54:48,444 - INFO - Phase 5: Completed (No association rules found)
+2026-01-24 23:54:48,444 - INFO - ======================================================================
+2026-01-24 23:58:15,101 - INFO - ======================================================================
+2026-01-24 23:58:15,101 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-01-24 23:58:15,101 - INFO - ======================================================================
+2026-01-24 23:58:15,101 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-01-24 23:58:15,103 - INFO - Loaded 8 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-24 23:58:15,104 - INFO - Validated 8 records for market basket analysis
+2026-01-24 23:58:15,104 - INFO -   Status: Loaded 8 transaction records
+2026-01-24 23:58:15,104 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-01-24 23:58:15,104 - INFO - Analyzing basket composition...
+2026-01-24 23:58:15,105 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-01-24 23:58:15,105 - INFO - Total Orders: 8
+2026-01-24 23:58:15,105 - INFO - Unique Products: 5
+2026-01-24 23:58:15,105 - INFO - Average Basket Size: 1.00 items
+2026-01-24 23:58:15,105 - INFO - Basket Size Range: 1-1 items
+2026-01-24 23:58:15,105 - INFO - Multi-product Orders: 0 (0.0%)
+2026-01-24 23:58:15,105 - WARNING - Very few multi-product orders detected. Association rules may not be meaningful.
+2026-01-24 23:58:15,105 - WARNING - 
+  WARNING: Very few multi-product baskets detected!
+2026-01-24 23:58:15,105 - WARNING -   Association rules may be sparse or unreliable.
+2026-01-24 23:58:15,105 - WARNING -   Consider collecting more data or adjusting parameters.
+2026-01-24 23:58:15,105 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-01-24 23:58:15,105 - INFO - Encoding baskets for analysis...
+2026-01-24 23:58:15,106 - INFO - Created basket matrix: 8 orders x 5 products
+2026-01-24 23:58:15,107 - INFO - Matrix sparsity: 80.0%
+2026-01-24 23:58:15,107 - INFO -   Status: Encoded 8 orders with 5 products
+2026-01-24 23:58:15,107 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-01-24 23:58:15,107 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-01-24 23:58:15,108 - INFO - Frequent itemsets found: 5
+2026-01-24 23:58:15,109 - INFO - Support range: 0.1250-0.2500
+2026-01-24 23:58:15,109 - INFO - Generating association rules (min_confidence=0.1)...
+2026-01-24 23:58:15,109 - WARNING -   Apriori mining failed: Error generating association rules: No rules found with min_confidence=0.1. Try lowering min_confidence or improving data quality.
+2026-01-24 23:58:15,109 - WARNING -   *** Dataset may be too small for meaningful recommendations ***
+2026-01-24 23:58:15,109 - INFO - 
+======================================================================
+2026-01-24 23:58:15,109 - INFO - Phase 5: Completed (No association rules found)
+2026-01-24 23:58:15,109 - INFO - ======================================================================
+2026-01-25 00:04:06,545 - INFO - ======================================================================
+2026-01-25 00:04:06,545 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-01-25 00:04:06,545 - INFO - ======================================================================
+2026-01-25 00:04:06,545 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-01-25 00:04:06,548 - INFO - Loaded 1000 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-25 00:04:06,549 - INFO - Validated 1000 records for market basket analysis
+2026-01-25 00:04:06,549 - INFO -   Status: Loaded 1000 transaction records
+2026-01-25 00:04:06,549 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-01-25 00:04:06,549 - INFO - Analyzing basket composition...
+2026-01-25 00:04:06,549 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-01-25 00:04:06,549 - INFO - Total Orders: 1000
+2026-01-25 00:04:06,549 - INFO - Unique Products: 100
+2026-01-25 00:04:06,549 - INFO - Average Basket Size: 1.00 items
+2026-01-25 00:04:06,550 - INFO - Basket Size Range: 1-1 items
+2026-01-25 00:04:06,550 - INFO - Multi-product Orders: 0 (0.0%)
+2026-01-25 00:04:06,550 - WARNING - Very few multi-product orders detected. Association rules may not be meaningful.
+2026-01-25 00:04:06,550 - WARNING - 
+  WARNING: Very few multi-product baskets detected!
+2026-01-25 00:04:06,550 - WARNING -   Association rules may be sparse or unreliable.
+2026-01-25 00:04:06,550 - WARNING -   Consider collecting more data or adjusting parameters.
+2026-01-25 00:04:06,550 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-01-25 00:04:06,550 - INFO - Encoding baskets for analysis...
+2026-01-25 00:04:06,559 - INFO - Created basket matrix: 1000 orders x 100 products
+2026-01-25 00:04:06,560 - INFO - Matrix sparsity: 99.0%
+2026-01-25 00:04:06,560 - INFO -   Status: Encoded 1000 orders with 100 products
+2026-01-25 00:04:06,560 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-01-25 00:04:06,560 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-01-25 00:04:06,571 - INFO - Frequent itemsets found: 53
+2026-01-25 00:04:06,571 - INFO - Support range: 0.0100-0.0200
+2026-01-25 00:04:06,571 - INFO - Generating association rules (min_confidence=0.1)...
+2026-01-25 00:04:06,572 - WARNING -   Apriori mining failed: Error generating association rules: No rules found with min_confidence=0.1. Try lowering min_confidence or improving data quality.
+2026-01-25 00:04:06,572 - WARNING -   *** Dataset may be too small for meaningful recommendations ***
+2026-01-25 00:04:06,572 - INFO - 
+======================================================================
+2026-01-25 00:04:06,572 - INFO - Phase 5: Completed (No association rules found)
+2026-01-25 00:04:06,572 - INFO - ======================================================================
+2026-01-25 00:04:42,477 - INFO - ======================================================================
+2026-01-25 00:04:42,477 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-01-25 00:04:42,477 - INFO - ======================================================================
+2026-01-25 00:04:42,478 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-01-25 00:04:42,480 - INFO - Loaded 1000 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-25 00:04:42,481 - INFO - Validated 1000 records for market basket analysis
+2026-01-25 00:04:42,481 - INFO -   Status: Loaded 1000 transaction records
+2026-01-25 00:04:42,481 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-01-25 00:04:42,481 - INFO - Analyzing basket composition...
+2026-01-25 00:04:42,482 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-01-25 00:04:42,482 - INFO - Total Orders: 1000
+2026-01-25 00:04:42,482 - INFO - Unique Products: 100
+2026-01-25 00:04:42,482 - INFO - Average Basket Size: 1.00 items
+2026-01-25 00:04:42,482 - INFO - Basket Size Range: 1-1 items
+2026-01-25 00:04:42,482 - INFO - Multi-product Orders: 0 (0.0%)
+2026-01-25 00:04:42,482 - WARNING - Very few multi-product orders detected. Association rules may not be meaningful.
+2026-01-25 00:04:42,482 - WARNING - 
+  WARNING: Very few multi-product baskets detected!
+2026-01-25 00:04:42,482 - WARNING -   Association rules may be sparse or unreliable.
+2026-01-25 00:04:42,482 - WARNING -   Consider collecting more data or adjusting parameters.
+2026-01-25 00:04:42,482 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-01-25 00:04:42,482 - INFO - Encoding baskets for analysis...
+2026-01-25 00:04:42,492 - INFO - Created basket matrix: 1000 orders x 100 products
+2026-01-25 00:04:42,492 - INFO - Matrix sparsity: 99.0%
+2026-01-25 00:04:42,492 - INFO -   Status: Encoded 1000 orders with 100 products
+2026-01-25 00:04:42,492 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-01-25 00:04:42,492 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-01-25 00:04:42,504 - INFO - Frequent itemsets found: 53
+2026-01-25 00:04:42,504 - INFO - Support range: 0.0100-0.0200
+2026-01-25 00:04:42,504 - INFO - Generating association rules (min_confidence=0.1)...
+2026-01-25 00:04:42,504 - WARNING -   Apriori mining failed: Error generating association rules: No rules found with min_confidence=0.1. Try lowering min_confidence or improving data quality.
+2026-01-25 00:04:42,504 - WARNING -   *** Dataset may be too small for meaningful recommendations ***
+2026-01-25 00:04:42,505 - INFO - 
+======================================================================
+2026-01-25 00:04:42,505 - INFO - Phase 5: Completed (No association rules found)
+2026-01-25 00:04:42,505 - INFO - ======================================================================

@@ -1,0 +1,21 @@
+# Core Web Framework
+fastapi==0.128.0
+uvicorn[standard]==0.40.0
+pydantic==2.12.5
+
+# Data Processing (Python 3.14+ compatible)
+pandas>=2.0.0
+numpy>=2.0.0
+
+# Machine Learning
+scikit-learn==1.3.2
+joblib==1.3.2
+
+# File Upload
+python-multipart==0.0.6
+
+# Security & Rate Limiting
+slowapi==0.1.9
+
+# Environment Variables
+python-dotenv==1.0.0

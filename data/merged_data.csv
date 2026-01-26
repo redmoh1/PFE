@@ -1,0 +1,9 @@
+OrderID,CustomerID,ProductID,Product,Quantity,UnitPrice,TotalPrice,OrderDate,Name,JoinDate,City,Month
+1001,1,P001,Laptop,1,1200,1200,2024-01-05,Ahmed Alami,2023-01-10,Algiers,2024-01
+1002,2,P002,Mouse,2,20,40,2024-01-07,Sarah Benali,2023-02-15,Oran,2024-01
+1003,3,P003,Keyboard,1,50,50,2024-02-10,Yacine Boudiaf,2023-03-01,Constantine,2024-02
+1004,1,P004,Monitor,1,300,300,2024-02-15,Ahmed Alami,2023-01-10,Algiers,2024-02
+1005,4,P001,Laptop,1,1200,1200,2024-03-01,Nour Haddad,2023-01-25,Setif,2024-03
+1006,5,P005,Headphones,2,80,160,2024-03-05,Khaled Amrani,2023-04-12,Blida,2024-03
+1007,2,P002,Mouse,1,20,20,2024-03-10,Sarah Benali,2023-02-15,Oran,2024-03
+1008,3,P003,Keyboard,2,50,100,2024-03-15,Yacine Boudiaf,2023-03-01,Constantine,2024-03

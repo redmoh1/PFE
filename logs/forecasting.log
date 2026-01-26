@@ -1,0 +1,55 @@
+2026-01-23 14:26:46,175 - INFO - Phase 3: Sales Forecasting started
+2026-01-23 14:26:49,344 - INFO - Forecasting completed successfully
+2026-01-23 14:26:49,345 - INFO - Forecast saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv
+2026-01-23 14:32:17,918 - INFO - ============================================================
+2026-01-23 14:32:17,918 - INFO - Phase 3: Sales Forecasting Started
+2026-01-23 14:32:17,918 - INFO - ============================================================
+2026-01-23 14:32:17,921 - INFO - Loaded 8 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-23 14:32:17,928 - INFO - Aggregated 8 records into 3 monthly periods
+2026-01-23 14:32:17,930 - INFO - Training Linear Regression model...
+2026-01-23 14:32:17,934 - INFO - Model R2 Score: 0.0406
+2026-01-23 14:32:17,935 - INFO - Model MAE: 448.89
+2026-01-23 14:32:17,935 - INFO - Model RMSE: 476.12
+2026-01-23 14:32:17,935 - INFO - Generating 6-month forecast...
+2026-01-23 14:32:17,938 - INFO - Generating forecast visualization...
+2026-01-23 14:32:18,526 - INFO - Forecast plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sales_forecast.png
+2026-01-23 14:32:18,532 - INFO - Forecast saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv with 6 periods
+2026-01-23 14:32:18,533 - INFO - ============================================================
+2026-01-23 14:32:18,534 - INFO - Phase 3: Sales Forecasting Completed Successfully
+2026-01-23 14:32:18,534 - INFO - ============================================================
+2026-01-24 16:55:05,430 - INFO - ============================================================
+2026-01-24 16:55:05,431 - INFO - Phase 3: Sales Forecasting Started
+2026-01-24 16:55:05,431 - INFO - ============================================================
+2026-01-24 16:55:05,432 - ERROR - File error: Input file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-24 17:05:07,045 - INFO - ============================================================
+2026-01-24 17:05:07,047 - INFO - Phase 3: Sales Forecasting Started
+2026-01-24 17:05:07,047 - INFO - ============================================================
+2026-01-24 17:05:07,050 - INFO - Loaded 1000 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-24 17:05:07,061 - INFO - Aggregated 1000 records into 13 monthly periods
+2026-01-24 17:05:07,062 - INFO - Training Linear Regression model...
+2026-01-24 17:05:07,071 - INFO - Model R2 Score: 0.1809
+2026-01-24 17:05:07,072 - INFO - Model MAE: 67,678.57
+2026-01-24 17:05:07,072 - INFO - Model RMSE: 101,329.75
+2026-01-24 17:05:07,072 - INFO - Generating 6-month forecast...
+2026-01-24 17:05:07,073 - INFO - Generating forecast visualization...
+2026-01-24 17:05:07,512 - INFO - Forecast plot saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sales_forecast.png
+2026-01-24 17:05:07,516 - INFO - Forecast saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv with 6 periods
+2026-01-24 17:05:07,516 - INFO - ============================================================
+2026-01-24 17:05:07,516 - INFO - Phase 3: Sales Forecasting Completed Successfully
+2026-01-24 17:05:07,516 - INFO - ============================================================
+2026-01-24 20:11:18,373 - INFO - ============================================================
+2026-01-24 20:11:18,373 - INFO - Phase 3: Sales Forecasting Started
+2026-01-24 20:11:18,374 - INFO - ============================================================
+2026-01-24 20:11:18,377 - INFO - Loaded 1000 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-24 20:11:18,388 - INFO - Aggregated 1000 records into 13 monthly periods
+2026-01-24 20:11:18,389 - INFO - Training Linear Regression model...
+2026-01-24 20:11:18,396 - INFO - Model R2 Score: 0.1809
+2026-01-24 20:11:18,397 - INFO - Model MAE: 67,678.57
+2026-01-24 20:11:18,397 - INFO - Model RMSE: 101,329.75
+2026-01-24 20:11:18,397 - INFO - Generating 6-month forecast...
+2026-01-24 20:11:18,399 - INFO - Generating forecast visualization...
+2026-01-24 20:11:18,826 - INFO - Forecast plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sales_forecast.png
+2026-01-24 20:11:18,832 - INFO - Forecast saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv with 6 periods
+2026-01-24 20:11:18,833 - INFO - ============================================================
+2026-01-24 20:11:18,833 - INFO - Phase 3: Sales Forecasting Completed Successfully
+2026-01-24 20:11:18,833 - INFO - ============================================================

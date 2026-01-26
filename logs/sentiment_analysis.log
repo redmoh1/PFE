@@ -1,0 +1,1292 @@
+2026-01-23 14:52:27,871 - INFO - ======================================================================
+2026-01-23 14:52:27,871 - INFO - Phase 6: Sentiment Analysis - NLP-Based Review Analysis
+2026-01-23 14:52:27,871 - INFO - ======================================================================
+2026-01-23 14:52:27,873 - ERROR - Data validation error: Error tokenizing data. C error: Expected 4 fields in line 3, saw 5
+
+2026-01-23 14:53:01,062 - INFO - ======================================================================
+2026-01-23 14:53:01,062 - INFO - Phase 6: Sentiment Analysis - NLP-Based Review Analysis
+2026-01-23 14:53:01,063 - INFO - ======================================================================
+2026-01-23 14:53:01,067 - INFO - Loaded 20 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-23 14:53:01,067 - INFO - Validated 20 reviews for sentiment analysis
+2026-01-23 14:53:01,068 - INFO - Preprocessing 20 reviews...
+2026-01-23 14:53:01,072 - INFO - Cleaned 20 reviews successfully
+2026-01-23 14:53:01,072 - INFO - Computing sentiment scores...
+2026-01-23 14:53:01,121 - INFO - Computing VADER scores for comparison...
+2026-01-23 14:53:01,122 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,123 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,124 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,126 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,127 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,129 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,131 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,132 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,134 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,135 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,139 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,141 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,142 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,145 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,146 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,148 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,150 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,153 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,154 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,156 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\Desktop\\New folder\\.venv\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:53:01,159 - INFO - Sentiment computation completed
+2026-01-23 14:53:01,160 - INFO - Computing sentiment statistics...
+2026-01-23 14:53:01,171 - INFO - ======================================================================
+2026-01-23 14:53:01,171 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-23 14:53:01,171 - INFO - ======================================================================
+2026-01-23 14:53:01,172 - INFO - 
+Total Reviews Analyzed: 20
+2026-01-23 14:53:01,172 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-23 14:53:01,172 - INFO -   Positive    :  14 reviews ( 70.0%)
+2026-01-23 14:53:01,173 - INFO -   Negative    :   3 reviews ( 15.0%)
+2026-01-23 14:53:01,173 - INFO -   Neutral     :   3 reviews ( 15.0%)
+2026-01-23 14:53:01,173 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-23 14:53:01,173 - INFO -   Mean:      0.2087
+2026-01-23 14:53:01,173 - INFO -   Median:    0.3187
+2026-01-23 14:53:01,174 - INFO -   Std Dev:   0.4929
+2026-01-23 14:53:01,174 - INFO -   Range:    [-1.0000, 0.8125]
+2026-01-23 14:53:01,174 - INFO - 
+======================================================================
+2026-01-23 14:53:01,174 - INFO - Generating sentiment visualizations...
+2026-01-23 14:53:01,595 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-23 14:53:02,100 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-23 14:53:02,478 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-23 14:53:02,483 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews)
+2026-01-23 14:53:02,484 - INFO - ======================================================================
+2026-01-23 14:53:02,484 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-23 14:53:02,484 - INFO - ======================================================================
+2026-01-23 14:54:38,731 - INFO - ======================================================================
+2026-01-23 14:54:38,731 - INFO - Phase 6: Sentiment Analysis - NLP-Based Review Analysis
+2026-01-23 14:54:38,732 - INFO - ======================================================================
+2026-01-23 14:54:38,735 - INFO - Loaded 20 reviews from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-23 14:54:38,736 - INFO - Validated 20 reviews for sentiment analysis
+2026-01-23 14:54:38,737 - INFO - Preprocessing 20 reviews...
+2026-01-23 14:54:38,743 - INFO - Cleaned 20 reviews successfully
+2026-01-23 14:54:38,744 - INFO - Computing sentiment scores...
+2026-01-23 14:54:38,798 - INFO - Computing VADER scores for comparison...
+2026-01-23 14:54:38,800 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,801 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,803 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,804 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,807 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,809 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,811 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,813 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,815 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,816 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,818 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,820 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,822 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,824 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,826 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,827 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,829 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,830 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,832 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,833 - WARNING - Error with VADER analysis: 
+**********************************************************************
+  Resource [93mvader_lexicon[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('vader_lexicon')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93msentiment/vader_lexicon.zip/vader_lexicon/vader_lexicon.txt[0m
+
+  Searched in:
+    - 'C:\\Users\\DELL/nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\share\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python314\\lib\\nltk_data'
+    - 'C:\\Users\\DELL\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - ''
+**********************************************************************
+
+2026-01-23 14:54:38,836 - INFO - Sentiment computation completed
+2026-01-23 14:54:38,836 - INFO - Computing sentiment statistics...
+2026-01-23 14:54:38,857 - INFO - ======================================================================
+2026-01-23 14:54:38,858 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-23 14:54:38,858 - INFO - ======================================================================
+2026-01-23 14:54:38,858 - INFO - 
+Total Reviews Analyzed: 20
+2026-01-23 14:54:38,859 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-23 14:54:38,859 - INFO -   Positive    :  14 reviews ( 70.0%)
+2026-01-23 14:54:38,860 - INFO -   Negative    :   3 reviews ( 15.0%)
+2026-01-23 14:54:38,860 - INFO -   Neutral     :   3 reviews ( 15.0%)
+2026-01-23 14:54:38,860 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-23 14:54:38,860 - INFO -   Mean:      0.2087
+2026-01-23 14:54:38,861 - INFO -   Median:    0.3187
+2026-01-23 14:54:38,861 - INFO -   Std Dev:   0.4929
+2026-01-23 14:54:38,861 - INFO -   Range:    [-1.0000, 0.8125]
+2026-01-23 14:54:38,861 - INFO - 
+======================================================================
+2026-01-23 14:54:38,862 - INFO - Generating sentiment visualizations...
+2026-01-23 14:54:39,405 - INFO - Sentiment distribution pie chart saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-23 14:54:39,909 - INFO - Sentiment score histogram saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-23 14:54:40,230 - INFO - Sentiment count bar chart saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-23 14:54:40,236 - INFO - Sentiment results saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews)
+2026-01-23 14:54:40,236 - INFO - ======================================================================
+2026-01-23 14:54:40,237 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-23 14:54:40,237 - INFO - ======================================================================
+2026-01-23 14:59:06,799 - INFO - ======================================================================
+2026-01-23 14:59:06,799 - INFO - Phase 6: Sentiment Analysis - NLP-Based Review Analysis
+2026-01-23 14:59:06,799 - INFO - ======================================================================
+2026-01-23 14:59:06,800 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-23 14:59:06,803 - INFO - Loaded 20 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-23 14:59:06,804 - INFO - Validated 20 reviews for sentiment analysis
+2026-01-23 14:59:06,804 - INFO -   Status: Loaded 20 reviews
+2026-01-23 14:59:06,804 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-23 14:59:06,804 - INFO - Preprocessing 20 reviews...
+2026-01-23 14:59:06,808 - INFO - Successfully preprocessed 20 reviews (quality: 100.0%)
+2026-01-23 14:59:06,808 - INFO -   Status: 20 valid reviews
+2026-01-23 14:59:06,809 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-23 14:59:06,809 - INFO - Computing sentiment scores...
+2026-01-23 14:59:06,848 - INFO - Computing VADER scores for comparison...
+2026-01-23 14:59:06,852 - INFO - Sentiment computation completed for 20 reviews
+2026-01-23 14:59:06,853 - INFO -   Status: Sentiment analysis complete
+2026-01-23 14:59:06,853 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-23 14:59:06,853 - INFO - Computing sentiment statistics...
+2026-01-23 14:59:06,862 - INFO - ======================================================================
+2026-01-23 14:59:06,862 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-23 14:59:06,862 - INFO - ======================================================================
+2026-01-23 14:59:06,862 - INFO - 
+Total Reviews Analyzed: 20
+2026-01-23 14:59:06,863 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-23 14:59:06,863 - INFO -   Positive    :  14 reviews ( 70.0%)
+2026-01-23 14:59:06,863 - INFO -   Negative    :   3 reviews ( 15.0%)
+2026-01-23 14:59:06,863 - INFO -   Neutral     :   3 reviews ( 15.0%)
+2026-01-23 14:59:06,863 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-23 14:59:06,864 - INFO -   Mean:      0.2087
+2026-01-23 14:59:06,864 - INFO -   Median:    0.3187
+2026-01-23 14:59:06,864 - INFO -   Std Dev:   0.4929
+2026-01-23 14:59:06,864 - INFO -   Range:    [-1.0000, 0.8125]
+2026-01-23 14:59:06,864 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-23 14:59:06,865 - INFO -   Mean:      0.5892
+2026-01-23 14:59:06,866 - INFO -   Max:       1.0000
+2026-01-23 14:59:06,866 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-23 14:59:06,866 - INFO -   Unique Customers: 5
+2026-01-23 14:59:06,866 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-23 14:59:06,867 - INFO - 
+======================================================================
+2026-01-23 14:59:06,867 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-23 14:59:06,867 - INFO - Generating sentiment visualizations...
+2026-01-23 14:59:07,273 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-23 14:59:07,737 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-23 14:59:08,071 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-23 14:59:08,072 - INFO -   Status: Generated 3 visualizations
+2026-01-23 14:59:08,076 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 12 columns)
+2026-01-23 14:59:08,076 - INFO - 
+======================================================================
+2026-01-23 14:59:08,077 - INFO - SUCCESS: Phase 6: Sentiment Analysis Completed
+2026-01-23 14:59:08,078 - INFO - ======================================================================
+2026-01-23 14:59:08,078 - INFO - 
+Outputs:
+2026-01-23 14:59:08,078 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-23 14:59:08,078 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-23 14:59:08,079 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-24 16:51:58,090 - INFO - ======================================================================
+2026-01-24 16:51:58,090 - INFO - Phase 6: Sentiment Analysis - NLP-Based Review Analysis
+2026-01-24 16:51:58,090 - INFO - ======================================================================
+2026-01-24 16:51:58,090 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-24 16:51:58,090 - ERROR - File error: Review file not found: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-24 16:51:58,090 - INFO - 
+Expected file: data/customer_reviews.csv
+2026-01-24 16:51:58,090 - INFO - Required columns: ReviewText
+2026-01-24 16:51:58,090 - INFO - Optional columns: ReviewID, CustomerID, ReviewDate
+2026-01-24 17:05:38,714 - INFO - ======================================================================
+2026-01-24 17:05:38,715 - INFO - Phase 6: Sentiment Analysis - NLP-Based Review Analysis
+2026-01-24 17:05:38,715 - INFO - ======================================================================
+2026-01-24 17:05:38,715 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-24 17:05:38,715 - ERROR - File error: Review file not found: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-24 17:05:38,715 - INFO - 
+Expected file: data/customer_reviews.csv
+2026-01-24 17:05:38,716 - INFO - Required columns: ReviewText
+2026-01-24 17:05:38,716 - INFO - Optional columns: ReviewID, CustomerID, ReviewDate
+2026-01-24 20:10:18,739 - INFO - ============================================================
+2026-01-24 20:10:18,740 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-24 20:10:18,740 - INFO - ============================================================
+2026-01-24 20:10:18,740 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-24 20:10:18,740 - INFO - ============================================================
+2026-01-24 20:10:18,740 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-24 20:10:18,741 - INFO - ============================================================
+2026-01-24 20:10:18,741 - WARNING - ============================================================
+2026-01-24 20:10:18,741 - WARNING - ⊘ SENTIMENT ANALYSIS SKIPPED
+2026-01-24 20:10:18,741 - WARNING - ⊘ Reason: No review files found
+2026-01-24 20:10:18,741 - WARNING - ⊘ Searched for: customer_reviews.csv, reviews.csv
+2026-01-24 20:10:18,741 - WARNING - ⊘ Solution: Upload reviews.csv with ReviewText column
+2026-01-24 20:10:18,741 - WARNING - ============================================================
+2026-01-24 20:10:18,741 - INFO - Sentiment Analysis skipped - exiting gracefully
+2026-01-24 23:09:48,484 - INFO - ============================================================
+2026-01-24 23:09:48,484 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-24 23:09:48,484 - INFO - ============================================================
+2026-01-24 23:09:48,484 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-24 23:09:48,484 - INFO - ============================================================
+2026-01-24 23:09:48,484 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-24 23:09:48,484 - INFO - ============================================================
+2026-01-24 23:09:48,484 - WARNING - ============================================================
+2026-01-24 23:09:48,484 - WARNING - ⊘ SENTIMENT ANALYSIS SKIPPED
+2026-01-24 23:09:48,486 - WARNING - ⊘ Reason: No review files found
+2026-01-24 23:09:48,487 - WARNING - ⊘ Searched for: customer_reviews.csv, reviews.csv
+2026-01-24 23:09:48,487 - WARNING - ⊘ Solution: Upload reviews.csv with ReviewText column
+2026-01-24 23:09:48,487 - WARNING - ============================================================
+2026-01-24 23:09:48,487 - INFO - Sentiment Analysis skipped - exiting gracefully
+2026-01-24 23:37:03,973 - INFO - ============================================================
+2026-01-24 23:37:03,973 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-24 23:37:03,974 - INFO - ============================================================
+2026-01-24 23:37:03,974 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-24 23:37:03,974 - INFO - ============================================================
+2026-01-24 23:37:03,974 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-24 23:37:03,974 - INFO - ============================================================
+2026-01-24 23:37:03,977 - INFO - ✓ Found 20 review records in reviews.csv
+2026-01-24 23:37:03,979 - INFO - ✓ Validated 20 reviews for sentiment analysis
+2026-01-24 23:37:03,979 - INFO - ============================================================
+2026-01-24 23:37:03,979 - INFO -   Status: Loaded 20 reviews
+2026-01-24 23:37:03,979 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-24 23:37:03,979 - INFO - Preprocessing 20 reviews...
+2026-01-24 23:37:03,981 - INFO - Successfully preprocessed 20 reviews (quality: 100.0%)
+2026-01-24 23:37:03,981 - INFO -   Status: 20 valid reviews
+2026-01-24 23:37:03,981 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-24 23:37:03,981 - INFO - Computing sentiment scores...
+2026-01-24 23:37:04,008 - INFO - Computing VADER scores for comparison...
+2026-01-24 23:37:04,012 - INFO - Sentiment computation completed for 20 reviews
+2026-01-24 23:37:04,012 - INFO -   Status: Sentiment analysis complete
+2026-01-24 23:37:04,013 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-24 23:37:04,013 - INFO - Computing sentiment statistics...
+2026-01-24 23:37:04,024 - INFO - ======================================================================
+2026-01-24 23:37:04,025 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-24 23:37:04,025 - INFO - ======================================================================
+2026-01-24 23:37:04,025 - INFO - 
+Total Reviews Analyzed: 20
+2026-01-24 23:37:04,025 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-24 23:37:04,025 - INFO -   Positive    :  14 reviews ( 70.0%)
+2026-01-24 23:37:04,026 - INFO -   Negative    :   3 reviews ( 15.0%)
+2026-01-24 23:37:04,026 - INFO -   Neutral     :   3 reviews ( 15.0%)
+2026-01-24 23:37:04,026 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-24 23:37:04,026 - INFO -   Mean:      0.2087
+2026-01-24 23:37:04,026 - INFO -   Median:    0.3187
+2026-01-24 23:37:04,026 - INFO -   Std Dev:   0.4929
+2026-01-24 23:37:04,026 - INFO -   Range:    [-1.0000, 0.8125]
+2026-01-24 23:37:04,026 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-24 23:37:04,027 - INFO -   Mean:      0.5892
+2026-01-24 23:37:04,027 - INFO -   Max:       1.0000
+2026-01-24 23:37:04,027 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-24 23:37:04,027 - INFO -   Unique Customers: 5
+2026-01-24 23:37:04,027 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-24 23:37:04,027 - INFO - 
+======================================================================
+2026-01-24 23:37:04,027 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-24 23:37:04,028 - INFO - Generating sentiment visualizations...
+2026-01-24 23:37:04,294 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-24 23:37:04,581 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-24 23:37:04,797 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-24 23:37:04,797 - INFO -   Status: Generated 3 visualizations
+2026-01-24 23:37:04,800 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 12 columns)
+2026-01-24 23:37:04,800 - INFO - 
+============================================================
+2026-01-24 23:37:04,800 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-24 23:37:04,800 - INFO - ============================================================
+2026-01-24 23:37:04,800 - INFO - 
+Outputs:
+2026-01-24 23:37:04,801 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-24 23:37:04,801 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-24 23:37:04,801 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-24 23:58:33,969 - INFO - ============================================================
+2026-01-24 23:58:33,969 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-24 23:58:33,969 - INFO - ============================================================
+2026-01-24 23:58:33,969 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-24 23:58:33,969 - INFO - ============================================================
+2026-01-24 23:58:33,969 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-24 23:58:33,969 - INFO - ============================================================
+2026-01-24 23:58:33,971 - INFO - ✓ Found 20 review records in customer_reviews.csv
+2026-01-24 23:58:33,974 - INFO - ✓ Validated 20 reviews for sentiment analysis
+2026-01-24 23:58:33,975 - INFO - ============================================================
+2026-01-24 23:58:33,975 - INFO -   Status: Loaded 20 reviews
+2026-01-24 23:58:33,975 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-24 23:58:33,975 - INFO - Preprocessing 20 reviews...
+2026-01-24 23:58:33,976 - INFO - Successfully preprocessed 20 reviews (quality: 100.0%)
+2026-01-24 23:58:33,976 - INFO -   Status: 20 valid reviews
+2026-01-24 23:58:33,976 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-24 23:58:33,976 - INFO - Computing sentiment scores...
+2026-01-24 23:58:34,000 - INFO - Computing VADER scores for comparison...
+2026-01-24 23:58:34,003 - INFO - Sentiment computation completed for 20 reviews
+2026-01-24 23:58:34,003 - INFO -   Status: Sentiment analysis complete
+2026-01-24 23:58:34,003 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-24 23:58:34,003 - INFO - Computing sentiment statistics...
+2026-01-24 23:58:34,011 - INFO - ======================================================================
+2026-01-24 23:58:34,011 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-24 23:58:34,012 - INFO - ======================================================================
+2026-01-24 23:58:34,012 - INFO - 
+Total Reviews Analyzed: 20
+2026-01-24 23:58:34,012 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-24 23:58:34,012 - INFO -   Positive    :  14 reviews ( 70.0%)
+2026-01-24 23:58:34,012 - INFO -   Negative    :   3 reviews ( 15.0%)
+2026-01-24 23:58:34,012 - INFO -   Neutral     :   3 reviews ( 15.0%)
+2026-01-24 23:58:34,012 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-24 23:58:34,012 - INFO -   Mean:      0.2087
+2026-01-24 23:58:34,012 - INFO -   Median:    0.3187
+2026-01-24 23:58:34,012 - INFO -   Std Dev:   0.4929
+2026-01-24 23:58:34,012 - INFO -   Range:    [-1.0000, 0.8125]
+2026-01-24 23:58:34,012 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-24 23:58:34,012 - INFO -   Mean:      0.5892
+2026-01-24 23:58:34,012 - INFO -   Max:       1.0000
+2026-01-24 23:58:34,012 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-24 23:58:34,012 - INFO -   Unique Customers: 5
+2026-01-24 23:58:34,012 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-24 23:58:34,012 - INFO - 
+======================================================================
+2026-01-24 23:58:34,012 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-24 23:58:34,012 - INFO - Generating sentiment visualizations...
+2026-01-24 23:58:34,269 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-24 23:58:34,569 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-24 23:58:34,783 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-24 23:58:34,783 - INFO -   Status: Generated 3 visualizations
+2026-01-24 23:58:34,787 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 12 columns)
+2026-01-24 23:58:34,787 - INFO - 
+============================================================
+2026-01-24 23:58:34,787 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-24 23:58:34,787 - INFO - ============================================================
+2026-01-24 23:58:34,787 - INFO - 
+Outputs:
+2026-01-24 23:58:34,787 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-24 23:58:34,787 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-24 23:58:34,787 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/

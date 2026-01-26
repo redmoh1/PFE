@@ -1,0 +1,166 @@
+2026-01-23 14:19:53,403 - INFO - Loaded 8 rows from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-23 14:19:53,406 - INFO - Dropped 0 duplicate rows
+2026-01-23 14:19:53,409 - INFO - Removed 0 rows with negative values in ['TotalPrice']
+2026-01-23 14:19:53,432 - INFO - Saved cleaned dataset to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 8 rows
+2026-01-23 14:28:37,644 - INFO - Loaded 8 rows from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-23 14:28:37,647 - INFO - Dropped 0 duplicate rows
+2026-01-23 14:28:37,652 - INFO - Removed 0 rows with negative values in ['TotalPrice']
+2026-01-23 14:28:37,677 - INFO - Saved cleaned dataset to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 8 rows
+2026-01-24 16:54:23,662 - ERROR - Missing input file: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 17:04:56,584 - INFO - Loaded 1000 rows from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 17:04:56,590 - INFO - Dropped 0 duplicate rows
+2026-01-24 17:04:56,595 - INFO - Removed 0 rows with negative values in ['TotalPrice']
+2026-01-24 17:04:56,617 - INFO - Saved cleaned dataset to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 1000 rows
+2026-01-24 20:08:46,517 - INFO - ============================================================
+2026-01-24 20:08:46,518 - INFO - PHASE 2: DATA CLEANING & FEATURE ENGINEERING
+2026-01-24 20:08:46,518 - INFO - ============================================================
+2026-01-24 20:08:46,522 - INFO - ✓ Loaded 1000 rows from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 20:08:46,522 - INFO - ✓ Mandatory columns validated
+2026-01-24 20:08:46,522 - INFO - ✓ Optional column 'CustomerID' available
+2026-01-24 20:08:46,523 - INFO - ✓ Optional column 'City' available
+2026-01-24 20:08:46,523 - INFO - ✓ Optional column 'Product' available
+2026-01-24 20:08:46,526 - INFO - ✓ Dropped 0 duplicate rows
+2026-01-24 20:08:46,528 - INFO - ✓ Handled missing values
+2026-01-24 20:08:46,532 - INFO - ✓ Outliers handled via IQR winsorization
+2026-01-24 20:08:46,535 - INFO - ✓ Core time-based features created
+2026-01-24 20:08:46,536 - INFO - ✓ Customer-based features created (CustomerLifetimeValue)
+2026-01-24 20:08:46,542 - INFO - ✓ Saved cleaned dataset to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 1000 rows
+2026-01-24 20:08:46,543 - INFO - ============================================================
+2026-01-24 20:08:46,543 - INFO - PHASE 2: CLEANING COMPLETED SUCCESSFULLY
+2026-01-24 20:08:46,543 - INFO - ============================================================
+2026-01-24 23:28:40,639 - INFO - ============================================================
+2026-01-24 23:28:40,640 - INFO - PHASE 2: DATA CLEANING & FEATURE ENGINEERING
+2026-01-24 23:28:40,640 - INFO - ============================================================
+2026-01-24 23:28:40,646 - INFO - ✓ Loaded 44 rows from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 23:28:40,647 - INFO - ✓ Mandatory columns validated
+2026-01-24 23:28:40,647 - INFO - ✓ Optional column 'CustomerID' available
+2026-01-24 23:28:40,647 - INFO - ✓ Optional column 'City' available
+2026-01-24 23:28:40,647 - INFO - ✓ Optional column 'Product' available
+2026-01-24 23:28:40,650 - INFO - ✓ Dropped 0 duplicate rows
+2026-01-24 23:28:40,651 - INFO - ✓ Handled missing values
+2026-01-24 23:28:40,655 - INFO - ✓ Outliers handled via IQR winsorization
+2026-01-24 23:28:40,658 - INFO - ✓ Core time-based features created
+2026-01-24 23:28:40,660 - INFO - ✓ Customer-based features created (CustomerLifetimeValue)
+2026-01-24 23:28:40,662 - INFO - ✓ Saved cleaned dataset to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 44 rows
+2026-01-24 23:28:40,662 - INFO - ============================================================
+2026-01-24 23:28:40,662 - INFO - PHASE 2: CLEANING COMPLETED SUCCESSFULLY
+2026-01-24 23:28:40,663 - INFO - ============================================================
+2026-01-24 23:36:32,959 - INFO - ============================================================
+2026-01-24 23:36:32,961 - INFO - PHASE 2: DATA CLEANING & FEATURE ENGINEERING
+2026-01-24 23:36:32,961 - INFO - ============================================================
+2026-01-24 23:36:32,967 - INFO - ✓ Loaded 58 rows from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 23:36:32,968 - INFO - ✓ Mandatory columns validated
+2026-01-24 23:36:32,968 - INFO - ✓ Optional column 'CustomerID' available
+2026-01-24 23:36:32,968 - INFO - ✓ Optional column 'City' available
+2026-01-24 23:36:32,969 - INFO - ✓ Optional column 'Product' available
+2026-01-24 23:36:32,970 - INFO - ✓ Dropped 0 duplicate rows
+2026-01-24 23:36:32,972 - INFO - ✓ Handled missing values
+2026-01-24 23:36:32,978 - INFO - ✓ Outliers handled via IQR winsorization
+2026-01-24 23:36:32,980 - INFO - ✓ Core time-based features created
+2026-01-24 23:36:32,981 - INFO - ✓ Customer-based features created (CustomerLifetimeValue)
+2026-01-24 23:36:32,984 - INFO - ✓ Saved cleaned dataset to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 58 rows
+2026-01-24 23:36:32,984 - INFO - ============================================================
+2026-01-24 23:36:32,984 - INFO - PHASE 2: CLEANING COMPLETED SUCCESSFULLY
+2026-01-24 23:36:32,984 - INFO - ============================================================
+2026-01-24 23:43:02,006 - INFO - ============================================================
+2026-01-24 23:43:02,006 - INFO - PHASE 2: DATA CLEANING & FEATURE ENGINEERING
+2026-01-24 23:43:02,006 - INFO - ============================================================
+2026-01-24 23:43:02,013 - INFO - ✓ Loaded 1000 rows from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 23:43:02,015 - INFO - ✓ Mandatory columns validated
+2026-01-24 23:43:02,015 - WARNING - ⊘ Optional column 'CustomerID' not available
+2026-01-24 23:43:02,016 - INFO - ✓ Optional column 'City' available
+2026-01-24 23:43:02,016 - INFO - ✓ Optional column 'Product' available
+2026-01-24 23:43:02,018 - INFO - ✓ Dropped 0 duplicate rows
+2026-01-24 23:43:02,019 - INFO - ✓ Handled missing values
+2026-01-24 23:43:02,024 - INFO - ✓ Outliers handled via IQR winsorization
+2026-01-24 23:43:02,026 - INFO - ✓ Core time-based features created
+2026-01-24 23:43:02,027 - INFO - ⊘ Skipped customer-based features (CustomerID not available)
+2026-01-24 23:43:02,031 - INFO - ✓ Saved cleaned dataset to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 1000 rows
+2026-01-24 23:43:02,031 - INFO - ============================================================
+2026-01-24 23:43:02,031 - INFO - PHASE 2: CLEANING COMPLETED SUCCESSFULLY
+2026-01-24 23:43:02,031 - INFO - ============================================================
+2026-01-24 23:54:46,433 - INFO - ============================================================
+2026-01-24 23:54:46,434 - INFO - PHASE 2: DATA CLEANING & FEATURE ENGINEERING
+2026-01-24 23:54:46,434 - INFO - ============================================================
+2026-01-24 23:54:46,441 - INFO - ✓ Loaded 1000 rows from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 23:54:46,442 - INFO - ✓ Mandatory columns validated
+2026-01-24 23:54:46,443 - WARNING - ⊘ Optional column 'CustomerID' not available
+2026-01-24 23:54:46,443 - INFO - ✓ Optional column 'City' available
+2026-01-24 23:54:46,443 - INFO - ✓ Optional column 'Product' available
+2026-01-24 23:54:46,445 - INFO - ✓ Dropped 0 duplicate rows
+2026-01-24 23:54:46,447 - INFO - ✓ Handled missing values
+2026-01-24 23:54:46,452 - INFO - ✓ Outliers handled via IQR winsorization
+2026-01-24 23:54:46,455 - INFO - ✓ Core time-based features created
+2026-01-24 23:54:46,455 - INFO - ⊘ Skipped customer-based features (CustomerID not available)
+2026-01-24 23:54:46,460 - INFO - ✓ Saved cleaned dataset to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 1000 rows
+2026-01-24 23:54:46,460 - INFO - ============================================================
+2026-01-24 23:54:46,460 - INFO - PHASE 2: CLEANING COMPLETED SUCCESSFULLY
+2026-01-24 23:54:46,460 - INFO - ============================================================
+2026-01-24 23:58:11,740 - INFO - ============================================================
+2026-01-24 23:58:11,741 - INFO - PHASE 2: DATA CLEANING & FEATURE ENGINEERING
+2026-01-24 23:58:11,741 - INFO - ============================================================
+2026-01-24 23:58:11,746 - INFO - ✓ Loaded 8 rows from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-24 23:58:11,748 - INFO - ✓ Mandatory columns validated
+2026-01-24 23:58:11,748 - INFO - ✓ Optional column 'CustomerID' available
+2026-01-24 23:58:11,749 - INFO - ✓ Optional column 'City' available
+2026-01-24 23:58:11,749 - INFO - ✓ Optional column 'Product' available
+2026-01-24 23:58:11,751 - INFO - ✓ Dropped 0 duplicate rows
+2026-01-24 23:58:11,753 - INFO - ✓ Handled missing values
+2026-01-24 23:58:11,758 - INFO - ✓ Outliers handled via IQR winsorization
+2026-01-24 23:58:11,760 - INFO - ✓ Core time-based features created
+2026-01-24 23:58:11,761 - INFO - ✓ Customer-based features created (CustomerLifetimeValue)
+2026-01-24 23:58:11,764 - INFO - ✓ Saved cleaned dataset to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 8 rows
+2026-01-24 23:58:11,765 - INFO - ============================================================
+2026-01-24 23:58:11,765 - INFO - PHASE 2: CLEANING COMPLETED SUCCESSFULLY
+2026-01-24 23:58:11,765 - INFO - ============================================================
+2026-01-25 00:04:04,604 - INFO - ============================================================
+2026-01-25 00:04:04,604 - INFO - PHASE 2: DATA CLEANING & FEATURE ENGINEERING
+2026-01-25 00:04:04,604 - INFO - ============================================================
+2026-01-25 00:04:04,612 - INFO - ✓ Loaded 1000 rows from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-25 00:04:04,614 - INFO - ✓ Mandatory columns validated
+2026-01-25 00:04:04,614 - WARNING - ⊘ Optional column 'CustomerID' not available
+2026-01-25 00:04:04,614 - INFO - ✓ Optional column 'City' available
+2026-01-25 00:04:04,615 - INFO - ✓ Optional column 'Product' available
+2026-01-25 00:04:04,616 - INFO - ✓ Dropped 0 duplicate rows
+2026-01-25 00:04:04,618 - INFO - ✓ Handled missing values
+2026-01-25 00:04:04,622 - INFO - ✓ Outliers handled via IQR winsorization
+2026-01-25 00:04:04,625 - INFO - ✓ Core time-based features created
+2026-01-25 00:04:04,625 - INFO - ⊘ Skipped customer-based features (CustomerID not available)
+2026-01-25 00:04:04,629 - INFO - ✓ Saved cleaned dataset to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 1000 rows
+2026-01-25 00:04:04,630 - INFO - ============================================================
+2026-01-25 00:04:04,630 - INFO - PHASE 2: CLEANING COMPLETED SUCCESSFULLY
+2026-01-25 00:04:04,630 - INFO - ============================================================
+2026-01-25 00:04:40,367 - INFO - ============================================================
+2026-01-25 00:04:40,367 - INFO - PHASE 2: DATA CLEANING & FEATURE ENGINEERING
+2026-01-25 00:04:40,367 - INFO - ============================================================
+2026-01-25 00:04:40,374 - INFO - ✓ Loaded 1000 rows from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-25 00:04:40,375 - INFO - ✓ Mandatory columns validated
+2026-01-25 00:04:40,376 - WARNING - ⊘ Optional column 'CustomerID' not available
+2026-01-25 00:04:40,376 - INFO - ✓ Optional column 'City' available
+2026-01-25 00:04:40,377 - INFO - ✓ Optional column 'Product' available
+2026-01-25 00:04:40,378 - INFO - ✓ Dropped 0 duplicate rows
+2026-01-25 00:04:40,380 - INFO - ✓ Handled missing values
+2026-01-25 00:04:40,384 - INFO - ✓ Outliers handled via IQR winsorization
+2026-01-25 00:04:40,387 - INFO - ✓ Core time-based features created
+2026-01-25 00:04:40,388 - INFO - ⊘ Skipped customer-based features (CustomerID not available)
+2026-01-25 00:04:40,392 - INFO - ✓ Saved cleaned dataset to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 1000 rows
+2026-01-25 00:04:40,393 - INFO - ============================================================
+2026-01-25 00:04:40,393 - INFO - PHASE 2: CLEANING COMPLETED SUCCESSFULLY
+2026-01-25 00:04:40,393 - INFO - ============================================================
+2026-01-25 00:13:21,538 - INFO - ============================================================
+2026-01-25 00:13:21,538 - INFO - PHASE 2: DATA CLEANING & FEATURE ENGINEERING
+2026-01-25 00:13:21,539 - INFO - ============================================================
+2026-01-25 00:13:21,545 - INFO - ✓ Loaded 8 rows from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\merged_data.csv
+2026-01-25 00:13:21,546 - INFO - ✓ Mandatory columns validated
+2026-01-25 00:13:21,546 - INFO - ✓ Optional column 'CustomerID' available
+2026-01-25 00:13:21,546 - INFO - ✓ Optional column 'City' available
+2026-01-25 00:13:21,547 - INFO - ✓ Optional column 'Product' available
+2026-01-25 00:13:21,549 - INFO - ✓ Dropped 0 duplicate rows
+2026-01-25 00:13:21,551 - INFO - ✓ Handled missing values
+2026-01-25 00:13:21,558 - INFO - ✓ Outliers handled via IQR winsorization
+2026-01-25 00:13:21,560 - INFO - ✓ Core time-based features created
+2026-01-25 00:13:21,562 - INFO - ✓ Customer-based features created (CustomerLifetimeValue)
+2026-01-25 00:13:21,565 - INFO - ✓ Saved cleaned dataset to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv with 8 rows
+2026-01-25 00:13:21,565 - INFO - ============================================================
+2026-01-25 00:13:21,565 - INFO - PHASE 2: CLEANING COMPLETED SUCCESSFULLY
+2026-01-25 00:13:21,566 - INFO - ============================================================
