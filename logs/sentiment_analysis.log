@@ -1762,3 +1762,823 @@ Outputs:
 2026-01-26 15:18:37,173 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
 2026-01-26 15:18:37,173 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
 2026-01-26 15:18:37,173 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 15:36:02,513 - INFO - ============================================================
+2026-01-26 15:36:02,513 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 15:36:02,513 - INFO - ============================================================
+2026-01-26 15:36:02,513 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 15:36:02,513 - INFO - ============================================================
+2026-01-26 15:36:02,513 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 15:36:02,513 - INFO - ============================================================
+2026-01-26 15:36:02,515 - INFO - ✓ Found 6 review records in customer_reviews.csv
+2026-01-26 15:36:02,519 - INFO - ✓ Validated 6 reviews for sentiment analysis
+2026-01-26 15:36:02,519 - INFO - ============================================================
+2026-01-26 15:36:02,519 - INFO -   Status: Loaded 6 reviews
+2026-01-26 15:36:02,519 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 15:36:02,519 - INFO - Preprocessing 6 reviews...
+2026-01-26 15:36:02,519 - INFO - Successfully preprocessed 6 reviews (quality: 100.0%)
+2026-01-26 15:36:02,519 - INFO -   Status: 6 valid reviews
+2026-01-26 15:36:02,519 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 15:36:02,519 - INFO - Computing sentiment scores...
+2026-01-26 15:36:02,543 - INFO - Computing VADER scores for comparison...
+2026-01-26 15:36:02,545 - INFO - Sentiment computation completed for 6 reviews
+2026-01-26 15:36:02,545 - INFO -   Status: Sentiment analysis complete
+2026-01-26 15:36:02,545 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 15:36:02,545 - INFO - Computing sentiment statistics...
+2026-01-26 15:36:02,548 - INFO - ======================================================================
+2026-01-26 15:36:02,548 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 15:36:02,548 - INFO - ======================================================================
+2026-01-26 15:36:02,548 - INFO - 
+Total Reviews Analyzed: 6
+2026-01-26 15:36:02,548 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 15:36:02,548 - INFO -   Positive    :   4 reviews ( 66.7%)
+2026-01-26 15:36:02,549 - INFO -   Neutral     :   2 reviews ( 33.3%)
+2026-01-26 15:36:02,549 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 15:36:02,549 - INFO -   Mean:      0.3000
+2026-01-26 15:36:02,549 - INFO -   Median:    0.3625
+2026-01-26 15:36:02,549 - INFO -   Std Dev:   0.3356
+2026-01-26 15:36:02,549 - INFO -   Range:    [-0.1000, 0.6300]
+2026-01-26 15:36:02,549 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 15:36:02,549 - INFO -   Mean:      0.6650
+2026-01-26 15:36:02,549 - INFO -   Max:       0.8900
+2026-01-26 15:36:02,549 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 15:36:02,549 - INFO -   Unique Customers: 5
+2026-01-26 15:36:02,549 - INFO -   Avg Reviews/Customer: 1.20
+2026-01-26 15:36:02,549 - INFO - 
+======================================================================
+2026-01-26 15:36:02,549 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 15:36:02,549 - INFO - Generating sentiment visualizations...
+2026-01-26 15:36:02,740 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-26 15:36:02,998 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-26 15:36:03,192 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-26 15:36:03,192 - INFO -   Status: Generated 3 visualizations
+2026-01-26 15:36:03,195 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 12 columns)
+2026-01-26 15:36:03,195 - INFO - 
+============================================================
+2026-01-26 15:36:03,195 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-26 15:36:03,195 - INFO - ============================================================
+2026-01-26 15:36:03,196 - INFO - 
+Outputs:
+2026-01-26 15:36:03,196 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 15:36:03,196 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-26 15:36:03,196 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 15:43:51,467 - INFO - ============================================================
+2026-01-26 15:43:51,467 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 15:43:51,467 - INFO - ============================================================
+2026-01-26 15:43:51,467 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 15:43:51,467 - INFO - ============================================================
+2026-01-26 15:43:51,467 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 15:43:51,467 - INFO - ============================================================
+2026-01-26 15:43:51,469 - INFO - ✓ Found 6 review records in customer_reviews.csv
+2026-01-26 15:43:51,471 - INFO - ✓ Validated 6 reviews for sentiment analysis
+2026-01-26 15:43:51,471 - INFO - ============================================================
+2026-01-26 15:43:51,471 - INFO -   Status: Loaded 6 reviews
+2026-01-26 15:43:51,471 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 15:43:51,471 - INFO - Preprocessing 6 reviews...
+2026-01-26 15:43:51,471 - INFO - Successfully preprocessed 6 reviews (quality: 100.0%)
+2026-01-26 15:43:51,471 - INFO -   Status: 6 valid reviews
+2026-01-26 15:43:51,471 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 15:43:51,471 - INFO - Computing sentiment scores...
+2026-01-26 15:43:51,495 - INFO - Computing VADER scores for comparison...
+2026-01-26 15:43:51,495 - INFO - Sentiment computation completed for 6 reviews
+2026-01-26 15:43:51,495 - INFO -   Status: Sentiment analysis complete
+2026-01-26 15:43:51,495 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 15:43:51,495 - INFO - Computing sentiment statistics...
+2026-01-26 15:43:51,495 - INFO - ======================================================================
+2026-01-26 15:43:51,495 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 15:43:51,495 - INFO - ======================================================================
+2026-01-26 15:43:51,495 - INFO - 
+Total Reviews Analyzed: 6
+2026-01-26 15:43:51,495 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 15:43:51,495 - INFO -   Positive    :   4 reviews ( 66.7%)
+2026-01-26 15:43:51,495 - INFO -   Neutral     :   2 reviews ( 33.3%)
+2026-01-26 15:43:51,495 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 15:43:51,495 - INFO -   Mean:      0.3000
+2026-01-26 15:43:51,495 - INFO -   Median:    0.3625
+2026-01-26 15:43:51,495 - INFO -   Std Dev:   0.3356
+2026-01-26 15:43:51,495 - INFO -   Range:    [-0.1000, 0.6300]
+2026-01-26 15:43:51,495 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 15:43:51,495 - INFO -   Mean:      0.6650
+2026-01-26 15:43:51,495 - INFO -   Max:       0.8900
+2026-01-26 15:43:51,495 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 15:43:51,495 - INFO -   Unique Customers: 5
+2026-01-26 15:43:51,495 - INFO -   Avg Reviews/Customer: 1.20
+2026-01-26 15:43:51,495 - INFO - 
+======================================================================
+2026-01-26 15:43:51,495 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 15:43:51,495 - INFO - Generating sentiment visualizations...
+2026-01-26 15:43:51,694 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-26 15:43:51,962 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-26 15:43:52,181 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-26 15:43:52,181 - INFO -   Status: Generated 3 visualizations
+2026-01-26 15:43:52,183 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 12 columns)
+2026-01-26 15:43:52,183 - INFO - 
+============================================================
+2026-01-26 15:43:52,183 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-26 15:43:52,183 - INFO - ============================================================
+2026-01-26 15:43:52,183 - INFO - 
+Outputs:
+2026-01-26 15:43:52,183 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 15:43:52,183 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-26 15:43:52,183 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 15:50:45,905 - INFO - ============================================================
+2026-01-26 15:50:45,905 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 15:50:45,905 - INFO - ============================================================
+2026-01-26 15:50:45,905 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 15:50:45,905 - INFO - ============================================================
+2026-01-26 15:50:45,905 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 15:50:45,905 - INFO - ============================================================
+2026-01-26 15:50:45,905 - INFO - ✓ Found 6 review records in customer_reviews.csv
+2026-01-26 15:50:45,920 - INFO - ✓ Validated 6 reviews for sentiment analysis
+2026-01-26 15:50:45,921 - INFO - ============================================================
+2026-01-26 15:50:45,921 - INFO -   Status: Loaded 6 reviews
+2026-01-26 15:50:45,921 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 15:50:45,921 - INFO - Preprocessing 6 reviews...
+2026-01-26 15:50:45,922 - INFO - Successfully preprocessed 6 reviews (quality: 100.0%)
+2026-01-26 15:50:45,922 - INFO -   Status: 6 valid reviews
+2026-01-26 15:50:45,922 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 15:50:45,922 - INFO - Computing sentiment scores...
+2026-01-26 15:50:45,942 - INFO - Computing VADER scores for comparison...
+2026-01-26 15:50:45,942 - INFO - Sentiment computation completed for 6 reviews
+2026-01-26 15:50:45,942 - INFO -   Status: Sentiment analysis complete
+2026-01-26 15:50:45,942 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 15:50:45,942 - INFO - Computing sentiment statistics...
+2026-01-26 15:50:45,942 - INFO - ======================================================================
+2026-01-26 15:50:45,942 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 15:50:45,942 - INFO - ======================================================================
+2026-01-26 15:50:45,942 - INFO - 
+Total Reviews Analyzed: 6
+2026-01-26 15:50:45,942 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 15:50:45,942 - INFO -   Positive    :   4 reviews ( 66.7%)
+2026-01-26 15:50:45,942 - INFO -   Neutral     :   2 reviews ( 33.3%)
+2026-01-26 15:50:45,942 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 15:50:45,942 - INFO -   Mean:      0.3000
+2026-01-26 15:50:45,942 - INFO -   Median:    0.3625
+2026-01-26 15:50:45,942 - INFO -   Std Dev:   0.3356
+2026-01-26 15:50:45,942 - INFO -   Range:    [-0.1000, 0.6300]
+2026-01-26 15:50:45,942 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 15:50:45,942 - INFO -   Mean:      0.6650
+2026-01-26 15:50:45,942 - INFO -   Max:       0.8900
+2026-01-26 15:50:45,942 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 15:50:45,942 - INFO -   Unique Customers: 5
+2026-01-26 15:50:45,942 - INFO -   Avg Reviews/Customer: 1.20
+2026-01-26 15:50:45,942 - INFO - 
+======================================================================
+2026-01-26 15:50:45,942 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 15:50:45,942 - INFO - Generating sentiment visualizations...
+2026-01-26 15:50:46,158 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-26 15:50:46,440 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-26 15:50:46,655 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-26 15:50:46,655 - INFO -   Status: Generated 3 visualizations
+2026-01-26 15:50:46,655 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 12 columns)
+2026-01-26 15:50:46,655 - INFO - 
+============================================================
+2026-01-26 15:50:46,655 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-26 15:50:46,655 - INFO - ============================================================
+2026-01-26 15:50:46,655 - INFO - 
+Outputs:
+2026-01-26 15:50:46,655 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 15:50:46,655 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-26 15:50:46,655 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 15:58:50,758 - INFO - ============================================================
+2026-01-26 15:58:50,758 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 15:58:50,758 - INFO - ============================================================
+2026-01-26 15:58:50,758 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 15:58:50,758 - INFO - ============================================================
+2026-01-26 15:58:50,758 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 15:58:50,758 - INFO - ============================================================
+2026-01-26 15:58:50,775 - INFO - ✓ Found 6 review records in reviews.csv
+2026-01-26 15:58:50,776 - INFO - ✓ Validated 6 reviews for sentiment analysis
+2026-01-26 15:58:50,777 - INFO - ============================================================
+2026-01-26 15:58:50,777 - INFO -   Status: Loaded 6 reviews
+2026-01-26 15:58:50,777 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 15:58:50,777 - INFO - Preprocessing 6 reviews...
+2026-01-26 15:58:50,779 - INFO - Successfully preprocessed 6 reviews (quality: 100.0%)
+2026-01-26 15:58:50,779 - INFO -   Status: 6 valid reviews
+2026-01-26 15:58:50,779 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 15:58:50,779 - INFO - Computing sentiment scores...
+2026-01-26 15:58:50,800 - INFO - Computing VADER scores for comparison...
+2026-01-26 15:58:50,803 - INFO - Sentiment computation completed for 6 reviews
+2026-01-26 15:58:50,803 - INFO -   Status: Sentiment analysis complete
+2026-01-26 15:58:50,803 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 15:58:50,803 - INFO - Computing sentiment statistics...
+2026-01-26 15:58:50,807 - INFO - ======================================================================
+2026-01-26 15:58:50,807 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 15:58:50,807 - INFO - ======================================================================
+2026-01-26 15:58:50,807 - INFO - 
+Total Reviews Analyzed: 6
+2026-01-26 15:58:50,808 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 15:58:50,808 - INFO -   Positive    :   4 reviews ( 66.7%)
+2026-01-26 15:58:50,808 - INFO -   Neutral     :   2 reviews ( 33.3%)
+2026-01-26 15:58:50,808 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 15:58:50,808 - INFO -   Mean:      0.3000
+2026-01-26 15:58:50,808 - INFO -   Median:    0.3625
+2026-01-26 15:58:50,809 - INFO -   Std Dev:   0.3356
+2026-01-26 15:58:50,809 - INFO -   Range:    [-0.1000, 0.6300]
+2026-01-26 15:58:50,809 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 15:58:50,809 - INFO -   Mean:      0.6650
+2026-01-26 15:58:50,809 - INFO -   Max:       0.8900
+2026-01-26 15:58:50,809 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 15:58:50,809 - INFO -   Unique Customers: 5
+2026-01-26 15:58:50,809 - INFO -   Avg Reviews/Customer: 1.20
+2026-01-26 15:58:50,811 - INFO - 
+======================================================================
+2026-01-26 15:58:50,811 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 15:58:50,811 - INFO - Generating sentiment visualizations...
+2026-01-26 15:58:51,051 - INFO - Sentiment distribution pie chart saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-26 15:58:51,362 - INFO - Sentiment score histogram saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-26 15:58:51,549 - INFO - Sentiment count bar chart saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-26 15:58:51,549 - INFO -   Status: Generated 3 visualizations
+2026-01-26 15:58:51,549 - INFO - Sentiment results saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 12 columns)
+2026-01-26 15:58:51,549 - INFO - 
+============================================================
+2026-01-26 15:58:51,549 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-26 15:58:51,549 - INFO - ============================================================
+2026-01-26 15:58:51,549 - INFO - 
+Outputs:
+2026-01-26 15:58:51,549 - INFO -   - Results: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 15:58:51,549 - INFO -   - Logs:    c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-26 15:58:51,549 - INFO -   - Plots:   c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 15:59:41,229 - INFO - ============================================================
+2026-01-26 15:59:41,229 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 15:59:41,229 - INFO - ============================================================
+2026-01-26 15:59:41,229 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 15:59:41,229 - INFO - ============================================================
+2026-01-26 15:59:41,229 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 15:59:41,229 - INFO - ============================================================
+2026-01-26 15:59:41,231 - INFO - ✓ Found 6 review records in customer_reviews.csv
+2026-01-26 15:59:41,234 - INFO - ✓ Validated 6 reviews for sentiment analysis
+2026-01-26 15:59:41,234 - INFO - ============================================================
+2026-01-26 15:59:41,234 - INFO -   Status: Loaded 6 reviews
+2026-01-26 15:59:41,234 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 15:59:41,234 - INFO - Preprocessing 6 reviews...
+2026-01-26 15:59:41,236 - INFO - Successfully preprocessed 6 reviews (quality: 100.0%)
+2026-01-26 15:59:41,236 - INFO -   Status: 6 valid reviews
+2026-01-26 15:59:41,236 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 15:59:41,236 - INFO - Computing sentiment scores...
+2026-01-26 15:59:41,247 - INFO - Computing VADER scores for comparison...
+2026-01-26 15:59:41,258 - INFO - Sentiment computation completed for 6 reviews
+2026-01-26 15:59:41,258 - INFO -   Status: Sentiment analysis complete
+2026-01-26 15:59:41,258 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 15:59:41,258 - INFO - Computing sentiment statistics...
+2026-01-26 15:59:41,262 - INFO - ======================================================================
+2026-01-26 15:59:41,262 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 15:59:41,262 - INFO - ======================================================================
+2026-01-26 15:59:41,262 - INFO - 
+Total Reviews Analyzed: 6
+2026-01-26 15:59:41,262 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 15:59:41,262 - INFO -   Positive    :   4 reviews ( 66.7%)
+2026-01-26 15:59:41,262 - INFO -   Neutral     :   2 reviews ( 33.3%)
+2026-01-26 15:59:41,262 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 15:59:41,262 - INFO -   Mean:      0.3000
+2026-01-26 15:59:41,262 - INFO -   Median:    0.3625
+2026-01-26 15:59:41,262 - INFO -   Std Dev:   0.3356
+2026-01-26 15:59:41,262 - INFO -   Range:    [-0.1000, 0.6300]
+2026-01-26 15:59:41,262 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 15:59:41,262 - INFO -   Mean:      0.6650
+2026-01-26 15:59:41,262 - INFO -   Max:       0.8900
+2026-01-26 15:59:41,262 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 15:59:41,262 - INFO -   Unique Customers: 5
+2026-01-26 15:59:41,262 - INFO -   Avg Reviews/Customer: 1.20
+2026-01-26 15:59:41,262 - INFO - 
+======================================================================
+2026-01-26 15:59:41,262 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 15:59:41,262 - INFO - Generating sentiment visualizations...
+2026-01-26 15:59:41,464 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-26 15:59:41,724 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-26 15:59:41,974 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-26 15:59:41,974 - INFO -   Status: Generated 3 visualizations
+2026-01-26 15:59:41,974 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 12 columns)
+2026-01-26 15:59:41,974 - INFO - 
+============================================================
+2026-01-26 15:59:41,974 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-26 15:59:41,974 - INFO - ============================================================
+2026-01-26 15:59:41,974 - INFO - 
+Outputs:
+2026-01-26 15:59:41,974 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 15:59:41,974 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-26 15:59:41,974 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 16:28:02,002 - INFO - ============================================================
+2026-01-26 16:28:02,002 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 16:28:02,002 - INFO - ============================================================
+2026-01-26 16:28:02,002 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 16:28:02,002 - INFO - ============================================================
+2026-01-26 16:28:02,002 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 16:28:02,002 - INFO - ============================================================
+2026-01-26 16:28:02,002 - INFO - ✓ Found 120 review records in customer_reviews.csv
+2026-01-26 16:28:02,002 - INFO - ✓ Validated 120 reviews for sentiment analysis
+2026-01-26 16:28:02,002 - INFO - ============================================================
+2026-01-26 16:28:02,002 - INFO -   Status: Loaded 120 reviews
+2026-01-26 16:28:02,002 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 16:28:02,002 - INFO - Preprocessing 120 reviews...
+2026-01-26 16:28:02,002 - INFO - Successfully preprocessed 120 reviews (quality: 100.0%)
+2026-01-26 16:28:02,002 - INFO -   Status: 120 valid reviews
+2026-01-26 16:28:02,002 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 16:28:02,002 - INFO - Computing sentiment scores...
+2026-01-26 16:28:02,043 - INFO - Computing VADER scores for comparison...
+2026-01-26 16:28:02,060 - INFO - Sentiment computation completed for 120 reviews
+2026-01-26 16:28:02,060 - INFO -   Status: Sentiment analysis complete
+2026-01-26 16:28:02,060 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 16:28:02,060 - INFO - Computing sentiment statistics...
+2026-01-26 16:28:02,064 - INFO - ======================================================================
+2026-01-26 16:28:02,064 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 16:28:02,064 - INFO - ======================================================================
+2026-01-26 16:28:02,064 - INFO - 
+Total Reviews Analyzed: 120
+2026-01-26 16:28:02,064 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 16:28:02,064 - INFO -   Positive    :  65 reviews ( 54.2%)
+2026-01-26 16:28:02,064 - INFO -   Negative    :  55 reviews ( 45.8%)
+2026-01-26 16:28:02,064 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 16:28:02,064 - INFO -   Mean:      0.0833
+2026-01-26 16:28:02,064 - INFO -   Median:    0.3333
+2026-01-26 16:28:02,064 - INFO -   Std Dev:   0.5118
+2026-01-26 16:28:02,064 - INFO -   Range:    [-0.9750, 0.8250]
+2026-01-26 16:28:02,064 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 16:28:02,064 - INFO -   Mean:      0.5719
+2026-01-26 16:28:02,064 - INFO -   Max:       1.0000
+2026-01-26 16:28:02,067 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 16:28:02,067 - INFO -   Unique Customers: 30
+2026-01-26 16:28:02,067 - INFO -   Avg Reviews/Customer: 4.00
+2026-01-26 16:28:02,067 - INFO - 
+======================================================================
+2026-01-26 16:28:02,067 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 16:28:02,067 - INFO - Generating sentiment visualizations...
+2026-01-26 16:28:02,268 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-26 16:28:02,521 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-26 16:28:02,718 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-26 16:28:02,718 - INFO -   Status: Generated 3 visualizations
+2026-01-26 16:28:02,735 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (120 reviews, 11 columns)
+2026-01-26 16:28:02,735 - INFO - 
+============================================================
+2026-01-26 16:28:02,735 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-26 16:28:02,735 - INFO - ============================================================
+2026-01-26 16:28:02,735 - INFO - 
+Outputs:
+2026-01-26 16:28:02,735 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 16:28:02,735 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-26 16:28:02,735 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 16:40:39,746 - INFO - ============================================================
+2026-01-26 16:40:39,746 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 16:40:39,746 - INFO - ============================================================
+2026-01-26 16:40:39,746 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 16:40:39,746 - INFO - ============================================================
+2026-01-26 16:40:39,746 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 16:40:39,746 - INFO - ============================================================
+2026-01-26 16:40:39,762 - INFO - ✓ Found 6 review records in customer_reviews.csv
+2026-01-26 16:40:39,765 - INFO - ✓ Validated 6 reviews for sentiment analysis
+2026-01-26 16:40:39,765 - INFO - ============================================================
+2026-01-26 16:40:39,765 - INFO -   Status: Loaded 6 reviews
+2026-01-26 16:40:39,765 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 16:40:39,765 - INFO - Preprocessing 6 reviews...
+2026-01-26 16:40:39,767 - INFO - Successfully preprocessed 6 reviews (quality: 100.0%)
+2026-01-26 16:40:39,767 - INFO -   Status: 6 valid reviews
+2026-01-26 16:40:39,767 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 16:40:39,767 - INFO - Computing sentiment scores...
+2026-01-26 16:40:39,785 - INFO - Computing VADER scores for comparison...
+2026-01-26 16:40:39,785 - INFO - Sentiment computation completed for 6 reviews
+2026-01-26 16:40:39,785 - INFO -   Status: Sentiment analysis complete
+2026-01-26 16:40:39,785 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 16:40:39,785 - INFO - Computing sentiment statistics...
+2026-01-26 16:40:39,785 - INFO - ======================================================================
+2026-01-26 16:40:39,785 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 16:40:39,785 - INFO - ======================================================================
+2026-01-26 16:40:39,785 - INFO - 
+Total Reviews Analyzed: 6
+2026-01-26 16:40:39,785 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 16:40:39,785 - INFO -   Positive    :   4 reviews ( 66.7%)
+2026-01-26 16:40:39,785 - INFO -   Neutral     :   2 reviews ( 33.3%)
+2026-01-26 16:40:39,785 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 16:40:39,785 - INFO -   Mean:      0.3000
+2026-01-26 16:40:39,785 - INFO -   Median:    0.3625
+2026-01-26 16:40:39,785 - INFO -   Std Dev:   0.3356
+2026-01-26 16:40:39,785 - INFO -   Range:    [-0.1000, 0.6300]
+2026-01-26 16:40:39,785 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 16:40:39,785 - INFO -   Mean:      0.6650
+2026-01-26 16:40:39,785 - INFO -   Max:       0.8900
+2026-01-26 16:40:39,785 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 16:40:39,785 - INFO -   Unique Customers: 5
+2026-01-26 16:40:39,785 - INFO -   Avg Reviews/Customer: 1.20
+2026-01-26 16:40:39,785 - INFO - 
+======================================================================
+2026-01-26 16:40:39,785 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 16:40:39,785 - INFO - Generating sentiment visualizations...
+2026-01-26 16:40:40,002 - INFO - Sentiment distribution pie chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-26 16:40:40,296 - INFO - Sentiment score histogram saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-26 16:40:40,507 - INFO - Sentiment count bar chart saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-26 16:40:40,507 - INFO -   Status: Generated 3 visualizations
+2026-01-26 16:40:40,510 - INFO - Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 12 columns)
+2026-01-26 16:40:40,510 - INFO - 
+============================================================
+2026-01-26 16:40:40,510 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-26 16:40:40,510 - INFO - ============================================================
+2026-01-26 16:40:40,510 - INFO - 
+Outputs:
+2026-01-26 16:40:40,510 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 16:40:40,510 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-26 16:40:40,510 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 16:42:15,931 - INFO - ============================================================
+2026-01-26 16:42:15,931 - INFO - PHASE 6: SENTIMENT ANALYSIS STARTED
+2026-01-26 16:42:15,931 - INFO - ============================================================
+2026-01-26 16:42:15,931 - INFO - 
+[STEP 1/5] Loading and validating reviews...
+2026-01-26 16:42:15,931 - INFO - ============================================================
+2026-01-26 16:42:15,931 - INFO - SENTIMENT ANALYSIS - DATA VALIDATION
+2026-01-26 16:42:15,931 - INFO - ============================================================
+2026-01-26 16:42:15,931 - INFO - ✓ Found 6 review records in customer_reviews.csv
+2026-01-26 16:42:15,931 - INFO - ✓ Validated 6 reviews for sentiment analysis
+2026-01-26 16:42:15,931 - INFO - ============================================================
+2026-01-26 16:42:15,931 - INFO -   Status: Loaded 6 reviews
+2026-01-26 16:42:15,931 - INFO - 
+[STEP 2/5] Preprocessing and cleaning text...
+2026-01-26 16:42:15,931 - INFO - Preprocessing 6 reviews...
+2026-01-26 16:42:15,931 - INFO - Successfully preprocessed 6 reviews (quality: 100.0%)
+2026-01-26 16:42:15,931 - INFO -   Status: 6 valid reviews
+2026-01-26 16:42:15,931 - INFO - 
+[STEP 3/5] Analyzing sentiment...
+2026-01-26 16:42:15,931 - INFO - Computing sentiment scores...
+2026-01-26 16:42:15,963 - INFO - Computing VADER scores for comparison...
+2026-01-26 16:42:15,966 - INFO - Sentiment computation completed for 6 reviews
+2026-01-26 16:42:15,966 - INFO -   Status: Sentiment analysis complete
+2026-01-26 16:42:15,966 - INFO - 
+[STEP 4/5] Computing statistics...
+2026-01-26 16:42:15,966 - INFO - Computing sentiment statistics...
+2026-01-26 16:42:15,969 - INFO - ======================================================================
+2026-01-26 16:42:15,969 - INFO - SENTIMENT ANALYSIS SUMMARY
+2026-01-26 16:42:15,969 - INFO - ======================================================================
+2026-01-26 16:42:15,969 - INFO - 
+Total Reviews Analyzed: 6
+2026-01-26 16:42:15,969 - INFO - 
+--- SENTIMENT DISTRIBUTION ---
+2026-01-26 16:42:15,969 - INFO -   Positive    :   4 reviews ( 66.7%)
+2026-01-26 16:42:15,969 - INFO -   Neutral     :   2 reviews ( 33.3%)
+2026-01-26 16:42:15,969 - INFO - 
+--- SCORE STATISTICS (TextBlob Polarity Scale: -1 to +1) ---
+2026-01-26 16:42:15,969 - INFO -   Mean:      0.3000
+2026-01-26 16:42:15,969 - INFO -   Median:    0.3625
+2026-01-26 16:42:15,969 - INFO -   Std Dev:   0.3356
+2026-01-26 16:42:15,969 - INFO -   Range:    [-0.1000, 0.6300]
+2026-01-26 16:42:15,973 - INFO - 
+--- SUBJECTIVITY STATISTICS (Scale: 0=Objective to 1=Subjective) ---
+2026-01-26 16:42:15,973 - INFO -   Mean:      0.6650
+2026-01-26 16:42:15,973 - INFO -   Max:       0.8900
+2026-01-26 16:42:15,973 - INFO - 
+--- CUSTOMER SENTIMENT ---
+2026-01-26 16:42:15,973 - INFO -   Unique Customers: 5
+2026-01-26 16:42:15,973 - INFO -   Avg Reviews/Customer: 1.20
+2026-01-26 16:42:15,973 - INFO - 
+======================================================================
+2026-01-26 16:42:15,973 - INFO - 
+[STEP 5/5] Generating visualizations...
+2026-01-26 16:42:15,973 - INFO - Generating sentiment visualizations...
+2026-01-26 16:42:16,225 - INFO - Sentiment distribution pie chart saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_distribution.png
+2026-01-26 16:42:16,530 - INFO - Sentiment score histogram saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_score_histogram.png
+2026-01-26 16:42:16,744 - INFO - Sentiment count bar chart saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_count_bar.png
+2026-01-26 16:42:16,745 - INFO -   Status: Generated 3 visualizations
+2026-01-26 16:42:16,748 - INFO - Sentiment results saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 12 columns)
+2026-01-26 16:42:16,748 - INFO - 
+============================================================
+2026-01-26 16:42:16,748 - INFO - PHASE 6: SENTIMENT ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-26 16:42:16,748 - INFO - ============================================================
+2026-01-26 16:42:16,749 - INFO - 
+Outputs:
+2026-01-26 16:42:16,749 - INFO -   - Results: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 16:42:16,749 - INFO -   - Logs:    c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\sentiment_analysis.log
+2026-01-26 16:42:16,749 - INFO -   - Plots:   c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 16:52:35,191 - INFO - ======================================================================
+2026-01-26 16:52:35,191 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-26 16:52:35,192 - INFO - ======================================================================
+2026-01-26 16:52:35,195 - INFO - Loaded 6 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-26 16:52:35,195 - INFO - Using text column: ReviewText
+2026-01-26 16:52:35,196 - INFO - Analyzing sentiment for 6 reviews...
+2026-01-26 16:52:35,226 - WARNING - Error analyzing text: 
+Looks like you are missing some required data for this feature.
+
+To download the necessary data, simply run
+
+    python -m textblob.download_corpora
+
+or use the NLTK downloader to download the missing data: http://nltk.org/data.html
+If this doesn't fix the problem, file an issue at https://github.com/sloria/TextBlob/issues.
+
+2026-01-26 16:52:35,228 - WARNING - Error analyzing text: 
+Looks like you are missing some required data for this feature.
+
+To download the necessary data, simply run
+
+    python -m textblob.download_corpora
+
+or use the NLTK downloader to download the missing data: http://nltk.org/data.html
+If this doesn't fix the problem, file an issue at https://github.com/sloria/TextBlob/issues.
+
+2026-01-26 16:52:35,230 - WARNING - Error analyzing text: 
+Looks like you are missing some required data for this feature.
+
+To download the necessary data, simply run
+
+    python -m textblob.download_corpora
+
+or use the NLTK downloader to download the missing data: http://nltk.org/data.html
+If this doesn't fix the problem, file an issue at https://github.com/sloria/TextBlob/issues.
+
+2026-01-26 16:52:35,231 - WARNING - Error analyzing text: 
+Looks like you are missing some required data for this feature.
+
+To download the necessary data, simply run
+
+    python -m textblob.download_corpora
+
+or use the NLTK downloader to download the missing data: http://nltk.org/data.html
+If this doesn't fix the problem, file an issue at https://github.com/sloria/TextBlob/issues.
+
+2026-01-26 16:52:35,234 - WARNING - Error analyzing text: 
+Looks like you are missing some required data for this feature.
+
+To download the necessary data, simply run
+
+    python -m textblob.download_corpora
+
+or use the NLTK downloader to download the missing data: http://nltk.org/data.html
+If this doesn't fix the problem, file an issue at https://github.com/sloria/TextBlob/issues.
+
+2026-01-26 16:52:35,235 - WARNING - Error analyzing text: 
+Looks like you are missing some required data for this feature.
+
+To download the necessary data, simply run
+
+    python -m textblob.download_corpora
+
+or use the NLTK downloader to download the missing data: http://nltk.org/data.html
+If this doesn't fix the problem, file an issue at https://github.com/sloria/TextBlob/issues.
+
+2026-01-26 16:52:35,237 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-26 16:52:35,237 - INFO - Total Reviews: 6
+2026-01-26 16:52:35,237 - INFO - Positive: 0 (0.0%)
+2026-01-26 16:52:35,237 - INFO - Neutral: 6 (100.0%)
+2026-01-26 16:52:35,237 - INFO - Negative: 0 (0.0%)
+2026-01-26 16:52:35,238 - INFO - Average Polarity: 0.0
+2026-01-26 16:52:35,238 - INFO - Average Subjectivity: 0.0
+2026-01-26 16:52:35,746 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-26 16:52:35,749 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 10 columns)
+2026-01-26 16:52:35,749 - INFO - ======================================================================
+2026-01-26 16:52:35,750 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-26 16:52:35,750 - INFO - ======================================================================
+2026-01-26 16:52:35,750 - INFO - 
+Outputs:
+2026-01-26 16:52:35,750 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 16:52:35,751 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 16:55:10,050 - INFO - ======================================================================
+2026-01-26 16:55:10,051 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-26 16:55:10,051 - INFO - ======================================================================
+2026-01-26 16:55:10,052 - INFO - Loaded 6 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-26 16:55:10,052 - INFO - Using text column: ReviewText
+2026-01-26 16:55:10,052 - INFO - Analyzing sentiment for 6 reviews...
+2026-01-26 16:55:10,182 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-26 16:55:10,182 - INFO - Total Reviews: 6
+2026-01-26 16:55:10,182 - INFO - Positive: 4 (66.67%)
+2026-01-26 16:55:10,183 - INFO - Neutral: 2 (33.33%)
+2026-01-26 16:55:10,183 - INFO - Negative: 0 (0.0%)
+2026-01-26 16:55:10,183 - INFO - Average Polarity: 0.3
+2026-01-26 16:55:10,183 - INFO - Average Subjectivity: 0.665
+2026-01-26 16:55:10,711 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-26 16:55:10,715 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 10 columns)
+2026-01-26 16:55:10,716 - INFO - ======================================================================
+2026-01-26 16:55:10,716 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-26 16:55:10,716 - INFO - ======================================================================
+2026-01-26 16:55:10,716 - INFO - 
+Outputs:
+2026-01-26 16:55:10,717 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 16:55:10,717 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 16:57:40,486 - INFO - ======================================================================
+2026-01-26 16:57:40,486 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-26 16:57:40,486 - INFO - ======================================================================
+2026-01-26 16:57:40,487 - INFO - Loaded 20 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-26 16:57:40,487 - INFO - Using text column: ReviewText
+2026-01-26 16:57:40,487 - INFO - Analyzing sentiment for 20 reviews...
+2026-01-26 16:57:40,601 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-26 16:57:40,601 - INFO - Total Reviews: 20
+2026-01-26 16:57:40,601 - INFO - Positive: 14 (70.0%)
+2026-01-26 16:57:40,601 - INFO - Neutral: 3 (15.0%)
+2026-01-26 16:57:40,601 - INFO - Negative: 3 (15.0%)
+2026-01-26 16:57:40,601 - INFO - Average Polarity: 0.2087
+2026-01-26 16:57:40,601 - INFO - Average Subjectivity: 0.5892
+2026-01-26 16:57:41,103 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-26 16:57:41,103 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 8 columns)
+2026-01-26 16:57:41,103 - INFO - ======================================================================
+2026-01-26 16:57:41,103 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-26 16:57:41,103 - INFO - ======================================================================
+2026-01-26 16:57:41,103 - INFO - 
+Outputs:
+2026-01-26 16:57:41,103 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 16:57:41,103 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 16:59:12,054 - INFO - ======================================================================
+2026-01-26 16:59:12,054 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-26 16:59:12,054 - INFO - ======================================================================
+2026-01-26 16:59:12,057 - INFO - Loaded 120 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-26 16:59:12,057 - INFO - Using text column: ReviewText
+2026-01-26 16:59:12,057 - INFO - Analyzing sentiment for 120 reviews...
+2026-01-26 16:59:12,228 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-26 16:59:12,228 - INFO - Total Reviews: 120
+2026-01-26 16:59:12,228 - INFO - Positive: 65 (54.17%)
+2026-01-26 16:59:12,228 - INFO - Neutral: 0 (0.0%)
+2026-01-26 16:59:12,229 - INFO - Negative: 55 (45.83%)
+2026-01-26 16:59:12,229 - INFO - Average Polarity: 0.0833
+2026-01-26 16:59:12,229 - INFO - Average Subjectivity: 0.5719
+2026-01-26 16:59:12,727 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-26 16:59:12,727 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (120 reviews, 8 columns)
+2026-01-26 16:59:12,727 - INFO - ======================================================================
+2026-01-26 16:59:12,727 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-26 16:59:12,727 - INFO - ======================================================================
+2026-01-26 16:59:12,727 - INFO - 
+Outputs:
+2026-01-26 16:59:12,727 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 16:59:12,727 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 17:07:28,170 - INFO - ======================================================================
+2026-01-26 17:07:28,170 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-26 17:07:28,170 - INFO - ======================================================================
+2026-01-26 17:07:28,170 - INFO - Loaded 6 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-26 17:07:28,170 - INFO - Using text column: ReviewText
+2026-01-26 17:07:28,170 - INFO - Analyzing sentiment for 6 reviews...
+2026-01-26 17:07:28,295 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-26 17:07:28,295 - INFO - Total Reviews: 6
+2026-01-26 17:07:28,295 - INFO - Positive: 4 (66.67%)
+2026-01-26 17:07:28,295 - INFO - Neutral: 2 (33.33%)
+2026-01-26 17:07:28,295 - INFO - Negative: 0 (0.0%)
+2026-01-26 17:07:28,295 - INFO - Average Polarity: 0.3
+2026-01-26 17:07:28,295 - INFO - Average Subjectivity: 0.665
+2026-01-26 17:07:28,837 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-26 17:07:28,846 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 10 columns)
+2026-01-26 17:07:28,846 - INFO - ======================================================================
+2026-01-26 17:07:28,846 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-26 17:07:28,846 - INFO - ======================================================================
+2026-01-26 17:07:28,846 - INFO - 
+Outputs:
+2026-01-26 17:07:28,846 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 17:07:28,846 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 17:12:12,973 - INFO - ======================================================================
+2026-01-26 17:12:12,973 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-26 17:12:12,973 - INFO - ======================================================================
+2026-01-26 17:12:12,981 - INFO - Loaded 6 reviews from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-26 17:12:12,981 - INFO - Using text column: ReviewText
+2026-01-26 17:12:12,981 - INFO - Analyzing sentiment for 6 reviews...
+2026-01-26 17:12:13,112 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-26 17:12:13,112 - INFO - Total Reviews: 6
+2026-01-26 17:12:13,112 - INFO - Positive: 4 (66.67%)
+2026-01-26 17:12:13,112 - INFO - Neutral: 2 (33.33%)
+2026-01-26 17:12:13,112 - INFO - Negative: 0 (0.0%)
+2026-01-26 17:12:13,112 - INFO - Average Polarity: 0.3
+2026-01-26 17:12:13,112 - INFO - Average Subjectivity: 0.665
+2026-01-26 17:12:13,712 - INFO - Sentiment visualization saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-26 17:12:13,715 - INFO - 
+Sentiment results saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 10 columns)
+2026-01-26 17:12:13,716 - INFO - ======================================================================
+2026-01-26 17:12:13,716 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-26 17:12:13,716 - INFO - ======================================================================
+2026-01-26 17:12:13,716 - INFO - 
+Outputs:
+2026-01-26 17:12:13,716 - INFO -   - Results: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 17:12:13,716 - INFO -   - Plots:   c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 17:21:27,337 - INFO - ======================================================================
+2026-01-26 17:21:27,337 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-26 17:21:27,337 - INFO - ======================================================================
+2026-01-26 17:21:27,337 - INFO - Loaded 6 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-26 17:21:27,337 - INFO - Using text column: ReviewText
+2026-01-26 17:21:27,337 - INFO - Analyzing sentiment for 6 reviews...
+2026-01-26 17:21:27,437 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-26 17:21:27,437 - INFO - Total Reviews: 6
+2026-01-26 17:21:27,452 - INFO - Positive: 4 (66.67%)
+2026-01-26 17:21:27,452 - INFO - Neutral: 2 (33.33%)
+2026-01-26 17:21:27,452 - INFO - Negative: 0 (0.0%)
+2026-01-26 17:21:27,452 - INFO - Average Polarity: 0.3
+2026-01-26 17:21:27,452 - INFO - Average Subjectivity: 0.665
+2026-01-26 17:21:27,952 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-26 17:21:27,955 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 10 columns)
+2026-01-26 17:21:27,955 - INFO - ======================================================================
+2026-01-26 17:21:27,955 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-26 17:21:27,957 - INFO - ======================================================================
+2026-01-26 17:21:27,957 - INFO - 
+Outputs:
+2026-01-26 17:21:27,957 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 17:21:27,957 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 17:25:07,097 - INFO - ======================================================================
+2026-01-26 17:25:07,097 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-26 17:25:07,097 - INFO - ======================================================================
+2026-01-26 17:25:07,097 - INFO - Loaded 20 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-26 17:25:07,097 - INFO - Using text column: ReviewText
+2026-01-26 17:25:07,097 - INFO - Analyzing sentiment for 20 reviews...
+2026-01-26 17:25:07,247 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-26 17:25:07,247 - INFO - Total Reviews: 20
+2026-01-26 17:25:07,247 - INFO - Positive: 14 (70.0%)
+2026-01-26 17:25:07,247 - INFO - Neutral: 3 (15.0%)
+2026-01-26 17:25:07,247 - INFO - Negative: 3 (15.0%)
+2026-01-26 17:25:07,247 - INFO - Average Polarity: 0.2087
+2026-01-26 17:25:07,247 - INFO - Average Subjectivity: 0.5892
+2026-01-26 17:25:07,845 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-26 17:25:07,848 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 8 columns)
+2026-01-26 17:25:07,848 - INFO - ======================================================================
+2026-01-26 17:25:07,848 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-26 17:25:07,848 - INFO - ======================================================================
+2026-01-26 17:25:07,848 - INFO - 
+Outputs:
+2026-01-26 17:25:07,848 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 17:25:07,848 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-26 17:26:07,569 - INFO - ======================================================================
+2026-01-26 17:26:07,569 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-26 17:26:07,569 - INFO - ======================================================================
+2026-01-26 17:26:07,572 - INFO - Loaded 120 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-26 17:26:07,572 - INFO - Using text column: ReviewText
+2026-01-26 17:26:07,572 - INFO - Analyzing sentiment for 120 reviews...
+2026-01-26 17:26:07,765 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-26 17:26:07,765 - INFO - Total Reviews: 120
+2026-01-26 17:26:07,765 - INFO - Positive: 65 (54.17%)
+2026-01-26 17:26:07,765 - INFO - Neutral: 0 (0.0%)
+2026-01-26 17:26:07,765 - INFO - Negative: 55 (45.83%)
+2026-01-26 17:26:07,765 - INFO - Average Polarity: 0.0833
+2026-01-26 17:26:07,765 - INFO - Average Subjectivity: 0.5719
+2026-01-26 17:26:08,354 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-26 17:26:08,356 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (120 reviews, 8 columns)
+2026-01-26 17:26:08,356 - INFO - ======================================================================
+2026-01-26 17:26:08,356 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-26 17:26:08,356 - INFO - ======================================================================
+2026-01-26 17:26:08,356 - INFO - 
+Outputs:
+2026-01-26 17:26:08,356 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-26 17:26:08,356 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/

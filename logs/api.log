@@ -5264,3 +5264,5 @@ Arguments: ()
 2026-01-26 14:35:21,118 - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
 2026-01-26 14:35:21,120 - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
 2026-01-26 14:35:21,120 - INFO - [RECOMMENDATIONS API] product_recommendations.csv not found - returning 204
+2026-01-26 16:08:08,619 - INFO - Data reloaded successfully
+2026-01-26 16:08:09,537 - INFO - Data reloaded successfully

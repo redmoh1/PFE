@@ -82,6 +82,12 @@ DERIVED_OUTPUT_FILES = [
     "sales_forecast_future.csv",
 ]
 
+# Directories to clean on hard reset
+DERIVED_DIRECTORIES = [
+    "output/plots",
+    "src/ml_lifecycle/model_registry",
+]
+
 # Additional output files in the output directory
 ADDITIONAL_OUTPUT_FILES = [
     "eda_report.json",
@@ -206,6 +212,20 @@ def hard_reset_derived_outputs() -> Dict[str, Any]:
         except Exception as e:
             errors.append(f"Failed to clear plots: {e}")
             logger.error(f"[HARD RESET] ✗ Failed to clear plots: {e}")
+    
+    # Clear model_registry directory
+    model_registry_dir = BASE_DIR / "src" / "ml_lifecycle" / "model_registry"
+    if model_registry_dir.exists():
+        try:
+            for model_file in model_registry_dir.glob("*"):
+                if model_file.is_file():
+                    model_file.unlink()
+                    deleted_count += 1
+                    deleted_files.append(f"model_registry/{model_file.name}")
+            logger.info(f"[HARD RESET] ✓ Cleared model_registry directory")
+        except Exception as e:
+            errors.append(f"Failed to clear model_registry: {e}")
+            logger.error(f"[HARD RESET] ✗ Failed to clear model_registry: {e}")
     
     logger.info("=" * 70)
     logger.info(f"[HARD RESET] COMPLETE: {deleted_count} files deleted")
@@ -513,28 +533,38 @@ def run_full_sales_pipeline(source_file: Optional[Path] = None) -> Dict[str, Any
         eda_result = run_script("01_eda.py", timeout=120)
         results["steps"]["eda"] = eda_result
         if not eda_result["success"]:
-            logger.warning("[SALES PIPELINE] EDA failed - continuing with remaining steps")
-        
-        # Step 4: Run Cleaning & Feature Engineering
-        logger.info("[SALES PIPELINE] Step 4: Running Cleaning (02_cleaning_features.py)")
-        cleaning_result = run_script("02_cleaning_features.py", timeout=120)
-        results["steps"]["cleaning"] = cleaning_result
-        if not cleaning_result["success"]:
-            logger.error("[SALES PIPELINE] Cleaning failed - cannot continue")
+            logger.error("[SALES PIPELINE] EDA failed - cannot continue")
             results["success"] = False
             return results
         
-        # Step 5: Run RFM Segmentation (optional - may skip if no CustomerID)
+        # Step 4: Verify cleaned_dataset.csv was created (01_eda.py creates it directly)
+        logger.info("[SALES PIPELINE] Step 4: Verifying cleaned_dataset.csv exists")
+        cleaned_path = DATA_DIR / "cleaned_dataset.csv"
+        if not cleaned_path.exists():
+            logger.error("[SALES PIPELINE] cleaned_dataset.csv not created by EDA - aborting")
+            results["success"] = False
+            results["steps"]["verify_cleaned"] = {"success": False, "error": "cleaned_dataset.csv not found"}
+            return results
+        results["steps"]["verify_cleaned"] = {"success": True, "file": str(cleaned_path)}
+        logger.info("[SALES PIPELINE] ✓ cleaned_dataset.csv verified")
+        
+        # Step 5: Run RFM Segmentation (conditional - requires CustomerID)
         logger.info("[SALES PIPELINE] Step 5: Running RFM (04_rfm.py)")
         rfm_result = run_script("04_rfm.py", timeout=120)
         results["steps"]["rfm"] = rfm_result
-        # RFM is optional - exit code 0 with no output is OK
+        if rfm_result["success"]:
+            logger.info("[SALES PIPELINE] ✓ RFM segmentation completed")
+        else:
+            logger.info("[SALES PIPELINE] ⊘ RFM skipped or failed (may lack CustomerID)")
         
-        # Step 6: Run Recommendations
+        # Step 6: Run Recommendations (conditional - requires multi-product orders)
         logger.info("[SALES PIPELINE] Step 6: Running Recommendations (05_recommendation.py)")
         rec_result = run_script("05_recommendation.py", timeout=180)
         results["steps"]["recommendations"] = rec_result
-        # Recommendations may fail if not enough multi-product orders
+        if rec_result["success"]:
+            logger.info("[SALES PIPELINE] ✓ Recommendations completed")
+        else:
+            logger.info("[SALES PIPELINE] ⊘ Recommendations skipped or failed (may lack multi-product orders)")
         
         logger.info("=" * 70)
         logger.info("[SALES PIPELINE] COMPLETED")

@@ -90,3 +90,41 @@
 2026-01-26 15:19:48,152 - INFO - ============================================================
 2026-01-26 15:19:48,152 - INFO - Phase 3: Sales Forecasting Completed Successfully
 2026-01-26 15:19:48,153 - INFO - ============================================================
+2026-01-26 15:55:30,780 - INFO - ============================================================
+2026-01-26 15:55:30,780 - INFO - Phase 3: Sales Forecasting Started
+2026-01-26 15:55:30,782 - INFO - ============================================================
+2026-01-26 15:55:30,784 - INFO - Loaded 18 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-26 15:55:30,787 - ERROR - Data validation error: Insufficient monthly data for forecasting (have 1 months, need at least 3)
+2026-01-26 15:58:31,706 - INFO - ============================================================
+2026-01-26 15:58:31,706 - INFO - PHASE 3: SALES FORECASTING
+2026-01-26 15:58:31,706 - INFO - ============================================================
+2026-01-26 15:58:31,709 - INFO - Loaded 18 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-26 15:58:31,716 - INFO - Prepared 1 monthly data points
+2026-01-26 15:58:31,716 - WARNING - Using NAIVE forecasting (insufficient historical data)
+2026-01-26 15:58:32,065 - INFO - Forecast plot saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sales_forecast.png
+2026-01-26 15:58:32,065 - INFO - Forecast saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv
+2026-01-26 15:58:32,065 - INFO - ============================================================
+2026-01-26 15:58:32,065 - INFO - PHASE 3 COMPLETED SUCCESSFULLY
+2026-01-26 15:58:32,065 - INFO - ============================================================
+2026-01-26 17:09:47,791 - INFO - ============================================================
+2026-01-26 17:09:47,791 - INFO - PHASE 3: SALES FORECASTING
+2026-01-26 17:09:47,791 - INFO - ============================================================
+2026-01-26 17:09:47,791 - INFO - Loaded 18 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-26 17:09:47,791 - INFO - Prepared 1 monthly data points
+2026-01-26 17:09:47,791 - WARNING - Using NAIVE forecasting (insufficient historical data)
+2026-01-26 17:09:48,103 - INFO - Forecast plot saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sales_forecast.png
+2026-01-26 17:09:48,115 - INFO - Forecast saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv
+2026-01-26 17:09:48,115 - INFO - ============================================================
+2026-01-26 17:09:48,116 - INFO - PHASE 3 COMPLETED SUCCESSFULLY
+2026-01-26 17:09:48,116 - INFO - ============================================================
+2026-01-26 17:11:38,647 - INFO - ============================================================
+2026-01-26 17:11:38,647 - INFO - PHASE 3: SALES FORECASTING
+2026-01-26 17:11:38,647 - INFO - ============================================================
+2026-01-26 17:11:38,647 - INFO - Loaded 18 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-26 17:11:38,652 - INFO - Prepared 1 monthly data points
+2026-01-26 17:11:38,652 - WARNING - Using NAIVE forecasting (insufficient historical data)
+2026-01-26 17:11:38,979 - INFO - Forecast plot saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sales_forecast.png
+2026-01-26 17:11:38,983 - INFO - Forecast saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv
+2026-01-26 17:11:38,985 - INFO - ============================================================
+2026-01-26 17:11:38,985 - INFO - PHASE 3 COMPLETED SUCCESSFULLY
+2026-01-26 17:11:38,985 - INFO - ============================================================

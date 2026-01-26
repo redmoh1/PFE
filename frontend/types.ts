@@ -57,6 +57,10 @@ export interface KPIData {
   average_order_value: number;
   top_product: string;
   top_city: string;
+  // Percentage changes (null = comparison unavailable)
+  revenue_change: number | null;
+  orders_change: number | null;
+  aov_change: number | null;
 }
 
 export interface DatasetMeta {

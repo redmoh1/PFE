@@ -82,7 +82,8 @@ ALLOWED_DATASET_TYPES = {"sales", "customers", "reviews"}
 MAX_PREVIEW_ROWS = 50
 
 DATE_CANDIDATES = ["OrderDate", "Sale_Date", "Order_Date", "Date", "order_date"]
-REVENUE_CANDIDATES = ["TotalPrice", "Sales_Amount", "SalesAmount", "Revenue", "Sales"]
+# IMPORTANT: Include "Price" for datasets that use Price instead of TotalPrice
+REVENUE_CANDIDATES = ["TotalPrice", "Price", "Sales_Amount", "SalesAmount", "Revenue", "Sales", "Amount", "amount", "price"]
 PRODUCT_CANDIDATES = ["ProductID", "Product_ID", "Product", "SKU"]
 CITY_CANDIDATES = ["City", "city", "Region", "region", "Market"]
 
@@ -212,6 +213,10 @@ class KPIResponse(BaseModel):
     average_order_value: float
     top_product: str
     top_city: str
+    # Percentage changes (None = comparison unavailable)
+    revenue_change: Optional[float] = None
+    orders_change: Optional[float] = None
+    aov_change: Optional[float] = None
 
 
 class MonthlySalesResponse(BaseModel):
@@ -829,6 +834,30 @@ def cascade_delete_derived_files(dataset_type: str) -> dict:
         except Exception as e:
             logger.warning(f"[CASCADE DELETE] Could not delete output/{output_file}: {e}")
     
+    # Step 5: Clear plots directory
+    logger.info("[CASCADE DELETE] Step 5: Cleaning plots directory...")
+    if plots_dir.exists():
+        try:
+            for plot_file in plots_dir.glob("*.png"):
+                plot_file.unlink()
+                deleted_files.append(f"plots/{plot_file.name}")
+            logger.info("[CASCADE DELETE] ✓ Cleared plots directory")
+        except Exception as e:
+            logger.warning(f"[CASCADE DELETE] Could not clear plots: {e}")
+    
+    # Step 6: Clear model_registry directory
+    logger.info("[CASCADE DELETE] Step 6: Cleaning model_registry directory...")
+    model_registry_dir = BASE_DIR / "src" / "ml_lifecycle" / "model_registry"
+    if model_registry_dir.exists():
+        try:
+            for model_file in model_registry_dir.glob("*"):
+                if model_file.is_file():
+                    model_file.unlink()
+                    deleted_files.append(f"model_registry/{model_file.name}")
+            logger.info("[CASCADE DELETE] ✓ Cleared model_registry directory")
+        except Exception as e:
+            logger.warning(f"[CASCADE DELETE] Could not clear model_registry: {e}")
+    
     logger.info("=" * 60)
     logger.info(f"[CASCADE DELETE] COMPLETED: {len(deleted_files)} files deleted, {len(errors)} errors")
     logger.info("[CASCADE DELETE] All in-memory state cleared")
@@ -858,11 +887,10 @@ def run_full_sales_pipeline(uploaded_file: Path) -> bool:
     Run the COMPLETE ML pipeline for sales data:
     1. Clear all caches first (no stale data)
     2. Copy uploaded file to canonical location (data/sales.csv)
-    3. Run 01_eda.py (creates merged_data.csv)
-    4. Run 02_cleaning_features.py (creates cleaned_dataset.csv)
-    5. Run 04_rfm.py (creates rfm_table.csv)
-    6. Run 05_recommendation.py (creates product_recommendations.csv)
-    7. Reload all data into memory
+    3. Run 01_eda.py (creates merged_data.csv AND cleaned_dataset.csv)
+    4. Run 04_rfm.py (creates rfm_table.csv) - conditional on CustomerID
+    5. Run 05_recommendation.py (creates product_recommendations.csv)
+    6. Reload all data into memory
     
     Returns:
         True if pipeline completed successfully, False otherwise
@@ -898,19 +926,13 @@ def run_full_sales_pipeline(uploaded_file: Path) -> bool:
             return False
         logger.info("[PIPELINE] ✓ Phase 1 EDA completed")
         
-        # Step 3: Run Cleaning & Features (Phase 2) - creates cleaned_dataset.csv
-        logger.info("[PIPELINE] Step 3: Running Phase 2 - Cleaning & Feature Engineering...")
-        result = subprocess.run(
-            [sys.executable, str(BASE_DIR / "src" / "02_cleaning_features.py")],
-            cwd=str(BASE_DIR),
-            capture_output=True,
-            text=True,
-            timeout=120
-        )
-        if result.returncode != 0:
-            logger.error(f"[PIPELINE] ✗ Phase 2 Cleaning failed: {result.stderr}")
+        # Step 3: Skip Phase 2 - 01_eda.py now creates cleaned_dataset.csv directly
+        # Verify cleaned_dataset.csv was created
+        cleaned_path = DATA_DIR / "cleaned_dataset.csv"
+        if not cleaned_path.exists():
+            logger.error("[PIPELINE] ✗ cleaned_dataset.csv was not created by Phase 1")
             return False
-        logger.info("[PIPELINE] ✓ Phase 2 Cleaning completed")
+        logger.info("[PIPELINE] ✓ cleaned_dataset.csv verified (created by Phase 1)")
         
         # Step 4: Run RFM Segmentation (Phase 4) - creates rfm_table.csv
         logger.info("[PIPELINE] Step 4: Running Phase 4 - RFM Segmentation...")
@@ -1512,39 +1534,73 @@ async def get_kpis(
     start_date: Optional[str] = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}$"),
     end_date: Optional[str] = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}$"),
 ):
-    """Get high-level KPIs (revenue, orders, AOV, top product, top city)."""
+    """Get high-level KPIs (revenue, orders, AOV, top product, top city) with dynamic percentage changes."""
     company_id = request.headers.get("X-Company-ID")
     sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
 
-    # Validate and apply date filters on normalized column
-    filtered_df = sales_df.copy()
-    try:
-        if start_date:
-            start = pd.to_datetime(start_date)
-            filtered_df = filtered_df[filtered_df["__order_date"] >= start]
-        if end_date:
-            end = pd.to_datetime(end_date)
-            filtered_df = filtered_df[filtered_df["__order_date"] <= end]
-    except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=400, detail=f"Invalid date format: {exc}") from exc
+    # Determine current and previous periods for comparison
+    # If date range specified, use that; otherwise use last 30 days
+    now = pd.Timestamp.now()
+    
+    if start_date and end_date:
+        current_end = pd.to_datetime(end_date)
+        current_start = pd.to_datetime(start_date)
+    else:
+        # Default: last 30 days as current period
+        current_end = sales_df["__order_date"].max() if not sales_df.empty else now
+        current_start = current_end - pd.Timedelta(days=30)
+    
+    # Calculate period length for previous period comparison
+    period_length = (current_end - current_start).days
+    previous_end = current_start - pd.Timedelta(days=1)
+    previous_start = previous_end - pd.Timedelta(days=period_length)
+    
+    # Filter data for current period
+    current_df = sales_df[
+        (sales_df["__order_date"] >= current_start) & 
+        (sales_df["__order_date"] <= current_end)
+    ].copy()
+    
+    # Filter data for previous period
+    previous_df = sales_df[
+        (sales_df["__order_date"] >= previous_start) & 
+        (sales_df["__order_date"] <= previous_end)
+    ].copy()
 
-    if filtered_df.empty:
+    if current_df.empty:
         raise HTTPException(status_code=404, detail="No data found for the specified date range")
 
-    total_revenue = float(filtered_df["__total_price"].sum())
-    total_orders = len(filtered_df)
+    # Calculate current period KPIs
+    total_revenue = float(current_df["__total_price"].sum())
+    total_orders = len(current_df)
     aov = total_revenue / total_orders if total_orders > 0 else 0.0
 
+    # Calculate previous period KPIs for comparison
+    prev_revenue = float(previous_df["__total_price"].sum()) if not previous_df.empty else 0.0
+    prev_orders = len(previous_df) if not previous_df.empty else 0
+    prev_aov = prev_revenue / prev_orders if prev_orders > 0 else 0.0
+    
+    # Calculate percentage changes
+    # Returns None if previous period has no data or zero value (cannot calculate meaningful change)
+    def calc_pct_change(current: float, previous: float) -> Optional[float]:
+        if previous == 0 or previous_df.empty:
+            return None
+        return round(((current - previous) / previous) * 100, 2)
+    
+    revenue_change = calc_pct_change(total_revenue, prev_revenue)
+    orders_change = calc_pct_change(float(total_orders), float(prev_orders)) if prev_orders > 0 else None
+    aov_change = calc_pct_change(aov, prev_aov) if prev_aov > 0 else None
+
     top_product = "N/A"
-    if filtered_df.get("__product") is not None and filtered_df["__product"].notna().any():
+    if current_df.get("__product") is not None and current_df["__product"].notna().any():
         top_product = str(
-            filtered_df.groupby("__product")["__total_price"].sum().idxmax()
+            current_df.groupby("__product")["__total_price"].sum().idxmax()
         )
 
     top_city = "N/A"
-    if filtered_df.get("__city") is not None and filtered_df["__city"].notna().any():
+    if current_df.get("__city") is not None and current_df["__city"].notna().any():
         top_city = str(
-            filtered_df.groupby("__city")["__total_price"].sum().idxmax()
+            current_df.groupby("__city")["__total_price"].sum().idxmax()
         )
 
     return KPIResponse(
@@ -1553,6 +1609,9 @@ async def get_kpis(
         average_order_value=aov,
         top_product=top_product,
         top_city=top_city,
+        revenue_change=revenue_change,
+        orders_change=orders_change,
+        aov_change=aov_change,
     )
 
 

@@ -8,6 +8,7 @@ import {
   DollarSign,
   ArrowUpRight,
   ArrowDownRight,
+  Minus,
   RefreshCw,
   AlertCircle
 } from 'lucide-react';
@@ -56,11 +57,46 @@ const Dashboard: React.FC = () => {
     );
   }
 
+  // Helper function to format percentage change
+  const formatChange = (change: number | null | undefined): string => {
+    if (change === null || change === undefined) return '—';
+    const sign = change > 0 ? '+' : '';
+    return `${sign}${change.toFixed(1)}%`;
+  };
+
+  // Helper function to determine if change is positive, negative, or neutral
+  const getChangeType = (change: number | null | undefined): 'up' | 'down' | 'neutral' => {
+    if (change === null || change === undefined) return 'neutral';
+    if (change > 0) return 'up';
+    if (change < 0) return 'down';
+    return 'neutral';
+  };
+
   const kpiCards = [
-    { label: 'Total Revenue', value: `$${kpis?.total_revenue?.toLocaleString() || '0'}`, icon: DollarSign, trend: '+12.5%', isUp: true },
-    { label: 'Total Orders', value: kpis?.total_orders?.toLocaleString() || '0', icon: ShoppingBag, trend: '+5.2%', isUp: true },
-    { label: 'Avg. Order Value', value: `$${kpis?.average_order_value?.toFixed(2) || '0.00'}`, icon: TrendingUp, trend: '-2.1%', isUp: false },
-    { label: 'Top City', value: kpis?.top_city || 'N/A', icon: Users, trend: 'N/A', isUp: true },
+    { 
+      label: 'Total Revenue', 
+      value: `$${kpis?.total_revenue?.toLocaleString() || '0'}`, 
+      icon: DollarSign, 
+      change: kpis?.revenue_change 
+    },
+    { 
+      label: 'Total Orders', 
+      value: kpis?.total_orders?.toLocaleString() || '0', 
+      icon: ShoppingBag, 
+      change: kpis?.orders_change 
+    },
+    { 
+      label: 'Avg. Order Value', 
+      value: `$${kpis?.average_order_value?.toFixed(2) || '0.00'}`, 
+      icon: TrendingUp, 
+      change: kpis?.aov_change 
+    },
+    { 
+      label: 'Top City', 
+      value: kpis?.top_city || 'N/A', 
+      icon: Users, 
+      change: null // Top city doesn't have a percentage change
+    },
   ];
 
   return (
@@ -78,23 +114,41 @@ const Dashboard: React.FC = () => {
 
       {/* KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {kpiCards.map((kpi, idx) => (
-          <div key={idx} className="bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-2.5 bg-primary/10 rounded-xl">
-                <kpi.icon className="text-primary" size={24} />
-              </div>
-              {kpi.trend !== 'N/A' && (
-                <div className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${kpi.isUp ? 'text-success bg-success/10' : 'text-error bg-error/10'}`}>
-                  {kpi.isUp ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
-                  {kpi.trend}
+        {kpiCards.map((kpi, idx) => {
+          const changeType = getChangeType(kpi.change);
+          const changeText = formatChange(kpi.change);
+          
+          return (
+            <div key={idx} className="bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex justify-between items-start mb-4">
+                <div className="p-2.5 bg-primary/10 rounded-xl">
+                  <kpi.icon className="text-primary" size={24} />
                 </div>
-              )}
+                {changeText !== '—' ? (
+                  <div className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${
+                    changeType === 'up' 
+                      ? 'text-success bg-success/10' 
+                      : changeType === 'down' 
+                        ? 'text-error bg-error/10' 
+                        : 'text-slate-500 bg-slate-100 dark:bg-slate-700'
+                  }`}>
+                    {changeType === 'up' && <ArrowUpRight size={14} />}
+                    {changeType === 'down' && <ArrowDownRight size={14} />}
+                    {changeType === 'neutral' && <Minus size={14} />}
+                    {changeText}
+                  </div>
+                ) : kpi.label !== 'Top City' ? (
+                  <div className="flex items-center text-xs font-bold px-2 py-1 rounded-full text-slate-400 bg-slate-100 dark:bg-slate-700">
+                    <Minus size={14} />
+                    —
+                  </div>
+                ) : null}
+              </div>
+              <p className="text-sm font-medium text-text-secondary dark:text-text-secondaryDark mb-1">{kpi.label}</p>
+              <h3 className="text-2xl font-bold">{kpi.value}</h3>
             </div>
-            <p className="text-sm font-medium text-text-secondary dark:text-text-secondaryDark mb-1">{kpi.label}</p>
-            <h3 className="text-2xl font-bold">{kpi.value}</h3>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Main Charts */}
