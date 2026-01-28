@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { useAuth } from './AuthContext';
+import { useAuth, useAuthFetch } from './AuthContext';
 import { SalesData, ForecastPoint, RFMSegment, Recommendation, SentimentData, KPIData } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
@@ -23,6 +23,18 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+// Helper to get auth token for fetch
+const getAuthHeaders = (): HeadersInit => {
+  const token = localStorage.getItem('auth_token');
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json'
+  };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
+
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [sales, setSales] = useState<SalesData[]>([]);
@@ -37,11 +49,11 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * CRITICAL: Fetch ALL data fresh from the server.
+   * CRITICAL: Fetch ALL data fresh from the server with JWT authentication.
    * 
    * This function:
    * 1. Clears all local state FIRST to prevent stale data display
-   * 2. Fetches fresh data from each endpoint
+   * 2. Fetches fresh data from each endpoint using JWT auth
    * 3. Handles 204 (No Content) responses by setting empty arrays
    * 4. NEVER uses cached or localStorage data for analytics
    */
@@ -62,10 +74,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     setError(null);
 
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      'X-Company-ID': user.company || 'demo-company'
-    };
+    const headers = getAuthHeaders();
 
     try {
       // Fetch KPIs
@@ -75,7 +84,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setKpis(null);
         } else if (kpiRes.ok) {
           const kpiData = await kpiRes.json();
-          setKpis(kpiData);
+          // Handle standardized response format
+          setKpis(kpiData.data || kpiData);
         } else {
           setKpis(null);
         }
@@ -90,7 +100,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (salesRes.status === 204) {
           setSales([]);
         } else if (salesRes.ok) {
-          const salesData = await salesRes.json();
+          const salesResponse = await salesRes.json();
+          const salesData = salesResponse.data || salesResponse;
           setSales(salesData.map((item: any, idx: number) => ({
             id: item.OrderID || item.Product_ID || `s-${idx}`,
             date: item.OrderDate || item.Sale_Date || item.Date || new Date().toISOString().split('T')[0],
@@ -114,11 +125,14 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (forecastRes.status === 204) {
           setForecast([]);
         } else if (forecastRes.ok) {
-          const forecastData = await forecastRes.json();
-          setForecast(forecastData.map((item: any) => ({
-            date: item.month,
-            actual: item.actual_sales || undefined,
-            forecast: item.forecasted_sales || undefined
+          const forecastResponse = await forecastRes.json();
+          const forecastData = forecastResponse.data || forecastResponse;
+          setForecast((Array.isArray(forecastData) ? forecastData : []).map((item: any) => ({
+            date: item.month || item.date,
+            actual: item.actual_sales || item.actual || undefined,
+            forecast: item.forecasted_sales || item.forecast || undefined,
+            forecast_upper: item.forecast_upper || undefined,
+            forecast_lower: item.forecast_lower || undefined
           })));
         } else {
           setForecast([]);
@@ -128,15 +142,15 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setForecast([]);
       }
 
-      // Fetch recommendations - ALWAYS fresh from server
+      // Fetch recommendations - ALWAYS fresh from server with JWT auth
       try {
         const recsRes = await fetch(`${API_BASE_URL}/api/recommendations?limit=10`, { headers });
         if (recsRes.status === 204) {
-          // 204 = No Content - explicitly set empty array
           console.log('[DataContext] Recommendations API returned 204 - clearing state');
           setRecommendations([]);
         } else if (recsRes.ok) {
-          const recsData = await recsRes.json();
+          const recsResponse = await recsRes.json();
+          const recsData = recsResponse.data || recsResponse;
           if (Array.isArray(recsData) && recsData.length > 0) {
             setRecommendations(recsData.map((item: any, idx: number) => ({
               id: `rec-${idx}`,
@@ -157,23 +171,24 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setRecommendations([]);
       }
 
-      // Fetch RFM segmentation data - ALWAYS fresh from server
+      // Fetch RFM segmentation data - ALWAYS fresh from server with JWT auth
       try {
         const segmentRes = await fetch(`${API_BASE_URL}/api/segmentation`, { headers });
         if (segmentRes.status === 204) {
-          // 204 = No Content - explicitly set empty array
           console.log('[DataContext] Segmentation API returned 204 - clearing state');
           setSegments([]);
         } else if (segmentRes.ok) {
-          const segmentData = await segmentRes.json();
-          if (segmentData.segments && segmentData.segments.length > 0) {
-            setSegments(segmentData.segments.map((item: any) => ({
-              name: item.segment,
-              count: item.customer_count,
+          const segmentResponse = await segmentRes.json();
+          const segmentData = segmentResponse.data || segmentResponse;
+          const segmentsArr = segmentData.segments || segmentData;
+          if (Array.isArray(segmentsArr) && segmentsArr.length > 0) {
+            setSegments(segmentsArr.map((item: any) => ({
+              name: item.segment || item.name,
+              count: item.customer_count || item.count,
               color: item.color,
-              recency: item.avg_recency,
-              frequency: item.avg_frequency,
-              monetary: item.avg_monetary
+              recency: item.avg_recency || item.recency,
+              frequency: item.avg_frequency || item.frequency,
+              monetary: item.avg_monetary || item.monetary
             })));
           } else {
             setSegments([]);

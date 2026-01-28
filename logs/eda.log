@@ -1,0 +1,308 @@
+2026-01-28 17:38:49,860 - INFO - ============================================================
+2026-01-28 17:38:49,860 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 17:38:49,860 - INFO - ============================================================
+2026-01-28 17:38:49,860 - INFO - ============================================================
+2026-01-28 17:38:49,860 - INFO - DATA LOADING PHASE
+2026-01-28 17:38:49,860 - INFO - ============================================================
+2026-01-28 17:38:49,862 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-28 17:38:49,863 - WARNING - [WARN] customers.csv not found – continuing without customers
+2026-01-28 17:38:49,865 - INFO - Cleaning data...
+2026-01-28 17:38:49,867 - INFO - Data cleaning completed
+2026-01-28 17:38:49,867 - INFO - ============================================================
+2026-01-28 17:38:49,867 - INFO - DATA MERGING PHASE
+2026-01-28 17:38:49,867 - INFO - ============================================================
+2026-01-28 17:38:49,867 - INFO - [SKIP] No customer enrichment applied
+2026-01-28 17:38:49,871 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 17:38:49,871 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 17:38:49,876 - INFO - Total Sales Revenue: 3,070.00
+2026-01-28 17:38:49,876 - INFO - Total Orders: 8.00
+2026-01-28 17:38:49,876 - INFO - Total Customers: 5.00
+2026-01-28 17:38:49,876 - INFO - Average Order Value: 383.75
+2026-01-28 17:38:49,876 - INFO - Median Order Value: 130.00
+2026-01-28 17:38:49,876 - INFO - Total Products Sold: 5.00
+2026-01-28 17:38:49,876 - INFO - Performing EDA...
+2026-01-28 17:38:50,476 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 17:38:59,739 - INFO - ============================================================
+2026-01-28 17:38:59,739 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 17:38:59,739 - INFO - ============================================================
+2026-01-28 17:38:59,739 - INFO - ============================================================
+2026-01-28 17:38:59,739 - INFO - DATA LOADING PHASE
+2026-01-28 17:38:59,739 - INFO - ============================================================
+2026-01-28 17:38:59,739 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-28 17:38:59,739 - INFO - Cleaning data...
+2026-01-28 17:38:59,756 - INFO - Data cleaning completed
+2026-01-28 17:38:59,756 - INFO - ============================================================
+2026-01-28 17:38:59,756 - INFO - DATA MERGING PHASE
+2026-01-28 17:38:59,756 - INFO - ============================================================
+2026-01-28 17:38:59,756 - INFO - [OK] Merge complete: 8 records
+2026-01-28 17:38:59,756 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 17:38:59,756 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 17:38:59,756 - INFO - Total Sales Revenue: 3,070.00
+2026-01-28 17:38:59,756 - INFO - Total Orders: 8.00
+2026-01-28 17:38:59,756 - INFO - Total Customers: 5.00
+2026-01-28 17:38:59,756 - INFO - Average Order Value: 383.75
+2026-01-28 17:38:59,756 - INFO - Median Order Value: 130.00
+2026-01-28 17:38:59,756 - INFO - Total Products Sold: 5.00
+2026-01-28 17:38:59,756 - INFO - Performing EDA...
+2026-01-28 17:38:59,756 - INFO - [SKIP] City-based EDA skipped
+2026-01-28 17:39:00,055 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 17:40:49,624 - INFO - ============================================================
+2026-01-28 17:40:49,624 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 17:40:49,624 - INFO - ============================================================
+2026-01-28 17:40:49,624 - INFO - ============================================================
+2026-01-28 17:40:49,624 - INFO - DATA LOADING PHASE
+2026-01-28 17:40:49,624 - INFO - ============================================================
+2026-01-28 17:40:49,624 - INFO - [OK] Loaded 307 sales records (MANDATORY)
+2026-01-28 17:40:49,624 - WARNING - [WARN] customers.csv not found – continuing without customers
+2026-01-28 17:40:49,634 - INFO - Cleaning data...
+2026-01-28 17:40:49,636 - INFO - Data cleaning completed
+2026-01-28 17:40:49,636 - INFO - ============================================================
+2026-01-28 17:40:49,636 - INFO - DATA MERGING PHASE
+2026-01-28 17:40:49,636 - INFO - ============================================================
+2026-01-28 17:40:49,636 - INFO - [SKIP] No customer enrichment applied
+2026-01-28 17:40:49,636 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 17:40:49,636 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 17:40:49,636 - INFO - Total Sales Revenue: 201,370.00
+2026-01-28 17:40:49,636 - INFO - Total Orders: 150.00
+2026-01-28 17:40:49,636 - INFO - Total Customers: 29.00
+2026-01-28 17:40:49,636 - INFO - Average Order Value: 655.93
+2026-01-28 17:40:49,636 - INFO - Median Order Value: 180.00
+2026-01-28 17:40:49,636 - INFO - Total Products Sold: 5.00
+2026-01-28 17:40:49,636 - INFO - Performing EDA...
+2026-01-28 17:40:50,052 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 17:41:07,112 - INFO - ============================================================
+2026-01-28 17:41:07,112 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 17:41:07,112 - INFO - ============================================================
+2026-01-28 17:41:07,112 - INFO - ============================================================
+2026-01-28 17:41:07,112 - INFO - DATA LOADING PHASE
+2026-01-28 17:41:07,112 - INFO - ============================================================
+2026-01-28 17:41:07,112 - INFO - [OK] Loaded 307 sales records (MANDATORY)
+2026-01-28 17:41:07,112 - INFO - Cleaning data...
+2026-01-28 17:41:07,129 - INFO - Data cleaning completed
+2026-01-28 17:41:07,129 - INFO - ============================================================
+2026-01-28 17:41:07,129 - INFO - DATA MERGING PHASE
+2026-01-28 17:41:07,129 - INFO - ============================================================
+2026-01-28 17:41:07,129 - INFO - [OK] Merge complete: 307 records
+2026-01-28 17:41:07,129 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 17:41:07,129 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 17:41:07,129 - INFO - Total Sales Revenue: 201,370.00
+2026-01-28 17:41:07,129 - INFO - Total Orders: 150.00
+2026-01-28 17:41:07,129 - INFO - Total Customers: 29.00
+2026-01-28 17:41:07,129 - INFO - Average Order Value: 655.93
+2026-01-28 17:41:07,129 - INFO - Median Order Value: 180.00
+2026-01-28 17:41:07,129 - INFO - Total Products Sold: 5.00
+2026-01-28 17:41:07,129 - INFO - Performing EDA...
+2026-01-28 17:41:07,129 - INFO - [SKIP] City-based EDA skipped
+2026-01-28 17:41:07,430 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 17:42:23,271 - INFO - ============================================================
+2026-01-28 17:42:23,271 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 17:42:23,271 - INFO - ============================================================
+2026-01-28 17:42:23,271 - INFO - ============================================================
+2026-01-28 17:42:23,271 - INFO - DATA LOADING PHASE
+2026-01-28 17:42:23,271 - INFO - ============================================================
+2026-01-28 17:42:23,271 - INFO - [OK] Loaded 18 sales records (MANDATORY)
+2026-01-28 17:42:23,271 - WARNING - [WARN] customers.csv not found – continuing without customers
+2026-01-28 17:42:23,271 - INFO - Computed TotalPrice from Price * Quantity
+2026-01-28 17:42:23,271 - INFO - Cleaning data...
+2026-01-28 17:42:23,271 - INFO - Data cleaning completed
+2026-01-28 17:42:23,271 - INFO - ============================================================
+2026-01-28 17:42:23,271 - INFO - DATA MERGING PHASE
+2026-01-28 17:42:23,271 - INFO - ============================================================
+2026-01-28 17:42:23,271 - INFO - [SKIP] No customer enrichment applied
+2026-01-28 17:42:23,271 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 17:42:23,271 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 17:42:23,271 - INFO - Total Sales Revenue: 6,340.00
+2026-01-28 17:42:23,271 - INFO - Total Orders: 7.00
+2026-01-28 17:42:23,271 - INFO - Total Customers: 5.00
+2026-01-28 17:42:23,271 - INFO - Average Order Value: 352.22
+2026-01-28 17:42:23,271 - INFO - Median Order Value: 45.00
+2026-01-28 17:42:23,271 - INFO - Total Products Sold: 9.00
+2026-01-28 17:42:23,271 - INFO - Performing EDA...
+2026-01-28 17:42:23,271 - INFO - [SKIP] City-based EDA skipped
+2026-01-28 17:42:23,571 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 17:43:09,539 - INFO - ============================================================
+2026-01-28 17:43:09,539 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 17:43:09,539 - INFO - ============================================================
+2026-01-28 17:43:09,539 - INFO - ============================================================
+2026-01-28 17:43:09,539 - INFO - DATA LOADING PHASE
+2026-01-28 17:43:09,539 - INFO - ============================================================
+2026-01-28 17:43:09,539 - INFO - [OK] Loaded 18 sales records (MANDATORY)
+2026-01-28 17:43:09,539 - INFO - Computed TotalPrice from Price * Quantity
+2026-01-28 17:43:09,539 - INFO - Cleaning data...
+2026-01-28 17:43:09,539 - INFO - Data cleaning completed
+2026-01-28 17:43:09,539 - INFO - ============================================================
+2026-01-28 17:43:09,539 - INFO - DATA MERGING PHASE
+2026-01-28 17:43:09,539 - INFO - ============================================================
+2026-01-28 17:43:09,539 - INFO - [OK] Merge complete: 18 records
+2026-01-28 17:43:09,555 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 17:43:09,557 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 17:43:09,557 - INFO - Total Sales Revenue: 6,340.00
+2026-01-28 17:43:09,557 - INFO - Total Orders: 7.00
+2026-01-28 17:43:09,557 - INFO - Total Customers: 5.00
+2026-01-28 17:43:09,557 - INFO - Average Order Value: 352.22
+2026-01-28 17:43:09,557 - INFO - Median Order Value: 45.00
+2026-01-28 17:43:09,557 - INFO - Total Products Sold: 9.00
+2026-01-28 17:43:09,557 - INFO - Performing EDA...
+2026-01-28 17:43:09,988 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 17:44:45,924 - INFO - ============================================================
+2026-01-28 17:44:45,924 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 17:44:45,924 - INFO - ============================================================
+2026-01-28 17:44:45,924 - INFO - ============================================================
+2026-01-28 17:44:45,924 - INFO - DATA LOADING PHASE
+2026-01-28 17:44:45,924 - INFO - ============================================================
+2026-01-28 17:44:45,924 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-28 17:44:45,936 - INFO - [OK] Loaded 20 review records from customer_reviews.csv
+2026-01-28 17:44:45,940 - INFO - Cleaning data...
+2026-01-28 17:44:45,942 - INFO - Data cleaning completed
+2026-01-28 17:44:45,942 - INFO - ============================================================
+2026-01-28 17:44:45,942 - INFO - DATA MERGING PHASE
+2026-01-28 17:44:45,942 - INFO - ============================================================
+2026-01-28 17:44:45,944 - INFO - [OK] Merge complete: 8 records
+2026-01-28 17:44:45,946 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 17:44:45,947 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 17:44:45,947 - INFO - Total Sales Revenue: 3,070.00
+2026-01-28 17:44:45,947 - INFO - Total Orders: 8.00
+2026-01-28 17:44:45,949 - INFO - Total Customers: 5.00
+2026-01-28 17:44:45,949 - INFO - Average Order Value: 383.75
+2026-01-28 17:44:45,949 - INFO - Median Order Value: 130.00
+2026-01-28 17:44:45,949 - INFO - Total Products Sold: 5.00
+2026-01-28 17:44:45,949 - INFO - Performing EDA...
+2026-01-28 17:44:45,951 - INFO - [SKIP] City-based EDA skipped
+2026-01-28 17:44:46,326 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 17:49:18,149 - INFO - ============================================================
+2026-01-28 17:49:18,149 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 17:49:18,149 - INFO - ============================================================
+2026-01-28 17:49:18,149 - INFO - ============================================================
+2026-01-28 17:49:18,149 - INFO - DATA LOADING PHASE
+2026-01-28 17:49:18,149 - INFO - ============================================================
+2026-01-28 17:49:18,149 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-28 17:49:18,149 - INFO - [OK] Loaded 20 review records from customer_reviews.csv
+2026-01-28 17:49:18,149 - INFO - Cleaning data...
+2026-01-28 17:49:18,149 - INFO - Data cleaning completed
+2026-01-28 17:49:18,149 - INFO - ============================================================
+2026-01-28 17:49:18,149 - INFO - DATA MERGING PHASE
+2026-01-28 17:49:18,149 - INFO - ============================================================
+2026-01-28 17:49:18,149 - INFO - [OK] Merge complete: 8 records
+2026-01-28 17:49:18,149 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 17:49:18,161 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 17:49:18,161 - INFO - Total Sales Revenue: 3,070.00
+2026-01-28 17:49:18,161 - INFO - Total Orders: 8.00
+2026-01-28 17:49:18,161 - INFO - Total Customers: 5.00
+2026-01-28 17:49:18,161 - INFO - Average Order Value: 383.75
+2026-01-28 17:49:18,161 - INFO - Median Order Value: 130.00
+2026-01-28 17:49:18,161 - INFO - Total Products Sold: 5.00
+2026-01-28 17:49:18,161 - INFO - Performing EDA...
+2026-01-28 17:49:18,163 - INFO - [SKIP] City-based EDA skipped
+2026-01-28 17:49:18,449 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 17:49:28,941 - INFO - ============================================================
+2026-01-28 17:49:28,941 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 17:49:28,941 - INFO - ============================================================
+2026-01-28 17:49:28,941 - INFO - ============================================================
+2026-01-28 17:49:28,941 - INFO - DATA LOADING PHASE
+2026-01-28 17:49:28,942 - INFO - ============================================================
+2026-01-28 17:49:28,944 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-28 17:49:28,944 - INFO - [OK] Loaded 20 review records from customer_reviews.csv
+2026-01-28 17:49:28,944 - INFO - Cleaning data...
+2026-01-28 17:49:28,944 - INFO - Data cleaning completed
+2026-01-28 17:49:28,944 - INFO - ============================================================
+2026-01-28 17:49:28,944 - INFO - DATA MERGING PHASE
+2026-01-28 17:49:28,944 - INFO - ============================================================
+2026-01-28 17:49:28,944 - INFO - [OK] Merge complete: 8 records
+2026-01-28 17:49:28,944 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 17:49:28,944 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 17:49:28,953 - INFO - Total Sales Revenue: 3,070.00
+2026-01-28 17:49:28,953 - INFO - Total Orders: 8.00
+2026-01-28 17:49:28,953 - INFO - Total Customers: 5.00
+2026-01-28 17:49:28,953 - INFO - Average Order Value: 383.75
+2026-01-28 17:49:28,953 - INFO - Median Order Value: 130.00
+2026-01-28 17:49:28,954 - INFO - Total Products Sold: 5.00
+2026-01-28 17:49:28,954 - INFO - Performing EDA...
+2026-01-28 17:49:28,954 - INFO - [SKIP] City-based EDA skipped
+2026-01-28 17:49:29,244 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 17:49:37,624 - INFO - ============================================================
+2026-01-28 17:49:37,624 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 17:49:37,624 - INFO - ============================================================
+2026-01-28 17:49:37,624 - INFO - ============================================================
+2026-01-28 17:49:37,624 - INFO - DATA LOADING PHASE
+2026-01-28 17:49:37,624 - INFO - ============================================================
+2026-01-28 17:49:37,624 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-28 17:49:37,624 - INFO - [OK] Loaded 20 review records from customer_reviews.csv
+2026-01-28 17:49:37,639 - INFO - Cleaning data...
+2026-01-28 17:49:37,641 - INFO - Data cleaning completed
+2026-01-28 17:49:37,641 - INFO - ============================================================
+2026-01-28 17:49:37,641 - INFO - DATA MERGING PHASE
+2026-01-28 17:49:37,641 - INFO - ============================================================
+2026-01-28 17:49:37,641 - ERROR - Pipeline failed: You are trying to merge on int64 and object columns for key 'CustomerID'. If you wish to proceed you should use pd.concat
+2026-01-28 19:06:17,291 - INFO - ============================================================
+2026-01-28 19:06:17,291 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 19:06:17,291 - INFO - ============================================================
+2026-01-28 19:06:17,291 - INFO - ============================================================
+2026-01-28 19:06:17,291 - INFO - DATA LOADING PHASE
+2026-01-28 19:06:17,291 - INFO - ============================================================
+2026-01-28 19:06:17,291 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-28 19:06:17,291 - INFO - [OK] Loaded 20 review records from customer_reviews.csv
+2026-01-28 19:06:17,307 - INFO - Cleaning data...
+2026-01-28 19:06:17,307 - INFO - Data cleaning completed
+2026-01-28 19:06:17,307 - INFO - ============================================================
+2026-01-28 19:06:17,307 - INFO - DATA MERGING PHASE
+2026-01-28 19:06:17,307 - INFO - ============================================================
+2026-01-28 19:06:17,307 - INFO - [OK] Merge complete: 8 records
+2026-01-28 19:06:17,307 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 19:06:17,307 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 19:06:17,307 - INFO - Total Sales Revenue: 3,070.00
+2026-01-28 19:06:17,307 - INFO - Total Orders: 8.00
+2026-01-28 19:06:17,307 - INFO - Total Customers: 5.00
+2026-01-28 19:06:17,307 - INFO - Average Order Value: 383.75
+2026-01-28 19:06:17,307 - INFO - Median Order Value: 130.00
+2026-01-28 19:06:17,307 - INFO - Total Products Sold: 5.00
+2026-01-28 19:06:17,307 - INFO - Performing EDA...
+2026-01-28 19:06:17,307 - INFO - [SKIP] City-based EDA skipped
+2026-01-28 19:06:17,641 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 19:07:43,995 - INFO - ============================================================
+2026-01-28 19:07:43,995 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 19:07:43,995 - INFO - ============================================================
+2026-01-28 19:07:43,995 - INFO - ============================================================
+2026-01-28 19:07:43,995 - INFO - DATA LOADING PHASE
+2026-01-28 19:07:43,995 - INFO - ============================================================
+2026-01-28 19:07:43,995 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-28 19:07:43,995 - WARNING - [WARN] customers.csv not found – continuing without customers
+2026-01-28 19:07:44,012 - INFO - Cleaning data...
+2026-01-28 19:07:44,012 - INFO - Data cleaning completed
+2026-01-28 19:07:44,012 - INFO - ============================================================
+2026-01-28 19:07:44,012 - INFO - DATA MERGING PHASE
+2026-01-28 19:07:44,012 - INFO - ============================================================
+2026-01-28 19:07:44,012 - INFO - [SKIP] No customer enrichment applied
+2026-01-28 19:07:44,012 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 19:07:44,012 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 19:07:44,012 - INFO - Total Sales Revenue: 3,070.00
+2026-01-28 19:07:44,012 - INFO - Total Orders: 8.00
+2026-01-28 19:07:44,012 - INFO - Total Customers: 5.00
+2026-01-28 19:07:44,012 - INFO - Average Order Value: 383.75
+2026-01-28 19:07:44,012 - INFO - Median Order Value: 130.00
+2026-01-28 19:07:44,012 - INFO - Total Products Sold: 5.00
+2026-01-28 19:07:44,012 - INFO - Performing EDA...
+2026-01-28 19:07:44,445 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-28 19:08:08,503 - INFO - ============================================================
+2026-01-28 19:08:08,503 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-28 19:08:08,503 - INFO - ============================================================
+2026-01-28 19:08:08,503 - INFO - ============================================================
+2026-01-28 19:08:08,503 - INFO - DATA LOADING PHASE
+2026-01-28 19:08:08,503 - INFO - ============================================================
+2026-01-28 19:08:08,503 - INFO - [OK] Loaded 8 sales records (MANDATORY)
+2026-01-28 19:08:08,503 - INFO - Cleaning data...
+2026-01-28 19:08:08,503 - INFO - Data cleaning completed
+2026-01-28 19:08:08,503 - INFO - ============================================================
+2026-01-28 19:08:08,503 - INFO - DATA MERGING PHASE
+2026-01-28 19:08:08,503 - INFO - ============================================================
+2026-01-28 19:08:08,503 - INFO - [OK] Merge complete: 8 records
+2026-01-28 19:08:08,503 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-28 19:08:08,503 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-28 19:08:08,503 - INFO - Total Sales Revenue: 3,070.00
+2026-01-28 19:08:08,503 - INFO - Total Orders: 8.00
+2026-01-28 19:08:08,503 - INFO - Total Customers: 5.00
+2026-01-28 19:08:08,503 - INFO - Average Order Value: 383.75
+2026-01-28 19:08:08,503 - INFO - Median Order Value: 130.00
+2026-01-28 19:08:08,503 - INFO - Total Products Sold: 5.00
+2026-01-28 19:08:08,503 - INFO - Performing EDA...
+2026-01-28 19:08:08,503 - INFO - [SKIP] City-based EDA skipped
+2026-01-28 19:08:08,803 - INFO - PHASE 1 COMPLETED SUCCESSFULLY

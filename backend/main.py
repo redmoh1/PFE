@@ -10,19 +10,38 @@ import os
 import sqlite3
 from pathlib import Path
 from typing import Optional, List, Dict, Any
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 import shutil
 import subprocess
+import hashlib
 
 import joblib
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query, Request, UploadFile, File, Form, Response
+from fastapi import FastAPI, HTTPException, Query, Request, UploadFile, File, Form, Response, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from pydantic import BaseModel, EmailStr
+
+# JWT Authentication
+try:
+    from jose import JWTError, jwt
+    JWT_ENABLED = True
+except ImportError:
+    JWT_ENABLED = False
+    logging.warning("python-jose not installed. JWT authentication disabled.")
+
+# Password hashing
+try:
+    from passlib.context import CryptContext
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    PASSLIB_ENABLED = True
+except ImportError:
+    PASSLIB_ENABLED = False
+    logging.warning("passlib not installed. Using simple password verification.")
 
 # Import Pipeline Controller - SINGLE SOURCE OF TRUTH
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
@@ -63,6 +82,7 @@ DATA_DIR = BASE_DIR / "data"
 LOGS_DIR = BASE_DIR / "logs"
 MODEL_PATH = BASE_DIR / "src" / "ml_lifecycle" / "model_registry" / "sales_forecast_model.pkl"
 DB_PATH = DATA_DIR / "datasets.db"
+PIPELINE_LOCK_PATH = DATA_DIR / ".pipeline.lock"
 
 DATA_DIR.mkdir(exist_ok=True)
 
@@ -86,6 +106,136 @@ DATE_CANDIDATES = ["OrderDate", "Sale_Date", "Order_Date", "Date", "order_date"]
 REVENUE_CANDIDATES = ["TotalPrice", "Price", "Sales_Amount", "SalesAmount", "Revenue", "Sales", "Amount", "amount", "price"]
 PRODUCT_CANDIDATES = ["ProductID", "Product_ID", "Product", "SKU"]
 CITY_CANDIDATES = ["City", "city", "Region", "region", "Market"]
+
+# =============================================================================
+# JWT Configuration
+# =============================================================================
+# SECURITY: In production, JWT_SECRET_KEY MUST be set as an environment variable
+# Never use the default in production - it's for development only
+_default_secret = "sales-intelligence-secret-key-change-in-production-2024"
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", _default_secret)
+if SECRET_KEY == _default_secret and os.getenv("ENVIRONMENT", "development") == "production":
+    logger.critical("SECURITY ERROR: JWT_SECRET_KEY must be set in production!")
+    raise RuntimeError("JWT_SECRET_KEY environment variable required in production")
+
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 hours
+
+security = HTTPBearer(auto_error=False)
+
+# Demo users for testing (in production, use database)
+DEMO_USERS = {
+    "admin@acme.com": {
+        "id": "1",
+        "email": "admin@acme.com",
+        "name": "Admin User",
+        "password_hash": "$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.OQbWIEPOZyAe9O",  # admin123
+        "company": "Acme Corp",
+        "company_id": 1,
+        "role": "admin"
+    },
+    "analyst@acme.com": {
+        "id": "2", 
+        "email": "analyst@acme.com",
+        "name": "Analyst User",
+        "password_hash": "$2b$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",  # analyst123
+        "company": "Acme Corp",
+        "company_id": 1,
+        "role": "analyst"
+    }
+}
+
+# Simple password for demo (when passlib is not available)
+DEMO_PASSWORDS = {
+    "admin@acme.com": "admin123",
+    "analyst@acme.com": "analyst123"
+}
+
+
+# =============================================================================
+# Authentication Models
+# =============================================================================
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: Dict[str, Any]
+
+
+class UserResponse(BaseModel):
+    id: str
+    email: str
+    name: str
+    company: str
+    role: str
+
+
+# =============================================================================
+# Authentication Helpers
+# =============================================================================
+def verify_password(plain_password: str, hashed_password: str, email: str = None) -> bool:
+    """Verify password - uses simple check for demo, bcrypt for production."""
+    # Always check simple demo passwords first for reliability
+    if email and email in DEMO_PASSWORDS:
+        if plain_password == DEMO_PASSWORDS[email]:
+            return True
+    
+    # Try bcrypt verification if passlib is available
+    if PASSLIB_ENABLED:
+        try:
+            return pwd_context.verify(plain_password, hashed_password)
+        except Exception as e:
+            logger.warning(f"Password verification failed: {e}")
+    
+    return False
+
+
+def create_access_token(data: dict) -> str:
+    """Create JWT access token."""
+    if not JWT_ENABLED:
+        # Simple fallback token
+        return f"demo-token-{data.get('sub', 'unknown')}"
+    
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Optional[Dict]:
+    """Extract current user from JWT token."""
+    if not credentials:
+        return None
+    
+    token = credentials.credentials
+    
+    # Handle demo token
+    if token.startswith("demo-token-"):
+        email = token.replace("demo-token-", "")
+        if email in DEMO_USERS:
+            user = DEMO_USERS[email].copy()
+            user.pop("password_hash", None)
+            return user
+        return None
+    
+    if not JWT_ENABLED:
+        return None
+    
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email = payload.get("sub")
+        if email and email in DEMO_USERS:
+            user = DEMO_USERS[email].copy()
+            user.pop("password_hash", None)
+            return user
+    except JWTError:
+        pass
+    
+    return None
 
 
 def get_db_connection():
@@ -117,6 +267,46 @@ def init_db():
 
 # Ensure metadata store exists after definitions are loaded
 init_db()
+
+
+# =============================================================================
+# Pipeline Concurrency Lock (prevents race conditions during file operations)
+# =============================================================================
+import threading
+import time
+from contextlib import contextmanager
+
+_pipeline_lock = threading.Lock()
+_pipeline_lock_timeout = 120  # seconds
+
+
+@contextmanager
+def pipeline_lock(operation: str = "pipeline"):
+    """
+    Acquire a lock before running pipeline operations.
+    
+    This prevents race conditions when multiple uploads happen simultaneously.
+    Uses a threading lock for in-process synchronization.
+    
+    For multi-process deployments, consider using:
+    - Redis distributed lock
+    - PostgreSQL advisory locks
+    - File-based locking with fcntl (Unix) or msvcrt (Windows)
+    """
+    acquired = _pipeline_lock.acquire(timeout=_pipeline_lock_timeout)
+    if not acquired:
+        logger.error(f"[LOCK] Failed to acquire pipeline lock for {operation} after {_pipeline_lock_timeout}s")
+        raise HTTPException(
+            status_code=503, 
+            detail="Server busy processing another operation. Please try again."
+        )
+    
+    try:
+        logger.debug(f"[LOCK] Acquired pipeline lock for {operation}")
+        yield
+    finally:
+        _pipeline_lock.release()
+        logger.debug(f"[LOCK] Released pipeline lock for {operation}")
 
 
 def ensure_company_dir(company_id: str, dataset_type: str) -> Path:
@@ -200,6 +390,63 @@ app.add_middleware(
     max_age=3600,  # Cache preflight requests for 1 hour
 )
 logger.info(f"CORS enabled for origins: {ALLOWED_ORIGINS}")
+
+
+# ============================================================================
+# Authentication Endpoints
+# ============================================================================
+
+@app.post("/api/auth/login", response_model=TokenResponse)
+async def login(request: LoginRequest):
+    """Authenticate user and return JWT token."""
+    email = request.email.lower().strip()
+    password = request.password
+    
+    # Check if user exists
+    if email not in DEMO_USERS:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    user_data = DEMO_USERS[email]
+    
+    # Verify password
+    if not verify_password(password, user_data["password_hash"], email):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    
+    # Create access token
+    access_token = create_access_token(data={"sub": email})
+    
+    # Prepare user response (without password)
+    user_response = {
+        "id": user_data["id"],
+        "email": user_data["email"],
+        "name": user_data["name"],
+        "company": user_data["company"],
+        "role": user_data["role"]
+    }
+    
+    logger.info(f"User logged in: {email}")
+    
+    return TokenResponse(
+        access_token=access_token,
+        token_type="bearer",
+        user=user_response
+    )
+
+
+@app.get("/api/auth/me")
+async def get_current_user_info(current_user: Dict = Depends(get_current_user)):
+    """Get current authenticated user info."""
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return current_user
+
+
+@app.get("/api/auth/verify")
+async def verify_token(current_user: Dict = Depends(get_current_user)):
+    """Verify if the current token is valid."""
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    return {"valid": True, "user": current_user}
 
 
 # ============================================================================
@@ -369,40 +616,71 @@ def reload_all_data_from_disk():
         "model": False
     }
     
-    data_last_modified = datetime.utcnow()
+    data_last_modified = datetime.now(timezone.utc)
     
-    # Load cleaned dataset
-    cleaned_path = DATA_DIR / "cleaned_dataset.csv"
-    if cleaned_path.exists():
-        try:
-            df = pd.read_csv(cleaned_path)
-            df["OrderDate"] = pd.to_datetime(df["OrderDate"], errors="coerce")
-            if df.empty or df["OrderDate"].isna().all():
-                logger.warning("[DATA RELOAD] cleaned_dataset.csv is empty or invalid")
+    # Load cleaned dataset - search multiple possible files
+    possible_data_files = [
+        DATA_DIR / "cleaned_dataset.csv",
+        DATA_DIR / "sales.csv",
+        DATA_DIR / "merged_data.csv",
+    ]
+    
+    df = None
+    for data_path in possible_data_files:
+        if data_path.exists():
+            try:
+                df = pd.read_csv(data_path)
+                # Auto-detect date column
+                date_cols = ["OrderDate", "Sale_Date", "Order_Date", "Date", "order_date"]
+                date_col = next((c for c in date_cols if c in df.columns), None)
+                if date_col:
+                    df = df.rename(columns={date_col: "OrderDate"})
+                    df["OrderDate"] = pd.to_datetime(df["OrderDate"], errors="coerce")
+                
+                if df.empty:
+                    logger.warning(f"[DATA RELOAD] {data_path.name} is empty")
+                    df = None
+                    continue
+                else:
+                    logger.info(f"[DATA RELOAD] Loaded {data_path.name}: {len(df)} rows")
+                    status["cleaned_dataset"] = True
+                    break
+            except Exception as e:
+                logger.warning(f"[DATA RELOAD] Failed to load {data_path.name}: {e}")
                 df = None
-            else:
-                logger.info(f"[DATA RELOAD] Loaded cleaned_dataset.csv: {len(df)} rows")
-                status["cleaned_dataset"] = True
-        except Exception as e:
-            logger.warning(f"[DATA RELOAD] Failed to load cleaned_dataset.csv: {e}")
-            df = None
-    else:
-        logger.info("[DATA RELOAD] cleaned_dataset.csv not found (expected after delete)")
-        df = None
     
-    # Load forecast
-    forecast_path = DATA_DIR / "sales_forecast_future.csv"
-    if forecast_path.exists():
-        try:
-            forecast_df = pd.read_csv(forecast_path)
-            forecast_df["MonthStart"] = pd.to_datetime(forecast_df["MonthStart"], errors="coerce")
-            logger.info(f"[DATA RELOAD] Loaded sales_forecast_future.csv: {len(forecast_df)} rows")
-            status["forecast"] = True
-        except Exception as e:
-            logger.warning(f"[DATA RELOAD] Failed to load sales_forecast_future.csv: {e}")
-            forecast_df = None
-    else:
-        forecast_df = None
+    if df is None:
+        logger.info("[DATA RELOAD] No sales data file found")
+    
+    # Load forecast - search multiple possible files
+    forecast_files = [
+        DATA_DIR / "sales_forecast.csv",  # From 03_forecasting.py (Linear Regression)
+        DATA_DIR / "sales_forecast_future.csv",
+        BASE_DIR / "output" / "Acme Corp_forecast_prophet.csv",
+        DATA_DIR / "forecast.csv",
+    ]
+    
+    forecast_df = None
+    for forecast_path in forecast_files:
+        if forecast_path.exists():
+            try:
+                forecast_df = pd.read_csv(forecast_path)
+                # Auto-detect date column
+                date_cols = ["MonthStart", "ds", "date", "Date", "OrderDate"]
+                date_col = next((c for c in date_cols if c in forecast_df.columns), None)
+                if date_col and date_col != "MonthStart":
+                    forecast_df = forecast_df.rename(columns={date_col: "MonthStart"})
+                if "MonthStart" in forecast_df.columns:
+                    forecast_df["MonthStart"] = pd.to_datetime(forecast_df["MonthStart"], errors="coerce")
+                logger.info(f"[DATA RELOAD] Loaded {forecast_path.name}: {len(forecast_df)} rows")
+                status["forecast"] = True
+                break
+            except Exception as e:
+                logger.warning(f"[DATA RELOAD] Failed to load {forecast_path.name}: {e}")
+                forecast_df = None
+    
+    if forecast_df is None:
+        logger.info("[DATA RELOAD] No forecast file found")
     
     # Load sentiment
     sentiment_path = DATA_DIR / "sentiment_results.csv"
@@ -637,7 +915,7 @@ def archive_existing(company_id: str, dataset_type: str) -> None:
 
 def insert_dataset(company_id: str, dataset_type: str, file_name: str, file_path: Path, row_count: int) -> Dict[str, Any]:
     conn = get_db_connection()
-    uploaded_at = datetime.utcnow().isoformat()
+    uploaded_at = datetime.now(timezone.utc).isoformat()
     cur = conn.execute(
         """
         INSERT INTO datasets (company_id, dataset_type, file_name, file_path, row_count, uploaded_at, is_active, is_deleted)
@@ -1154,7 +1432,7 @@ def trigger_pipeline(company_id: str, dataset_type: str, action: str, file_path:
 
 
 def load_active_sales_df(company_id: Optional[str] = None) -> pd.DataFrame:
-    """Load the active sales dataset for a company; fallback to global df."""
+    """Load the active sales dataset for a company; fallback to global df or direct files."""
     active: Optional[Dict[str, Any]] = None
 
     if company_id:
@@ -1171,6 +1449,24 @@ def load_active_sales_df(company_id: Optional[str] = None) -> pd.DataFrame:
     # Fallback to legacy global dataset
     if df is not None and not df.empty:
         return df
+
+    # Fallback to direct file search
+    possible_files = [
+        DATA_DIR / "sales.csv",
+        DATA_DIR / "cleaned_dataset.csv",
+        DATA_DIR / "merged_data.csv",
+    ]
+    
+    for file_path in possible_files:
+        if file_path.exists():
+            try:
+                loaded_df = pd.read_csv(file_path)
+                if not loaded_df.empty:
+                    logger.info(f"[FALLBACK] Loaded sales data from {file_path.name}")
+                    return loaded_df
+            except Exception as e:
+                logger.warning(f"Failed to load {file_path}: {e}")
+                continue
 
     raise HTTPException(status_code=503, detail="No sales data available")
 
@@ -1259,43 +1555,45 @@ async def upload_dataset(
     if dataset_type not in ALLOWED_DATASET_TYPES:
         raise HTTPException(status_code=400, detail="Unsupported dataset_type")
 
-    target_dir = ensure_company_dir(company_id, dataset_type)
-    safe_name = file.filename.replace(" ", "_")
-    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    target_path = target_dir / f"{timestamp}_{safe_name}"
+    # Use lock to prevent concurrent upload/pipeline race conditions
+    with pipeline_lock(f"upload-{dataset_type}-{company_id}"):
+        target_dir = ensure_company_dir(company_id, dataset_type)
+        safe_name = file.filename.replace(" ", "_")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        target_path = target_dir / f"{timestamp}_{safe_name}"
 
-    with target_path.open("wb") as fh:
-        fh.write(await file.read())
+        with target_path.open("wb") as fh:
+            fh.write(await file.read())
 
-    # Normalize sales schema to canonical columns for downstream jobs
-    if dataset_type == "sales":
-        try:
-            raw_df = pd.read_csv(target_path)
-            normalized = normalize_sales_dataframe(raw_df)
-            canonical = pd.DataFrame({
-                "OrderID": raw_df.get("OrderID")
-                or raw_df.get("id")
-                or raw_df.get("ID")
-                or raw_df.get("Order_Id")
-                or range(1, len(normalized) + 1),
-                "OrderDate": normalized["__order_date"],
-                "TotalPrice": normalized["__total_price"],
-                "ProductID": normalized["__product"],
-                "City": normalized["__city"],
-            })
-            canonical.to_csv(target_path, index=False)
-            row_count = len(canonical)
-        except Exception as exc:  # noqa: BLE001
-            logger.warning("Failed to normalize uploaded sales file %s: %s", target_path, exc)
+        # Normalize sales schema to canonical columns for downstream jobs
+        if dataset_type == "sales":
+            try:
+                raw_df = pd.read_csv(target_path)
+                normalized = normalize_sales_dataframe(raw_df)
+                canonical = pd.DataFrame({
+                    "OrderID": raw_df.get("OrderID")
+                    or raw_df.get("id")
+                    or raw_df.get("ID")
+                    or raw_df.get("Order_Id")
+                    or range(1, len(normalized) + 1),
+                    "OrderDate": normalized["__order_date"],
+                    "TotalPrice": normalized["__total_price"],
+                    "ProductID": normalized["__product"],
+                    "City": normalized["__city"],
+                })
+                canonical.to_csv(target_path, index=False)
+                row_count = len(canonical)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("Failed to normalize uploaded sales file %s: %s", target_path, exc)
+                row_count = compute_row_count(target_path)
+        else:
             row_count = compute_row_count(target_path)
-    else:
-        row_count = compute_row_count(target_path)
 
-    archive_existing(company_id, dataset_type)
-    record = insert_dataset(company_id, dataset_type, safe_name, target_path, row_count)
+        archive_existing(company_id, dataset_type)
+        record = insert_dataset(company_id, dataset_type, safe_name, target_path, row_count)
 
-    trigger_pipeline(company_id, dataset_type, action="upload", file_path=target_path)
-    return record
+        trigger_pipeline(company_id, dataset_type, action="upload", file_path=target_path)
+        return record
 
 
 @app.post("/api/datasets/{dataset_id}/replace", response_model=DatasetMeta, tags=["Datasets"])
@@ -1310,50 +1608,53 @@ async def replace_dataset(
         raise HTTPException(status_code=404, detail="Dataset not found")
 
     dataset_type = current["dataset_type"]
-    target_dir = ensure_company_dir(company_id, dataset_type)
-    safe_name = file.filename.replace(" ", "_")
-    timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-    target_path = target_dir / f"{timestamp}_{safe_name}"
+    
+    # Use lock to prevent concurrent replace/pipeline race conditions
+    with pipeline_lock(f"replace-{dataset_type}-{company_id}"):
+        target_dir = ensure_company_dir(company_id, dataset_type)
+        safe_name = file.filename.replace(" ", "_")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        target_path = target_dir / f"{timestamp}_{safe_name}"
 
-    with target_path.open("wb") as fh:
-        fh.write(await file.read())
+        with target_path.open("wb") as fh:
+            fh.write(await file.read())
 
-    # Normalize sales schema to canonical columns for downstream jobs
-    if dataset_type == "sales":
-        try:
-            raw_df = pd.read_csv(target_path)
-            normalized = normalize_sales_dataframe(raw_df)
-            
-            # Build OrderID from multiple possible columns
-            order_id_col = None
-            for col in ["OrderID", "order_id", "id", "ID", "Order_Id"]:
-                if col in raw_df.columns:
-                    order_id_col = raw_df[col]
-                    break
-            if order_id_col is None:
-                order_id_col = range(1, len(normalized) + 1)
-            
-            canonical = pd.DataFrame({
-                "OrderID": order_id_col,
-                "OrderDate": normalized["__order_date"],
-                "TotalPrice": normalized["__total_price"],
-                "ProductID": normalized["__product"],
-                "City": normalized["__city"],
-            })
-            canonical.to_csv(target_path, index=False)
-            row_count = len(canonical)
-            logger.info(f"Normalized sales file (replace): {safe_name} -> {row_count} rows")
-        except Exception as exc:  # noqa: BLE001
-            logger.error("Failed to normalize replaced sales file %s: %s", target_path, exc)
-            raise HTTPException(status_code=400, detail=f"CSV validation failed: {str(exc)}") from exc
-    else:
-        row_count = compute_row_count(target_path)
+        # Normalize sales schema to canonical columns for downstream jobs
+        if dataset_type == "sales":
+            try:
+                raw_df = pd.read_csv(target_path)
+                normalized = normalize_sales_dataframe(raw_df)
+                
+                # Build OrderID from multiple possible columns
+                order_id_col = None
+                for col in ["OrderID", "order_id", "id", "ID", "Order_Id"]:
+                    if col in raw_df.columns:
+                        order_id_col = raw_df[col]
+                        break
+                if order_id_col is None:
+                    order_id_col = range(1, len(normalized) + 1)
+                
+                canonical = pd.DataFrame({
+                    "OrderID": order_id_col,
+                    "OrderDate": normalized["__order_date"],
+                    "TotalPrice": normalized["__total_price"],
+                    "ProductID": normalized["__product"],
+                    "City": normalized["__city"],
+                })
+                canonical.to_csv(target_path, index=False)
+                row_count = len(canonical)
+                logger.info(f"Normalized sales file (replace): {safe_name} -> {row_count} rows")
+            except Exception as exc:  # noqa: BLE001
+                logger.error("Failed to normalize replaced sales file %s: %s", target_path, exc)
+                raise HTTPException(status_code=400, detail=f"CSV validation failed: {str(exc)}") from exc
+        else:
+            row_count = compute_row_count(target_path)
 
-    archive_existing(company_id, dataset_type)
-    record = insert_dataset(company_id, dataset_type, safe_name, target_path, row_count)
+        archive_existing(company_id, dataset_type)
+        record = insert_dataset(company_id, dataset_type, safe_name, target_path, row_count)
 
-    trigger_pipeline(company_id, dataset_type, action="replace", file_path=target_path)
-    return record
+        trigger_pipeline(company_id, dataset_type, action="replace", file_path=target_path)
+        return record
 
 
 @app.delete("/api/datasets/{dataset_id}", tags=["Datasets"])
@@ -1427,7 +1728,7 @@ def health_check():
     """Health check endpoint with component status."""
     return {
         "status": "healthy" if df is not None else "degraded",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "components": {
             "sales_data": "available" if df is not None else "unavailable",
             "forecast_data": "available" if forecast_df is not None else "unavailable",
@@ -1615,6 +1916,40 @@ async def get_kpis(
     )
 
 
+def load_forecast_data() -> Optional[pd.DataFrame]:
+    """Load forecast data from multiple possible sources."""
+    forecast_files = [
+        DATA_DIR / "sales_forecast.csv",  # From 03_forecasting.py (Linear Regression)
+        DATA_DIR / "sales_forecast_future.csv",
+        BASE_DIR / "output" / "Acme Corp_forecast_prophet.csv",
+        DATA_DIR / "forecast.csv",
+    ]
+    
+    for fpath in forecast_files:
+        if fpath.exists():
+            try:
+                fdf = pd.read_csv(fpath)
+                # Normalize column names
+                date_cols = ["MonthStart", "ds", "date", "Date", "OrderDate"]
+                date_col = next((c for c in date_cols if c in fdf.columns), None)
+                if date_col:
+                    fdf = fdf.rename(columns={date_col: "MonthStart"})
+                    fdf["MonthStart"] = pd.to_datetime(fdf["MonthStart"], errors="coerce")
+                
+                # Normalize forecast column
+                forecast_cols = ["ForecastedSales", "yhat", "forecast", "predicted"]
+                forecast_col = next((c for c in forecast_cols if c in fdf.columns), None)
+                if forecast_col:
+                    fdf = fdf.rename(columns={forecast_col: "ForecastedSales"})
+                
+                logger.info(f"[FORECAST] Loaded forecast from {fpath.name}: {len(fdf)} rows")
+                return fdf
+            except Exception as e:
+                logger.warning(f"Failed to load forecast from {fpath}: {e}")
+    
+    return None
+
+
 @app.get("/api/monthly-sales", response_model=List[MonthlySalesResponse], tags=["Analytics"])
 def get_monthly_sales(
     request: Request,
@@ -1648,16 +1983,20 @@ def get_monthly_sales(
         except Exception as e:
             logger.warning(f"Failed to compute monthly sales: {e}")
 
-    # Step 2: Add forecast data (blend with actuals or standalone)
-    if forecast_df is not None and not forecast_df.empty:
+    # Step 2: Add forecast data (load fresh from disk)
+    local_forecast_df = load_forecast_data()
+    if local_forecast_df is not None and not local_forecast_df.empty:
         try:
-            for _, row in forecast_df.iterrows():
+            for _, row in local_forecast_df.iterrows():
+                if "MonthStart" not in local_forecast_df.columns:
+                    continue
                 month_key = row["MonthStart"].strftime("%Y-%m")
                 if month_key not in monthly_dict:
                     monthly_dict[month_key] = {"actual": None, "forecast": None}
                 # Only add forecast if it's positive (avoid anomalous negative values)
-                if row["ForecastedSales"] > 0:
-                    monthly_dict[month_key]["forecast"] = float(row["ForecastedSales"])
+                forecast_val = row.get("ForecastedSales", row.get("yhat", 0))
+                if forecast_val and forecast_val > 0:
+                    monthly_dict[month_key]["forecast"] = float(forecast_val)
             
             logger.info(f"Added {len([m for m in monthly_dict.values() if m['forecast']])} forecast records")
         except Exception as e:
@@ -1934,7 +2273,7 @@ def get_summary():
         "sentiment_records": len(sentiment_df) if sentiment_df is not None else 0,
         "recommendation_rules": len(recommendation_df) if recommendation_df is not None else 0,
         "model_loaded": model is not None,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
     return summary
 

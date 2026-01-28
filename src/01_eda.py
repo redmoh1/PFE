@@ -1,12 +1,21 @@
 """
 Sales Intelligence Project - Phase 1: Data Collection & EDA
 READY VERSION – generates merged_data.csv for Phase 2
+
+=============================================================================
+PROBLEM #2 FIX: Hard-Coded Column Assumptions
+=============================================================================
+This module now uses the Schema Resolver to auto-detect column names.
+Instead of assuming fixed column names (OrderDate, CustomerID, etc.),
+the system resolves semantic fields to actual column names dynamically.
+
+=============================================================================
 """
 
 import logging
 import sys
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -35,54 +44,203 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # -------------------------------------------------
-# Normalization
+# Schema Resolver Integration
+# -------------------------------------------------
+try:
+    from schema_resolver import (
+        SchemaResolver,
+        SemanticField,
+        SchemaResolutionResult,
+    )
+    SCHEMA_RESOLVER_AVAILABLE = True
+    logger.info("Schema Resolver loaded successfully")
+except ImportError:
+    SCHEMA_RESOLVER_AVAILABLE = False
+    logger.warning("Schema Resolver not available - using fallback column detection")
+
+
+def resolve_columns(df: pd.DataFrame, dataset_type: str = "sales") -> Dict[str, Optional[str]]:
+    """
+    Resolve semantic field names to actual column names in the dataframe.
+    
+    This is the KEY FUNCTION for decoupling business meaning from column names.
+    
+    Args:
+        df: DataFrame to analyze
+        dataset_type: Type of dataset
+        
+    Returns:
+        Dict mapping semantic field names to actual column names (or None if not found)
+    """
+    if SCHEMA_RESOLVER_AVAILABLE:
+        resolver = SchemaResolver()
+        result = resolver.resolve(df, dataset_type)
+        
+        # Log the resolution results
+        logger.info("=" * 40)
+        logger.info("SCHEMA RESOLUTION RESULTS")
+        for field, col in result.resolved_columns.items():
+            logger.info(f"  {field.value} -> '{col}'")
+        if result.unmapped_columns:
+            logger.info(f"  Unmapped: {result.unmapped_columns}")
+        logger.info("=" * 40)
+        
+        # Convert to simple dict for backward compatibility
+        return {
+            "order_date": result.get_column(SemanticField.ORDER_DATE),
+            "customer_id": result.get_column(SemanticField.CUSTOMER_ID),
+            "order_id": result.get_column(SemanticField.ORDER_ID),
+            "product": result.get_column(SemanticField.PRODUCT),
+            "quantity": result.get_column(SemanticField.QUANTITY),
+            "unit_price": result.get_column(SemanticField.UNIT_PRICE),
+            "total_price": result.get_column(SemanticField.TOTAL_PRICE),
+            "city": result.get_column(SemanticField.CITY),
+        }
+    else:
+        # Fallback: Manual column detection
+        return _fallback_resolve_columns(df)
+
+
+def _fallback_resolve_columns(df: pd.DataFrame) -> Dict[str, Optional[str]]:
+    """Fallback column resolution when Schema Resolver is not available."""
+    columns = set(df.columns)
+    
+    def find_column(candidates):
+        for c in candidates:
+            if c in columns:
+                return c
+        return None
+    
+    return {
+        "order_date": find_column(["OrderDate", "order_date", "Sale_Date", "Date"]),
+        "customer_id": find_column(["CustomerID", "customer_id", "Customer_ID", "cust_id"]),
+        "order_id": find_column(["OrderID", "order_id", "Order_ID", "InvoiceNo"]),
+        "product": find_column(["Product", "product", "ProductName", "Item", "Description"]),
+        "quantity": find_column(["Quantity", "quantity", "Qty", "Units"]),
+        "unit_price": find_column(["UnitPrice", "unit_price", "Price", "price"]),
+        "total_price": find_column(["TotalPrice", "total_price", "Revenue", "Sales", "Amount"]),
+        "city": find_column(["City", "city", "Location", "Region"]),
+    }
+
+# -------------------------------------------------
+# Normalization (Now uses Schema Resolver)
 # -------------------------------------------------
 def normalize_sales_df(sales: pd.DataFrame) -> pd.DataFrame:
+    """
+    Normalize sales dataframe to have canonical column names.
+    
+    PROBLEM #2 FIX: Instead of assuming fixed column names, we now:
+    1. Resolve semantic fields to actual column names
+    2. Create canonical columns with standard names
+    3. Handle missing columns gracefully
+    """
     sales = sales.copy()
-
-    # Rename common aliases
-    rename_map = {
-        "order_id": "OrderID",
-        "customer_id": "CustomerID",
-        "order_date": "OrderDate",
-        "price": "Price",
-        "quantity": "Quantity",
-        "product": "Product",
-    }
-    for old, new in rename_map.items():
-        if old in sales.columns and new not in sales.columns:
-            sales.rename(columns={old: new}, inplace=True)
-
-    # OrderDate (MANDATORY)
-    if "OrderDate" not in sales.columns:
-        raise ValueError("OrderDate is mandatory in sales data")
-    sales["OrderDate"] = pd.to_datetime(sales["OrderDate"], errors="coerce")
-    if sales["OrderDate"].isna().any():
-        raise ValueError("Invalid OrderDate values found")
-
-    # TotalPrice
-    if "TotalPrice" not in sales.columns:
-        if {"Price", "Quantity"}.issubset(sales.columns):
-            sales["TotalPrice"] = (
-                pd.to_numeric(sales["Price"], errors="coerce").fillna(0)
-                * pd.to_numeric(sales["Quantity"], errors="coerce").fillna(0)
-            )
-            logger.info("Computed TotalPrice from Price * Quantity")
-        else:
-            sales["TotalPrice"] = 0.0
-            logger.warning("TotalPrice missing – defaulting to 0")
+    
+    # Use Schema Resolver to find columns
+    resolved = resolve_columns(sales, "sales")
+    
+    # Create canonical columns from resolved fields
+    # ORDER DATE (MANDATORY)
+    date_col = resolved.get("order_date")
+    if date_col and date_col in sales.columns:
+        sales["OrderDate"] = pd.to_datetime(sales[date_col], errors="coerce")
+        if date_col != "OrderDate":
+            logger.info(f"Mapped '{date_col}' -> 'OrderDate'")
     else:
-        sales["TotalPrice"] = pd.to_numeric(sales["TotalPrice"], errors="coerce").fillna(0)
+        raise ValueError(
+            f"Sales data requires a date column. "
+            f"Expected one of: OrderDate, order_date, Sale_Date, Date. "
+            f"Found: {list(sales.columns)}"
+        )
+    
+    if sales["OrderDate"].isna().all():
+        raise ValueError("All OrderDate values are invalid")
+    
+    # CUSTOMER ID (OPTIONAL but useful for RFM)
+    customer_col = resolved.get("customer_id")
+    if customer_col and customer_col in sales.columns:
+        sales["CustomerID"] = sales[customer_col]
+        if customer_col != "CustomerID":
+            logger.info(f"Mapped '{customer_col}' -> 'CustomerID'")
+    else:
+        logger.warning("No CustomerID column found - RFM analysis will be unavailable")
+    
+    # ORDER ID (OPTIONAL)
+    order_col = resolved.get("order_id")
+    if order_col and order_col in sales.columns:
+        sales["OrderID"] = sales[order_col]
+        if order_col != "OrderID":
+            logger.info(f"Mapped '{order_col}' -> 'OrderID'")
+    else:
+        # Generate synthetic order IDs
+        sales["OrderID"] = range(1, len(sales) + 1)
+        logger.info("Generated synthetic OrderID values")
+    
+    # PRODUCT (OPTIONAL but useful for recommendations)
+    product_col = resolved.get("product")
+    if product_col and product_col in sales.columns:
+        sales["Product"] = sales[product_col]
+        if product_col != "Product":
+            logger.info(f"Mapped '{product_col}' -> 'Product'")
+    else:
+        logger.warning("No Product column found - Recommendations will be unavailable")
+    
+    # QUANTITY (OPTIONAL)
+    qty_col = resolved.get("quantity")
+    if qty_col and qty_col in sales.columns:
+        sales["Quantity"] = pd.to_numeric(sales[qty_col], errors="coerce").fillna(1)
+        if qty_col != "Quantity":
+            logger.info(f"Mapped '{qty_col}' -> 'Quantity'")
+    else:
+        sales["Quantity"] = 1
+    
+    # UNIT PRICE (OPTIONAL)
+    price_col = resolved.get("unit_price")
+    if price_col and price_col in sales.columns:
+        sales["Price"] = pd.to_numeric(sales[price_col], errors="coerce").fillna(0)
+        if price_col != "Price":
+            logger.info(f"Mapped '{price_col}' -> 'Price'")
+    
+    # TOTAL PRICE (MANDATORY for analysis)
+    total_col = resolved.get("total_price")
+    if total_col and total_col in sales.columns:
+        sales["TotalPrice"] = pd.to_numeric(sales[total_col], errors="coerce").fillna(0)
+        if total_col != "TotalPrice":
+            logger.info(f"Mapped '{total_col}' -> 'TotalPrice'")
+    elif "Price" in sales.columns and "Quantity" in sales.columns:
+        sales["TotalPrice"] = sales["Price"] * sales["Quantity"]
+        logger.info("Computed TotalPrice from Price × Quantity")
+    else:
+        raise ValueError(
+            f"Sales data requires a value column. "
+            f"Expected one of: TotalPrice, Revenue, Sales, Amount. "
+            f"Or provide Price and Quantity columns."
+        )
 
     return sales
 
 
 def normalize_customers_df(customers: pd.DataFrame) -> pd.DataFrame:
+    """Normalize customers dataframe using schema resolution."""
+    if customers.empty:
+        return customers
+    
     customers = customers.copy()
-    if "city" in customers.columns and "City" not in customers.columns:
-        customers.rename(columns={"city": "City"}, inplace=True)
-    if "City" in customers.columns:
-        customers["City"] = customers["City"].fillna("Unknown")
+    resolved = resolve_columns(customers, "customers")
+    
+    # City column
+    city_col = resolved.get("city")
+    if city_col and city_col in customers.columns:
+        customers["City"] = customers[city_col].fillna("Unknown")
+        if city_col != "City":
+            logger.info(f"Mapped '{city_col}' -> 'City'")
+    
+    # CustomerID
+    customer_col = resolved.get("customer_id")
+    if customer_col and customer_col in customers.columns and customer_col != "CustomerID":
+        customers["CustomerID"] = customers[customer_col]
+        logger.info(f"Mapped '{customer_col}' -> 'CustomerID'")
+    
     return customers
 
 

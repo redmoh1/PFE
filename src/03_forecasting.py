@@ -1,12 +1,29 @@
 """
 Phase 3: Sales Forecasting
 Flexible & Robust Version (Academic + Production Ready)
+
+=============================================================================
+PROBLEM #2 FIX: Hard-Coded Column Assumptions
+=============================================================================
+This module now uses the Schema Resolver (when available) to auto-detect
+column names, making it work with different data schemas.
+
+=============================================================================
+PROBLEM #4 FIX: Pipeline Rigidity  
+=============================================================================
+This module will gracefully fail if:
+- No date column is found
+- No revenue/value column is found
+- Insufficient data for forecasting (<30 rows recommended)
+
+The pipeline controller will skip forecasting if these conditions aren't met.
+=============================================================================
 """
 
 import sys
 import logging
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Optional, Dict
 
 import pandas as pd
 import numpy as np
@@ -38,17 +55,107 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # -------------------------------------------------
+# Schema Resolver Integration
+# -------------------------------------------------
+try:
+    from schema_resolver import SchemaResolver, SemanticField, can_perform_analysis
+    SCHEMA_RESOLVER_AVAILABLE = True
+    logger.info("Schema Resolver loaded successfully")
+except ImportError:
+    SCHEMA_RESOLVER_AVAILABLE = False
+    logger.warning("Schema Resolver not available - using fallback column detection")
+
+
+def resolve_forecasting_columns(df: pd.DataFrame) -> Dict[str, Optional[str]]:
+    """
+    Resolve required columns for forecasting analysis.
+    
+    Forecasting requires:
+    - date column (ORDER_DATE)
+    - value column (TOTAL_PRICE or equivalent)
+    
+    Returns dict with resolved column names or None if not found.
+    """
+    if SCHEMA_RESOLVER_AVAILABLE:
+        resolver = SchemaResolver()
+        result = resolver.resolve(df, "sales")
+        
+        return {
+            "date": result.get_column(SemanticField.ORDER_DATE),
+            "value": result.get_column(SemanticField.TOTAL_PRICE)
+        }
+    else:
+        # Fallback detection
+        date_cols = ["OrderDate", "Sale_Date", "Order_Date", "Date", "order_date", "ds"]
+        value_cols = ["TotalPrice", "Revenue", "Sales", "Amount", "total_price", "yhat"]
+        
+        date_col = next((c for c in date_cols if c in df.columns), None)
+        value_col = next((c for c in value_cols if c in df.columns), None)
+        
+        return {"date": date_col, "value": value_col}
+
+
+# -------------------------------------------------
 # Load & Prepare Data
 # -------------------------------------------------
-def load_and_prepare_data(input_path: Path) -> pd.DataFrame:
+def find_data_file() -> Path:
+    """Find data file in multiple possible locations."""
+    possible_paths = [
+        DATA_DIR / "cleaned_dataset.csv",
+        DATA_DIR / "sales.csv",
+        DATA_DIR / "merged_data.csv",
+    ]
+    
+    for path in possible_paths:
+        if path.exists():
+            logger.info(f"Found data file at: {path}")
+            return path
+    
+    raise FileNotFoundError(
+        f"No data file found. Searched in:\n" + 
+        "\n".join(f"  - {p}" for p in possible_paths)
+    )
+
+
+def load_and_prepare_data(input_path: Path = None) -> pd.DataFrame:
+    """
+    Load and prepare data for forecasting.
+    
+    Uses Schema Resolver to auto-detect column names.
+    """
+    # Auto-detect file if not provided
+    if input_path is None:
+        input_path = find_data_file()
+        
     if not input_path.exists():
         raise FileNotFoundError(f"Input file not found: {input_path}")
 
     df = pd.read_csv(input_path)
     logger.info(f"Loaded {len(df)} records from {input_path}")
 
-    if not {"OrderDate", "TotalPrice"}.issubset(df.columns):
-        raise ValueError("Missing required columns: OrderDate, TotalPrice")
+    # Use Schema Resolver to find columns
+    resolved = resolve_forecasting_columns(df)
+    date_col = resolved.get("date")
+    value_col = resolved.get("value")
+    
+    if not date_col:
+        raise ValueError(
+            f"No date column found for forecasting. "
+            f"Expected one of: OrderDate, Sale_Date, Date, etc. "
+            f"Found: {list(df.columns)}"
+        )
+    
+    if not value_col:
+        raise ValueError(
+            f"No value column found for forecasting. "
+            f"Expected one of: TotalPrice, Revenue, Sales, Amount. "
+            f"Found: {list(df.columns)}"
+        )
+    
+    logger.info(f"Using columns: date='{date_col}', value='{value_col}'")
+    
+    # Rename to standard names for processing
+    df = df.rename(columns={date_col: "OrderDate", value_col: "TotalPrice"})
 
     df["OrderDate"] = pd.to_datetime(df["OrderDate"], errors="coerce")
     df = df.dropna(subset=["OrderDate"])
@@ -78,18 +185,59 @@ def load_and_prepare_data(input_path: Path) -> pd.DataFrame:
 # Forecasting Strategies
 # -------------------------------------------------
 def regression_forecast(monthly_sales: pd.DataFrame, periods: int):
+    """
+    Fit linear regression for time-series forecasting.
+    
+    NOTE: For production use, consider:
+    1. Using proper time-series cross-validation (TimeSeriesSplit)
+    2. Using Prophet or ARIMA for seasonality handling
+    3. Adding proper holdout validation
+    
+    Current implementation uses all data for training due to limited data points.
+    Metrics are in-sample (training) metrics - not true predictive accuracy.
+    """
     X = monthly_sales[["TimeIndex"]]
     y = monthly_sales["TotalPrice"]
 
-    model = LinearRegression()
-    model.fit(X, y)
-
-    y_pred = model.predict(X)
-    metrics = {
-        "R2": r2_score(y, y_pred),
-        "MAE": mean_absolute_error(y, y_pred),
-        "RMSE": np.sqrt(mean_squared_error(y, y_pred)),
-    }
+    n_samples = len(monthly_sales)
+    
+    # Use temporal train/test split when we have enough data
+    if n_samples >= 6:
+        # Reserve last 20% for validation (minimum 1 month)
+        split_idx = max(int(n_samples * 0.8), n_samples - 2)
+        X_train, X_val = X.iloc[:split_idx], X.iloc[split_idx:]
+        y_train, y_val = y.iloc[:split_idx], y.iloc[split_idx:]
+        
+        model = LinearRegression()
+        model.fit(X_train, y_train)
+        
+        # Out-of-sample metrics (more reliable)
+        y_val_pred = model.predict(X_val)
+        metrics = {
+            "R2": r2_score(y_val, y_val_pred),
+            "MAE": mean_absolute_error(y_val, y_val_pred),
+            "RMSE": np.sqrt(mean_squared_error(y_val, y_val_pred)),
+            "validation_months": len(y_val),
+            "is_oos_metric": True,  # Out-of-sample
+        }
+        
+        # Retrain on full data for final model
+        model.fit(X, y)
+        logger.info(f"Used temporal validation: {split_idx} train, {n_samples - split_idx} validation")
+    else:
+        # Too few samples for proper validation - use all data
+        model = LinearRegression()
+        model.fit(X, y)
+        
+        # In-sample metrics (less reliable, marked clearly)
+        y_pred = model.predict(X)
+        metrics = {
+            "R2": r2_score(y, y_pred),
+            "MAE": mean_absolute_error(y, y_pred),
+            "RMSE": np.sqrt(mean_squared_error(y, y_pred)),
+            "is_oos_metric": False,  # In-sample (training metrics)
+        }
+        logger.warning(f"Only {n_samples} months - using in-sample metrics (not reliable for accuracy)")
 
     future_index = range(len(monthly_sales), len(monthly_sales) + periods)
     future_X = pd.DataFrame({"TimeIndex": future_index})
@@ -151,8 +299,8 @@ def main():
         logger.info("PHASE 3: SALES FORECASTING")
         logger.info("=" * 60)
 
-        input_path = DATA_DIR / "cleaned_dataset.csv"
-        monthly_sales = load_and_prepare_data(input_path)
+        # Use auto-detection to find data file
+        monthly_sales = load_and_prepare_data()
 
         periods = 6
         n_months = len(monthly_sales)

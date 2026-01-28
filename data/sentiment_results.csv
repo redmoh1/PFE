@@ -1,0 +1,21 @@
+ReviewID,CustomerID,ReviewText,ReviewDate,Polarity,Subjectivity,Sentiment,Keywords
+R001,C001,This product is absolutely amazing! Exceeded all my expectations. Highly recommended!,2026-01-15,0.475,0.72,Positive,"product, expectations"
+R002,C002,"Good quality, but shipping took longer than expected.",2026-01-14,0.3,0.5,Positive,quality
+R003,C003,Terrible! Product broke after one week. Very disappointed.,2026-01-12,-0.9875,0.9875,Negative,"Product, week"
+R004,C004,"It is okay. Nothing special, but does the job.",2026-01-11,0.4286,0.5357,Positive,job
+R005,C005,Excellent customer service and fast delivery. Very happy with purchase!,2026-01-10,0.7333,0.8667,Positive,"customer, service, delivery, purchase"
+R006,C001,Waste of money. Does not work as advertised.,2026-01-08,-0.2,0.0,Negative,"Waste, money, Does"
+R007,C002,Average product. Could be better for the price.,2026-01-07,0.175,0.45,Positive,"product, price"
+R008,C003,Love it! Best purchase I have made this year!,2026-01-05,0.8125,0.45,Positive,"purchase, year"
+R009,C004,"Not bad, but there are better alternatives available.",2026-01-04,0.4167,0.5222,Positive,alternatives
+R010,C005,Absolutely horrible experience. Will never buy again.,2026-01-02,-1.0,1.0,Negative,experience
+R011,C001,Pretty good! Meets expectations and good value.,2025-12-30,0.6083,0.7333,Positive,"Meets, expectations, value"
+R012,C002,Fantastic! Exactly what I was looking for.,2025-12-28,0.375,0.575,Positive,
+R013,C003,"Meh. It is just a regular product, nothing impressive.",2025-12-26,0.5,0.5385,Positive,"Meh, product, nothing, impressive"
+R014,C004,Outstanding quality and professional support!,2025-12-24,0.3125,0.4875,Positive,"quality, support"
+R015,C005,Defective unit received. Returned it immediately.,2025-12-22,0.0,0.0,Neutral,unit
+R016,C001,Very satisfied with this purchase. Definitely recommend!,2025-12-20,0.325,0.75,Positive,"purchase, recommend"
+R017,C002,Poor quality for the price. Expected much better.,2025-12-18,0.0,0.5,Neutral,"Poor, quality, price"
+R018,C003,Excellent product! Fast shipping and great packaging!,2025-12-16,0.7333,0.7833,Positive,"product, Fast, shipping, packaging"
+R019,C004,Mediocre at best. Disappointed with quality.,2025-12-14,-0.0833,0.6833,Neutral,"Mediocre, quality"
+R020,C005,Fantastic experience! Will definitely buy again soon!,2025-12-12,0.25,0.7,Positive,experience

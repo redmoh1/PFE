@@ -1,0 +1,10 @@
+2026-01-28 17:48:33,150 - INFO - Starting sentiment analysis for Acme Corp
+2026-01-28 17:48:33,150 - INFO - Arabic model enabled: True
+2026-01-28 17:48:33,150 - ERROR - Sentiment analysis failed: No reviews file found in c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\reviews
+Traceback (most recent call last):
+  File "c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment_arabic.py", line 376, in <module>
+    results_df = analyze_reviews(company, use_arabic)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment_arabic.py", line 301, in analyze_reviews
+    raise FileNotFoundError(f"No reviews file found in {reviews_dir}")
+FileNotFoundError: No reviews file found in c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\reviews

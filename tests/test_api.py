@@ -61,10 +61,18 @@ class TestKPIEndpoints:
         assert response.status_code in [200, 503]
     
     def test_kpis_with_invalid_date_format(self):
-        """Test KPIs with invalid date format."""
+        """Test KPIs with invalid date format.
+        
+        FastAPI Query validation with pattern=r"^\\d{4}-\\d{2}-\\d{2}$" should reject
+        strings that don't match YYYY-MM-DD format with a 422 Unprocessable Entity.
+        """
         response = client.get("/api/kpis?start_date=invalid-date")
-        # Should return 400 for invalid date format or 422 for validation error
-        assert response.status_code in [400, 422]
+        # FastAPI returns 422 for validation errors (Query pattern mismatch)
+        assert response.status_code == 422
+        # Verify error message mentions the invalid parameter
+        if response.status_code == 422:
+            error_detail = response.json()
+            assert "detail" in error_detail
 
 
 class TestForecastEndpoints:

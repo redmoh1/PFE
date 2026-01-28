@@ -1,9 +1,26 @@
-"""Phase 4: RFM Analysis - Customer Segmentation via Recency, Frequency, Monetary."""
+"""
+Phase 4: RFM Analysis - Customer Segmentation via Recency, Frequency, Monetary.
+
+=============================================================================
+PROBLEM #2 FIX: Hard-Coded Column Assumptions
+=============================================================================
+This module now uses the Schema Resolver (when available) to auto-detect
+column names, making it work with different data schemas.
+
+=============================================================================
+PROBLEM #4 FIX: Pipeline Rigidity  
+=============================================================================
+RFM Analysis REQUIRES CustomerID. If the dataset doesn't have customer 
+identification, this analysis will gracefully skip with a clear message.
+The pipeline controller checks for CustomerID availability before calling
+this module.
+=============================================================================
+"""
 
 import sys
 import logging
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Optional, Dict
 
 import pandas as pd
 import numpy as np
@@ -30,16 +47,89 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# -------------------------------------------------
+# Schema Resolver Integration
+# -------------------------------------------------
+try:
+    from schema_resolver import SchemaResolver, SemanticField, can_perform_analysis
+    SCHEMA_RESOLVER_AVAILABLE = True
+    logger.info("Schema Resolver loaded successfully")
+except ImportError:
+    SCHEMA_RESOLVER_AVAILABLE = False
+    logger.warning("Schema Resolver not available - using fallback column detection")
 
-def load_and_validate_data(input_path: Path) -> pd.DataFrame:
+
+def resolve_rfm_columns(df: pd.DataFrame) -> Dict[str, Optional[str]]:
+    """
+    Resolve required columns for RFM analysis.
+    
+    RFM requires:
+    - date column (ORDER_DATE) - for Recency
+    - customer column (CUSTOMER_ID) - for grouping
+    - value column (TOTAL_PRICE) - for Monetary
+    
+    Frequency is derived from counting orders per customer.
+    
+    Returns dict with resolved column names or None if not found.
+    """
+    if SCHEMA_RESOLVER_AVAILABLE:
+        resolver = SchemaResolver()
+        result = resolver.resolve(df, "sales")
+        
+        return {
+            "date": result.get_column(SemanticField.ORDER_DATE),
+            "customer": result.get_column(SemanticField.CUSTOMER_ID),
+            "value": result.get_column(SemanticField.TOTAL_PRICE)
+        }
+    else:
+        # Fallback detection
+        date_candidates = ["OrderDate", "Sale_Date", "Order_Date", "Date", "order_date"]
+        revenue_candidates = ["TotalPrice", "Price", "Sales_Amount", "Revenue", "Amount"]
+        customer_candidates = ["CustomerID", "Customer_ID", "customer_id", "CustomerId"]
+        
+        date_col = next((c for c in date_candidates if c in df.columns), None)
+        revenue_col = next((c for c in revenue_candidates if c in df.columns), None)
+        customer_col = next((c for c in customer_candidates if c in df.columns), None)
+        
+        return {"date": date_col, "customer": customer_col, "value": revenue_col}
+
+
+def find_data_file() -> Path:
+    """Find data file in multiple possible locations.
+    
+    Search order:
+    1. data/cleaned_dataset.csv
+    2. data/merged_data.csv
+    3. data/sales.csv
+    """
+    possible_paths = [
+        DATA_DIR / "cleaned_dataset.csv",
+        DATA_DIR / "merged_data.csv",
+        DATA_DIR / "sales.csv",
+    ]
+    
+    for path in possible_paths:
+        if path.exists():
+            logger.info(f"Found data file at: {path}")
+            return path
+    
+    raise FileNotFoundError(
+        f"No data file found. Searched in:\n" + 
+        "\n".join(f"  - {p}" for p in possible_paths)
+    )
+
+
+def load_and_validate_data(input_path: Path = None) -> pd.DataFrame:
     """
     Load and validate cleaned dataset for RFM analysis.
     
-    REQUIRES: CustomerID from customers.csv (optional file)
-    REQUIRES: OrderDate, TotalPrice from sales.csv (mandatory)
+    Uses Schema Resolver to auto-detect column names.
+    
+    REQUIRES: CustomerID (for customer grouping)
+    REQUIRES: OrderDate, TotalPrice (for RFM metrics)
     
     Args:
-        input_path: Path to cleaned_dataset.csv
+        input_path: Path to data file (optional, will auto-detect if None)
         
     Returns:
         Validated dataframe with required columns, or None if CustomerID missing
@@ -51,6 +141,10 @@ def load_and_validate_data(input_path: Path) -> pd.DataFrame:
     logger.info("RFM ANALYSIS - DATA VALIDATION")
     logger.info("=" * 60)
     
+    # Auto-detect file if not provided
+    if input_path is None:
+        input_path = find_data_file()
+    
     if not input_path.exists():
         logger.error(f"✗ Input file not found: {input_path}")
         raise FileNotFoundError(f"Input file not found: {input_path}")
@@ -58,21 +152,35 @@ def load_and_validate_data(input_path: Path) -> pd.DataFrame:
     df = pd.read_csv(input_path)
     logger.info(f"✓ Loaded {len(df)} records from {input_path}")
     
+    # Use Schema Resolver to find columns
+    resolved = resolve_rfm_columns(df)
+    date_col = resolved.get("date")
+    revenue_col = resolved.get("value")
+    customer_col = resolved.get("customer")
+    
+    logger.info(f"Column resolution: date='{date_col}', customer='{customer_col}', value='{revenue_col}'")
+    
     # Check for MANDATORY CustomerID (comes from optional customers.csv)
-    if "CustomerID" not in df.columns:
+    if not customer_col:
         logger.warning("=" * 60)
         logger.warning("⊘ RFM ANALYSIS SKIPPED")
         logger.warning("⊘ Reason: CustomerID column not available")
+        logger.warning(f"⊘ Available columns: {list(df.columns)}")
         logger.warning("⊘ Solution: Upload customers.csv with CustomerID column")
         logger.warning("=" * 60)
         return None
     
-    # Validate other required columns (from sales)
-    required_cols = ["CustomerID", "OrderDate", "TotalPrice"]
-    missing = [c for c in required_cols if c not in df.columns]
-    if missing:
-        logger.error(f"✗ Missing required columns: {missing}")
-        raise ValueError(f"Missing required columns: {missing}")
+    if not date_col or not revenue_col:
+        logger.error(f"✗ Missing required columns. Found: date={date_col}, revenue={revenue_col}")
+        raise ValueError(f"Missing required columns: date={date_col}, revenue={revenue_col}")
+    
+    # Rename to standard names
+    df = df.rename(columns={
+        customer_col: "CustomerID",
+        date_col: "OrderDate", 
+        revenue_col: "TotalPrice"
+    })
+    logger.info(f"✓ Using columns: CustomerID={customer_col}, OrderDate={date_col}, TotalPrice={revenue_col}")
     
     # Parse dates
     df["OrderDate"] = pd.to_datetime(df["OrderDate"], errors='coerce')
@@ -127,28 +235,45 @@ def calculate_rfm(df: pd.DataFrame) -> pd.DataFrame:
     return rfm
 
 
-def score_metric(series: pd.Series, reverse: bool = False) -> pd.Series:
+def score_metric(series: pd.Series, lower_is_better: bool = False) -> pd.Series:
     """
-    Convert metric values into 1-5 scores based on rank.
+    Convert metric values into 1-5 scores based on quantile binning.
     
     Args:
         series: Metric values to score
-        reverse: If True, higher values get higher scores (for R, F, M)
+        lower_is_better: If True, lower values get higher scores (for Recency)
+                        If False, higher values get higher scores (for F, M)
         
     Returns:
         Scored series with values 1-5
     """
-    ranks = series.rank(method="dense")
-    if reverse:
-        ranks = ranks.max() - ranks + 1
-    
-    # Bin into 5 scores
-    return pd.cut(
-        ranks,
-        bins=5,
-        labels=[1, 2, 3, 4, 5],
-        include_lowest=True
-    ).astype(int)
+    try:
+        # Use quantile-based binning (qcut) for more even distribution
+        # This handles skewed distributions better than rank-based approach
+        if lower_is_better:
+            # For Recency: lower days = more recent = HIGHER score (5)
+            # Invert the series so that qcut gives high scores to low values
+            labels = [5, 4, 3, 2, 1]
+        else:
+            # For Frequency/Monetary: higher values = higher scores
+            labels = [1, 2, 3, 4, 5]
+        
+        scores = pd.qcut(
+            series,
+            q=5,
+            labels=labels,
+            duplicates='drop'
+        ).astype(int)
+        return scores
+    except ValueError:
+        # Fallback to rank-based if qcut fails (too few unique values)
+        ranks = series.rank(method="dense", ascending=not lower_is_better)
+        return pd.cut(
+            ranks,
+            bins=5,
+            labels=[1, 2, 3, 4, 5],
+            include_lowest=True
+        ).astype(int)
 
 
 def add_rfm_scores(rfm: pd.DataFrame) -> pd.DataFrame:
@@ -161,16 +286,17 @@ def add_rfm_scores(rfm: pd.DataFrame) -> pd.DataFrame:
     Returns:
         RFM dataframe with R_Score, F_Score, M_Score, and RFM_Score columns
     """
-    logger.info("Computing RFM scores (1-5 scale)...")
+    logger.info("Computing RFM scores (1-5 scale using quantile binning)...")
     
-    # Recency: Lower is better (more recent = higher score)
-    rfm["R_Score"] = score_metric(rfm["Recency"], reverse=True)
+    # Recency: Lower days = more recent = HIGHER score (5)
+    # A customer who purchased 1 day ago should score 5, not 1
+    rfm["R_Score"] = score_metric(rfm["Recency"], lower_is_better=True)
     
-    # Frequency: Higher is better
-    rfm["F_Score"] = score_metric(rfm["Frequency"], reverse=False)
+    # Frequency: Higher order count = higher score
+    rfm["F_Score"] = score_metric(rfm["Frequency"], lower_is_better=False)
     
-    # Monetary: Higher is better
-    rfm["M_Score"] = score_metric(rfm["Monetary"], reverse=False)
+    # Monetary: Higher spending = higher score
+    rfm["M_Score"] = score_metric(rfm["Monetary"], lower_is_better=False)
     
     # Composite score
     rfm["RFM_Score"] = (
@@ -326,9 +452,8 @@ def main() -> None:
         logger.info("PHASE 4: RFM ANALYSIS STARTED")
         logger.info("=" * 60)
         
-        # Load and validate data
-        input_path = DATA_DIR / "cleaned_dataset.csv"
-        df = load_and_validate_data(input_path)
+        # Load and validate data (auto-detects file location)
+        df = load_and_validate_data()
         
         # If CustomerID not available, skip RFM gracefully
         if df is None:
@@ -359,38 +484,11 @@ def main() -> None:
         logger.error(f"File not found: {e}")
         logger.error("Please ensure Phase 2 (cleaning) has completed successfully")
         sys.exit(1)
-    except Exception as e:
-        logger.error(f"RFM analysis failed: {e}")
-        sys.exit(1)
-        
-        # Calculate RFM metrics
-        rfm = calculate_rfm(df)
-        
-        # Add RFM scores
-        rfm = add_rfm_scores(rfm)
-        
-        # Classify customers into segments
-        rfm = classify_customers(rfm)
-        
-        # Generate visualizations
-        plot_rfm_distribution(rfm, PLOTS_DIR)
-        
-        # Save results
-        output_path = DATA_DIR / "rfm_table.csv"
-        save_rfm_results(rfm, output_path)
-        
-        logger.info("=" * 60)
-        logger.info("Phase 4: RFM Analysis Completed Successfully")
-        logger.info("=" * 60)
-        
-    except FileNotFoundError as e:
-        logger.error(f"File error: {e}")
-        sys.exit(1)
     except ValueError as e:
         logger.error(f"Data validation error: {e}")
         sys.exit(1)
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        logger.error(f"RFM analysis failed: {e}")
         sys.exit(1)
 
 

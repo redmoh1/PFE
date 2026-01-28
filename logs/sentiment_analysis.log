@@ -1,0 +1,216 @@
+2026-01-28 17:39:13,488 - INFO - ======================================================================
+2026-01-28 17:39:13,488 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-28 17:39:13,488 - INFO - ======================================================================
+2026-01-28 17:39:13,488 - INFO - Loaded 20 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-28 17:39:13,488 - INFO - Using text column: ReviewText
+2026-01-28 17:39:13,488 - INFO - Analyzing sentiment for 20 reviews...
+2026-01-28 17:39:13,651 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-28 17:39:13,651 - INFO - Total Reviews: 20
+2026-01-28 17:39:13,651 - INFO - Positive: 14 (70.0%)
+2026-01-28 17:39:13,651 - INFO - Neutral: 3 (15.0%)
+2026-01-28 17:39:13,651 - INFO - Negative: 3 (15.0%)
+2026-01-28 17:39:13,651 - INFO - Average Polarity: 0.2087
+2026-01-28 17:39:13,651 - INFO - Average Subjectivity: 0.5892
+2026-01-28 17:39:14,218 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-28 17:39:14,218 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 8 columns)
+2026-01-28 17:39:14,218 - INFO - ======================================================================
+2026-01-28 17:39:14,218 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-28 17:39:14,218 - INFO - ======================================================================
+2026-01-28 17:39:14,218 - INFO - 
+Outputs:
+2026-01-28 17:39:14,218 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-28 17:39:14,218 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-28 17:41:19,059 - INFO - ======================================================================
+2026-01-28 17:41:19,059 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-28 17:41:19,059 - INFO - ======================================================================
+2026-01-28 17:41:19,075 - INFO - Loaded 120 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-28 17:41:19,075 - INFO - Using text column: ReviewText
+2026-01-28 17:41:19,075 - INFO - Analyzing sentiment for 120 reviews...
+2026-01-28 17:41:19,259 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-28 17:41:19,259 - INFO - Total Reviews: 120
+2026-01-28 17:41:19,259 - INFO - Positive: 65 (54.17%)
+2026-01-28 17:41:19,259 - INFO - Neutral: 0 (0.0%)
+2026-01-28 17:41:19,259 - INFO - Negative: 55 (45.83%)
+2026-01-28 17:41:19,259 - INFO - Average Polarity: 0.0833
+2026-01-28 17:41:19,259 - INFO - Average Subjectivity: 0.5719
+2026-01-28 17:41:19,843 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-28 17:41:19,843 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (120 reviews, 8 columns)
+2026-01-28 17:41:19,843 - INFO - ======================================================================
+2026-01-28 17:41:19,843 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-28 17:41:19,843 - INFO - ======================================================================
+2026-01-28 17:41:19,843 - INFO - 
+Outputs:
+2026-01-28 17:41:19,843 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-28 17:41:19,843 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-28 17:43:26,782 - INFO - ======================================================================
+2026-01-28 17:43:26,782 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-28 17:43:26,782 - INFO - ======================================================================
+2026-01-28 17:43:26,786 - INFO - Loaded 6 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-28 17:43:26,786 - INFO - Using text column: ReviewText
+2026-01-28 17:43:26,786 - INFO - Analyzing sentiment for 6 reviews...
+2026-01-28 17:43:26,899 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-28 17:43:26,899 - INFO - Total Reviews: 6
+2026-01-28 17:43:26,899 - INFO - Positive: 4 (66.67%)
+2026-01-28 17:43:26,899 - INFO - Neutral: 2 (33.33%)
+2026-01-28 17:43:26,899 - INFO - Negative: 0 (0.0%)
+2026-01-28 17:43:26,899 - INFO - Average Polarity: 0.3
+2026-01-28 17:43:26,899 - INFO - Average Subjectivity: 0.665
+2026-01-28 17:43:27,417 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-28 17:43:27,417 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (6 reviews, 10 columns)
+2026-01-28 17:43:27,417 - INFO - ======================================================================
+2026-01-28 17:43:27,417 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-28 17:43:27,417 - INFO - ======================================================================
+2026-01-28 17:43:27,417 - INFO - 
+Outputs:
+2026-01-28 17:43:27,417 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-28 17:43:27,417 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-28 17:48:43,242 - INFO - ======================================================================
+2026-01-28 17:48:43,242 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-28 17:48:43,242 - INFO - ======================================================================
+2026-01-28 17:48:43,242 - INFO - Loaded 20 reviews from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-28 17:48:43,242 - INFO - Using text column: ReviewText
+2026-01-28 17:48:43,242 - INFO - Analyzing sentiment for 20 reviews...
+2026-01-28 17:48:43,410 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-28 17:48:43,410 - INFO - Total Reviews: 20
+2026-01-28 17:48:43,410 - INFO - Positive: 14 (70.0%)
+2026-01-28 17:48:43,410 - INFO - Neutral: 3 (15.0%)
+2026-01-28 17:48:43,410 - INFO - Negative: 3 (15.0%)
+2026-01-28 17:48:43,410 - INFO - Average Polarity: 0.2087
+2026-01-28 17:48:43,410 - INFO - Average Subjectivity: 0.5892
+2026-01-28 17:48:43,981 - INFO - Sentiment visualization saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-28 17:48:43,985 - INFO - 
+Sentiment results saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 8 columns)
+2026-01-28 17:48:43,985 - INFO - ======================================================================
+2026-01-28 17:48:43,985 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-28 17:48:43,985 - INFO - ======================================================================
+2026-01-28 17:48:43,985 - INFO - 
+Outputs:
+2026-01-28 17:48:43,985 - INFO -   - Results: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-28 17:48:43,986 - INFO -   - Plots:   c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-28 17:49:45,556 - INFO - ======================================================================
+2026-01-28 17:49:45,556 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-28 17:49:45,556 - INFO - ======================================================================
+2026-01-28 17:49:45,556 - INFO - Loaded 20 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-28 17:49:45,556 - INFO - Using text column: ReviewText
+2026-01-28 17:49:45,556 - INFO - Analyzing sentiment for 20 reviews...
+2026-01-28 17:49:45,701 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-28 17:49:45,701 - INFO - Total Reviews: 20
+2026-01-28 17:49:45,701 - INFO - Positive: 14 (70.0%)
+2026-01-28 17:49:45,701 - INFO - Neutral: 3 (15.0%)
+2026-01-28 17:49:45,701 - INFO - Negative: 3 (15.0%)
+2026-01-28 17:49:45,701 - INFO - Average Polarity: 0.2087
+2026-01-28 17:49:45,701 - INFO - Average Subjectivity: 0.5892
+2026-01-28 17:49:46,224 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-28 17:49:46,224 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 8 columns)
+2026-01-28 17:49:46,224 - INFO - ======================================================================
+2026-01-28 17:49:46,224 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-28 17:49:46,224 - INFO - ======================================================================
+2026-01-28 17:49:46,224 - INFO - 
+Outputs:
+2026-01-28 17:49:46,224 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-28 17:49:46,224 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-28 17:56:40,330 - INFO - ======================================================================
+2026-01-28 17:56:40,330 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-28 17:56:40,332 - INFO - ======================================================================
+2026-01-28 17:56:40,334 - INFO - Loaded 20 reviews from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-28 17:56:40,334 - INFO - Using text column: ReviewText
+2026-01-28 17:56:40,334 - INFO - Analyzing sentiment for 20 reviews...
+2026-01-28 17:56:40,485 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-28 17:56:40,485 - INFO - Total Reviews: 20
+2026-01-28 17:56:40,485 - INFO - Positive: 14 (70.0%)
+2026-01-28 17:56:40,485 - INFO - Neutral: 3 (15.0%)
+2026-01-28 17:56:40,485 - INFO - Negative: 3 (15.0%)
+2026-01-28 17:56:40,485 - INFO - Average Polarity: 0.2087
+2026-01-28 17:56:40,485 - INFO - Average Subjectivity: 0.5892
+2026-01-28 17:56:41,106 - INFO - Sentiment visualization saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-28 17:56:41,110 - INFO - 
+Sentiment results saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 8 columns)
+2026-01-28 17:56:41,110 - INFO - ======================================================================
+2026-01-28 17:56:41,110 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-28 17:56:41,111 - INFO - ======================================================================
+2026-01-28 17:56:41,111 - INFO - 
+Outputs:
+2026-01-28 17:56:41,111 - INFO -   - Results: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-28 17:56:41,111 - INFO -   - Plots:   c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-28 18:03:20,542 - INFO - ======================================================================
+2026-01-28 18:03:20,542 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-28 18:03:20,542 - INFO - ======================================================================
+2026-01-28 18:03:20,544 - INFO - Loaded 20 reviews from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-28 18:03:20,544 - INFO - Using text column: ReviewText
+2026-01-28 18:03:20,545 - INFO - Analyzing sentiment for 20 reviews...
+2026-01-28 18:03:20,695 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-28 18:03:20,696 - INFO - Total Reviews: 20
+2026-01-28 18:03:20,696 - INFO - Positive: 14 (70.0%)
+2026-01-28 18:03:20,696 - INFO - Neutral: 3 (15.0%)
+2026-01-28 18:03:20,696 - INFO - Negative: 3 (15.0%)
+2026-01-28 18:03:20,697 - INFO - Average Polarity: 0.2087
+2026-01-28 18:03:20,697 - INFO - Average Subjectivity: 0.5892
+2026-01-28 18:03:21,269 - INFO - Sentiment visualization saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-28 18:03:21,274 - INFO - 
+Sentiment results saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 8 columns)
+2026-01-28 18:03:21,276 - INFO - ======================================================================
+2026-01-28 18:03:21,277 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-28 18:03:21,278 - INFO - ======================================================================
+2026-01-28 18:03:21,278 - INFO - 
+Outputs:
+2026-01-28 18:03:21,278 - INFO -   - Results: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-28 18:03:21,278 - INFO -   - Plots:   c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-28 19:07:05,642 - INFO - ======================================================================
+2026-01-28 19:07:05,642 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-28 19:07:05,642 - INFO - ======================================================================
+2026-01-28 19:07:05,642 - INFO - Loaded 20 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-28 19:07:05,642 - INFO - Using text column: ReviewText
+2026-01-28 19:07:05,642 - INFO - Analyzing sentiment for 20 reviews...
+2026-01-28 19:07:05,790 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-28 19:07:05,790 - INFO - Total Reviews: 20
+2026-01-28 19:07:05,790 - INFO - Positive: 14 (70.0%)
+2026-01-28 19:07:05,790 - INFO - Neutral: 3 (15.0%)
+2026-01-28 19:07:05,790 - INFO - Negative: 3 (15.0%)
+2026-01-28 19:07:05,790 - INFO - Average Polarity: 0.2087
+2026-01-28 19:07:05,790 - INFO - Average Subjectivity: 0.5892
+2026-01-28 19:07:06,342 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-28 19:07:06,342 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 8 columns)
+2026-01-28 19:07:06,342 - INFO - ======================================================================
+2026-01-28 19:07:06,342 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-28 19:07:06,342 - INFO - ======================================================================
+2026-01-28 19:07:06,342 - INFO - 
+Outputs:
+2026-01-28 19:07:06,342 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-28 19:07:06,342 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-01-28 19:08:24,598 - INFO - ======================================================================
+2026-01-28 19:08:24,598 - INFO - Phase 6: Customer Sentiment Analysis
+2026-01-28 19:08:24,598 - INFO - ======================================================================
+2026-01-28 19:08:24,598 - INFO - Loaded 20 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-01-28 19:08:24,598 - INFO - Using text column: ReviewText
+2026-01-28 19:08:24,598 - INFO - Analyzing sentiment for 20 reviews...
+2026-01-28 19:08:24,748 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-01-28 19:08:24,748 - INFO - Total Reviews: 20
+2026-01-28 19:08:24,748 - INFO - Positive: 14 (70.0%)
+2026-01-28 19:08:24,748 - INFO - Neutral: 3 (15.0%)
+2026-01-28 19:08:24,748 - INFO - Negative: 3 (15.0%)
+2026-01-28 19:08:24,748 - INFO - Average Polarity: 0.2087
+2026-01-28 19:08:24,748 - INFO - Average Subjectivity: 0.5892
+2026-01-28 19:08:25,331 - INFO - Sentiment visualization saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sentiment_analysis.png
+2026-01-28 19:08:25,331 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (20 reviews, 8 columns)
+2026-01-28 19:08:25,331 - INFO - ======================================================================
+2026-01-28 19:08:25,331 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-01-28 19:08:25,331 - INFO - ======================================================================
+2026-01-28 19:08:25,331 - INFO - 
+Outputs:
+2026-01-28 19:08:25,331 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-01-28 19:08:25,331 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/

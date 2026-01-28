@@ -1,13 +1,16 @@
 
 export enum UserRole {
-  ADMIN = 'ADMIN',
-  ANALYST = 'ANALYST',
+  ADMIN = 'admin',
+  ANALYST = 'analyst',
+  VIEWER = 'viewer',
 }
 
 export interface User {
   id: string;
   email: string;
+  name?: string;
   company: string;
+  companyId?: number;
   role: UserRole;
   avatar?: string;
 }
@@ -26,6 +29,8 @@ export interface ForecastPoint {
   date: string;
   actual?: number;
   forecast?: number;
+  forecast_upper?: number;
+  forecast_lower?: number;
 }
 
 export interface RFMSegment {

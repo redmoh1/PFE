@@ -1,6 +1,21 @@
 """
 Phase 5: Market Basket Analysis - Product Recommendation Engine
 
+=============================================================================
+PROBLEM #2 FIX: Hard-Coded Column Assumptions
+=============================================================================
+This module now uses the Schema Resolver (when available) to auto-detect
+column names, making it work with different data schemas.
+
+=============================================================================
+PROBLEM #4 FIX: Pipeline Rigidity  
+=============================================================================
+Market Basket Analysis REQUIRES Product column. If the dataset doesn't have 
+product identification, this analysis will gracefully skip.
+The pipeline controller checks for Product availability before calling
+this module.
+=============================================================================
+
 Purpose:
     Analyze customer purchase patterns to identify product associations and
     generate data-driven product recommendations using market basket analysis.
@@ -23,7 +38,7 @@ Business Value:
 import sys
 import logging
 from pathlib import Path
-from typing import Tuple, List, Dict, Any
+from typing import Tuple, List, Dict, Any, Optional
 
 import pandas as pd
 import numpy as np
@@ -52,13 +67,74 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# -------------------------------------------------
+# Schema Resolver Integration
+# -------------------------------------------------
+try:
+    from schema_resolver import SchemaResolver, SemanticField, can_perform_analysis
+    SCHEMA_RESOLVER_AVAILABLE = True
+    logger.info("Schema Resolver loaded successfully")
+except ImportError:
+    SCHEMA_RESOLVER_AVAILABLE = False
+    logger.warning("Schema Resolver not available - using fallback column detection")
 
-def load_and_validate_data(input_path: Path) -> pd.DataFrame:
+
+def resolve_recommendation_columns(df: pd.DataFrame) -> Dict[str, Optional[str]]:
+    """
+    Resolve required columns for market basket analysis.
+    
+    Market Basket requires:
+    - order column (ORDER_ID) - for grouping transactions
+    - product column (PRODUCT) - for item associations
+    
+    Returns dict with resolved column names or None if not found.
+    """
+    if SCHEMA_RESOLVER_AVAILABLE:
+        resolver = SchemaResolver()
+        result = resolver.resolve(df, "sales")
+        
+        return {
+            "order": result.get_column(SemanticField.ORDER_ID),
+            "product": result.get_column(SemanticField.PRODUCT)
+        }
+    else:
+        # Fallback detection
+        order_candidates = ["OrderID", "Order_ID", "order_id", "TransactionID", "InvoiceNo"]
+        product_candidates = ["Product", "ProductID", "Product_ID", "product", "Item", "Description"]
+        
+        order_col = next((c for c in order_candidates if c in df.columns), None)
+        product_col = next((c for c in product_candidates if c in df.columns), None)
+        
+        return {"order": order_col, "product": product_col}
+
+
+def find_data_file() -> Path:
+    """Find data file in multiple possible locations."""
+    possible_paths = [
+        DATA_DIR / "cleaned_dataset.csv",
+        DATA_DIR / "merged_data.csv",
+        DATA_DIR / "sales.csv",
+    ]
+    
+    for path in possible_paths:
+        if path.exists():
+            logger.info(f"Found data file at: {path}")
+            return path
+    
+    raise FileNotFoundError(
+        f"No data file found. Searched in:\n" + 
+        "\n".join(f"  - {p}" for p in possible_paths)
+    )
+
+
+def load_and_validate_data(input_path: Path = None) -> pd.DataFrame:
     """
     Load and validate cleaned dataset for market basket analysis.
     
+    Uses Schema Resolver to auto-detect column names.
+    
     Args:
-        input_path: Path to cleaned_dataset.csv
+        input_path: Path to data file (optional, will auto-detect if None)
         
     Returns:
         Validated dataframe with required columns
@@ -67,6 +143,10 @@ def load_and_validate_data(input_path: Path) -> pd.DataFrame:
         FileNotFoundError: If input file not found
         ValueError: If required columns missing or dataset empty
     """
+    # Auto-detect file if not provided
+    if input_path is None:
+        input_path = find_data_file()
+        
     if not input_path.exists():
         raise FileNotFoundError(f"Input file not found: {input_path}")
     
@@ -77,11 +157,29 @@ def load_and_validate_data(input_path: Path) -> pd.DataFrame:
     
     logger.info(f"Loaded {len(df)} records from {input_path}")
     
+    # Use Schema Resolver to find columns
+    resolved = resolve_recommendation_columns(df)
+    order_col = resolved.get("order")
+    product_col = resolved.get("product")
+    
+    logger.info(f"Column resolution: order='{order_col}', product='{product_col}'")
+    
+    if not order_col or not product_col:
+        logger.warning(f"Missing columns. Available: {list(df.columns)}")
+        logger.warning("Market basket analysis requires OrderID and Product columns")
+        raise ValueError(
+            f"Missing required columns for market basket analysis.\n"
+            f"  - OrderID: {order_col or 'NOT FOUND'}\n"
+            f"  - Product: {product_col or 'NOT FOUND'}\n"
+            f"  Available columns: {list(df.columns)}"
+        )
+    
+    # Rename to standard names for processing
+    df = df.rename(columns={order_col: "OrderID", product_col: "Product"})
+    logger.info(f"Using columns: OrderID='{order_col}', Product='{product_col}'")
+    
     # Validate required columns
     required_cols = ["OrderID", "Product"]
-    missing = [c for c in required_cols if c not in df.columns]
-    if missing:
-        raise ValueError(f"Missing required columns: {missing}")
     
     if len(df) == 0:
         raise ValueError("Dataset is empty")
@@ -206,14 +304,28 @@ def mine_association_rules(basket_encoded: pd.DataFrame,
     
     Args:
         basket_encoded: One-hot encoded basket matrix
-        min_support: Minimum support threshold (0.0-1.0), typically 0.01-0.05
-        min_confidence: Minimum confidence threshold (0.0-1.0), typically 0.1-0.5
+        min_support: Minimum support threshold (0.0-1.0)
+            - 0.01 (1%) is the default, suitable for exploratory analysis
+            - For production, consider 0.02-0.05 to reduce false positives
+            - Lower values generate more rules but may include spurious patterns
+            - Rule of thumb: min_support >= 1 / (number of orders * 2)
+        min_confidence: Minimum confidence threshold (0.0-1.0)
+            - 0.1 (10%) is the default
+            - Higher values (0.3-0.5) ensure more reliable recommendations
+            - Lower values may include coincidental associations
         
     Returns:
         Dataframe with association rules sorted by confidence and lift
         
     Raises:
         ValueError: If no frequent itemsets/rules found or invalid parameters
+        
+    Note:
+        Always validate rules with domain knowledge. High support/confidence
+        doesn't guarantee business relevance. Consider:
+        - Lift > 1.0 indicates positive correlation (required for useful rules)
+        - Lift > 2.0 suggests strong association
+        - High conviction (>1) means the rule is reliable
     """
     # Validate parameters
     if not (0 < min_support < 1):
@@ -267,6 +379,22 @@ def mine_association_rules(basket_encoded: pd.DataFrame,
         raise ValueError(f"Error generating association rules: {str(e)[:100]}")
     except Exception as e:
         raise ValueError(f"Error generating association rules: {str(e)[:100]}")
+    
+    # CRITICAL: Filter by lift > 1.0 (positive association)
+    # Lift < 1 means negative correlation (buying A makes buying B LESS likely)
+    # Lift = 1 means no correlation (random chance)
+    # Lift > 1 means positive correlation (useful for recommendations)
+    initial_count = len(rules)
+    rules = rules[rules["lift"] > 1.0]
+    filtered_count = initial_count - len(rules)
+    if filtered_count > 0:
+        logger.info(f"Filtered out {filtered_count} rules with lift <= 1.0 (no positive correlation)")
+    
+    if len(rules) == 0:
+        raise ValueError(
+            "No rules with lift > 1.0 found. "
+            "This means no meaningful positive associations exist in the data."
+        )
     
     # Sort by metrics
     rules = rules.sort_values(
@@ -471,10 +599,9 @@ def main() -> None:
         logger.info("Phase 5: Market Basket Analysis & Product Recommendations")
         logger.info("=" * 70)
         
-        # Step 1: Load and validate data
+        # Step 1: Load and validate data (auto-detects file)
         logger.info("\n[STEP 1/6] Loading and validating transaction data...")
-        input_path = DATA_DIR / "cleaned_dataset.csv"
-        df = load_and_validate_data(input_path)
+        df = load_and_validate_data()
         logger.info(f"  Status: Loaded {len(df)} transaction records")
         
         # Step 2: Analyze basket composition

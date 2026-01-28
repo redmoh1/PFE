@@ -1,23 +1,51 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../store/AuthContext';
-import { Lock, Mail, Building, ArrowRight } from 'lucide-react';
+import { Lock, Mail, Building, ArrowRight, User, AlertCircle, Loader2 } from 'lucide-react';
+import { UserRole } from '../types';
 
 const AuthPage: React.FC = () => {
-  const { login, register } = useAuth();
+  const { login, register, isLoading, error, clearError } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
-  const [company, setCompany] = useState('');
   const [password, setPassword] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [companyId, setCompanyId] = useState<number>(1); // Default to first company
+  const [localError, setLocalError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Clear errors when switching between login/register
+  useEffect(() => {
+    setLocalError(null);
+    clearError?.();
+  }, [isLogin, clearError]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLogin) {
-      login(email, company || 'Acme Corp');
-    } else {
-      register(email, company);
+    setLocalError(null);
+
+    // Validation
+    if (password.length < 8 && !isLogin) {
+      setLocalError('Password must be at least 8 characters');
+      return;
+    }
+
+    try {
+      let success: boolean;
+      if (isLogin) {
+        success = await login(email, password);
+      } else {
+        success = await register(email, password, fullName, companyId, UserRole.ANALYST);
+      }
+      
+      if (!success) {
+        // Error is handled by context
+      }
+    } catch (err) {
+      setLocalError('An unexpected error occurred');
     }
   };
+
+  const displayError = localError || error;
 
   return (
     <div className="min-h-screen flex">
@@ -69,9 +97,26 @@ const AuthPage: React.FC = () => {
               {isLogin ? 'Welcome back' : 'Create your account'}
             </h2>
             <p className="mt-2 text-text-secondary">
-              {isLogin ? 'Enter your details to access your dashboard' : 'Start your 14-day free trial today'}
+              {isLogin ? 'Enter your credentials to access your dashboard' : 'Start your 14-day free trial today'}
             </p>
           </div>
+
+          {/* Error Display */}
+          {displayError && (
+            <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 animate-in slide-in-from-top-2">
+              <AlertCircle size={18} />
+              <span className="text-sm">{displayError}</span>
+            </div>
+          )}
+
+          {/* Demo Credentials Info */}
+          {isLogin && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl text-blue-700 text-sm">
+              <p className="font-semibold mb-1">Demo Credentials:</p>
+              <p>Admin: <code className="bg-blue-100 px-1 rounded">admin@acme.com</code> / <code className="bg-blue-100 px-1 rounded">admin123</code></p>
+              <p>Analyst: <code className="bg-blue-100 px-1 rounded">analyst@acme.com</code> / <code className="bg-blue-100 px-1 rounded">analyst123</code></p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-4">
@@ -86,23 +131,43 @@ const AuthPage: React.FC = () => {
                   className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
 
               {!isLogin && (
-                <div className="relative animate-in slide-in-from-top-2">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                    <Building size={18} />
+                <>
+                  <div className="relative animate-in slide-in-from-top-2">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <User size={18} />
+                    </div>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Full Name"
+                      className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      disabled={isLoading}
+                    />
                   </div>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Company name"
-                    className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white"
-                    value={company}
-                    onChange={(e) => setCompany(e.target.value)}
-                  />
-                </div>
+                  
+                  <div className="relative animate-in slide-in-from-top-2">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                      <Building size={18} />
+                    </div>
+                    <select
+                      required
+                      className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white appearance-none"
+                      value={companyId}
+                      onChange={(e) => setCompanyId(parseInt(e.target.value))}
+                      disabled={isLoading}
+                    >
+                      <option value={1}>Acme Corp</option>
+                      <option value={2}>TechCo Industries</option>
+                    </select>
+                  </div>
+                </>
               )}
 
               <div className="relative">
@@ -112,20 +177,32 @@ const AuthPage: React.FC = () => {
                 <input
                   type="password"
                   required
-                  placeholder="Password"
+                  placeholder="Password (min 8 characters)"
+                  minLength={isLogin ? undefined : 8}
                   className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-white"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 px-4 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+              disabled={isLoading}
+              className="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 px-4 rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLogin ? 'Sign In' : 'Create Account'}
-              <ArrowRight size={18} />
+              {isLoading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  {isLogin ? 'Signing In...' : 'Creating Account...'}
+                </>
+              ) : (
+                <>
+                  {isLogin ? 'Sign In' : 'Create Account'}
+                  <ArrowRight size={18} />
+                </>
+              )}
             </button>
           </form>
 
@@ -133,6 +210,7 @@ const AuthPage: React.FC = () => {
             <button 
               onClick={() => setIsLogin(!isLogin)}
               className="text-sm font-semibold text-primary hover:underline"
+              disabled={isLoading}
             >
               {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
             </button>
@@ -143,7 +221,7 @@ const AuthPage: React.FC = () => {
               <div className="w-full border-t border-slate-200"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background-light px-2 text-slate-500 font-medium">Secured by Enterprise Shield</span>
+              <span className="bg-background-light px-2 text-slate-500 font-medium">JWT Secured Authentication</span>
             </div>
           </div>
         </div>

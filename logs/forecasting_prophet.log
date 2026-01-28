@@ -1,0 +1,73 @@
+2026-01-28 17:44:51,203 - INFO - Starting forecasting for Acme Corp, 6 months ahead
+2026-01-28 17:47:57,823 - INFO - Starting forecasting for Acme Corp, 6 months ahead
+2026-01-28 17:47:57,823 - INFO - Found sales data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-28 17:47:57,823 - INFO - Loaded 8 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-28 17:47:57,823 - INFO - Using columns: date=OrderDate, revenue=TotalPrice
+2026-01-28 17:47:57,843 - INFO - Prepared 3 monthly data points
+2026-01-28 17:47:57,843 - INFO - Running baseline Linear Regression...
+2026-01-28 17:47:57,845 - INFO - Linear Regression - R²: 0.0406, MAE: 448.89, RMSE: 476.12
+2026-01-28 17:47:57,845 - INFO - Running Prophet forecasting...
+2026-01-28 17:47:57,876 - DEBUG - cmd: where.exe tbb.dll
+cwd: None
+2026-01-28 17:47:57,931 - DEBUG - Adding TBB (C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\prophet\stan_model\cmdstan-2.33.1\stan\lib\stan_math\lib\tbb) to PATH
+2026-01-28 17:47:57,931 - INFO - Training Prophet model...
+2026-01-28 17:47:57,942 - INFO - n_changepoints greater than number of observations. Using 1.
+2026-01-28 17:47:57,942 - DEBUG - input tempfile: C:\Users\DELL\AppData\Local\Temp\tmpb2wo3r10\9385dizj.json
+2026-01-28 17:47:57,949 - DEBUG - input tempfile: C:\Users\DELL\AppData\Local\Temp\tmpb2wo3r10\3luanknx.json
+2026-01-28 17:47:57,951 - DEBUG - idx 0
+2026-01-28 17:47:57,951 - DEBUG - running CmdStan, num_threads: None
+2026-01-28 17:47:57,951 - DEBUG - CmdStan args: ['C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\prophet\\stan_model\\prophet_model.bin', 'random', 'seed=54499', 'data', 'file=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmpb2wo3r10\\9385dizj.json', 'init=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmpb2wo3r10\\3luanknx.json', 'output', 'file=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmpb2wo3r10\\prophet_modeloh1tazy2\\prophet_model-20260128174757.csv', 'method=optimize', 'algorithm=newton', 'iter=10000']
+2026-01-28 17:47:57,952 - INFO - Chain [1] start processing
+2026-01-28 17:47:58,879 - INFO - Chain [1] done processing
+2026-01-28 17:47:58,908 - INFO - Prophet - MAE: 0.00, RMSE: 0.00, MAPE: 0.00%
+2026-01-28 17:47:58,926 - INFO - Prophet forecast saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_forecast_prophet.csv
+2026-01-28 17:47:59,444 - INFO - Forecast comparison saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\Acme Corp_forecast_comparison.png
+2026-01-28 17:47:59,782 - INFO - Components plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\Acme Corp_forecast_components.png
+2026-01-28 17:51:20,323 - INFO - Starting forecasting for Acme Corp, 6 months ahead
+2026-01-28 17:51:20,324 - INFO - Found sales data at: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv
+2026-01-28 17:51:20,325 - INFO - Loaded 8 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv
+2026-01-28 17:51:20,325 - INFO - Using columns: date=OrderDate, revenue=TotalPrice
+2026-01-28 17:51:20,325 - INFO - Prepared 3 monthly data points
+2026-01-28 17:51:20,325 - INFO - Running baseline Linear Regression...
+2026-01-28 17:51:20,335 - INFO - Linear Regression - R²: 0.0406, MAE: 448.89, RMSE: 476.12
+2026-01-28 17:51:20,336 - INFO - Running Prophet forecasting...
+2026-01-28 17:51:20,358 - DEBUG - cmd: where.exe tbb.dll
+cwd: None
+2026-01-28 17:51:20,399 - DEBUG - Adding TBB (C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\prophet\stan_model\cmdstan-2.33.1\stan\lib\stan_math\lib\tbb) to PATH
+2026-01-28 17:51:20,399 - INFO - Training Prophet model...
+2026-01-28 17:51:20,410 - INFO - n_changepoints greater than number of observations. Using 1.
+2026-01-28 17:51:20,411 - DEBUG - input tempfile: C:\Users\DELL\AppData\Local\Temp\tmppblqzuh7\hvn_koac.json
+2026-01-28 17:51:20,412 - DEBUG - input tempfile: C:\Users\DELL\AppData\Local\Temp\tmppblqzuh7\22vhaeth.json
+2026-01-28 17:51:20,413 - DEBUG - idx 0
+2026-01-28 17:51:20,413 - DEBUG - running CmdStan, num_threads: None
+2026-01-28 17:51:20,413 - DEBUG - CmdStan args: ['C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\prophet\\stan_model\\prophet_model.bin', 'random', 'seed=43326', 'data', 'file=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmppblqzuh7\\hvn_koac.json', 'init=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmppblqzuh7\\22vhaeth.json', 'output', 'file=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmppblqzuh7\\prophet_modelvr4r_e6a\\prophet_model-20260128175120.csv', 'method=optimize', 'algorithm=newton', 'iter=10000']
+2026-01-28 17:51:20,413 - INFO - Chain [1] start processing
+2026-01-28 17:51:21,324 - INFO - Chain [1] done processing
+2026-01-28 17:51:21,351 - INFO - Prophet - MAE: 0.00, RMSE: 0.00, MAPE: 0.00%
+2026-01-28 17:51:21,377 - INFO - Prophet forecast saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_forecast_prophet.csv
+2026-01-28 17:51:21,886 - INFO - Forecast comparison saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\Acme Corp_forecast_comparison.png
+2026-01-28 17:51:22,199 - INFO - Components plot saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\Acme Corp_forecast_components.png
+2026-01-28 18:08:51,203 - INFO - Starting forecasting for Acme Corp, 6 months ahead
+2026-01-28 18:08:51,204 - INFO - Found sales data at: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv
+2026-01-28 18:08:51,206 - INFO - Loaded 8 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv
+2026-01-28 18:08:51,207 - INFO - Using columns: date=OrderDate, revenue=TotalPrice
+2026-01-28 18:08:51,211 - INFO - Prepared 3 monthly data points
+2026-01-28 18:08:51,212 - INFO - Running baseline Linear Regression...
+2026-01-28 18:08:51,217 - INFO - Linear Regression - R²: 0.0406, MAE: 448.89, RMSE: 476.12
+2026-01-28 18:08:51,218 - INFO - Running Prophet forecasting...
+2026-01-28 18:08:51,244 - DEBUG - cmd: where.exe tbb.dll
+cwd: None
+2026-01-28 18:08:51,291 - DEBUG - Adding TBB (C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\prophet\stan_model\cmdstan-2.33.1\stan\lib\stan_math\lib\tbb) to PATH
+2026-01-28 18:08:51,292 - INFO - Training Prophet model...
+2026-01-28 18:08:51,302 - INFO - n_changepoints greater than number of observations. Using 1.
+2026-01-28 18:08:51,303 - DEBUG - input tempfile: C:\Users\DELL\AppData\Local\Temp\tmp30dbszq3\5au7yiyr.json
+2026-01-28 18:08:51,305 - DEBUG - input tempfile: C:\Users\DELL\AppData\Local\Temp\tmp30dbszq3\l8gz_juk.json
+2026-01-28 18:08:51,307 - DEBUG - idx 0
+2026-01-28 18:08:51,308 - DEBUG - running CmdStan, num_threads: None
+2026-01-28 18:08:51,308 - DEBUG - CmdStan args: ['C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\prophet\\stan_model\\prophet_model.bin', 'random', 'seed=28395', 'data', 'file=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmp30dbszq3\\5au7yiyr.json', 'init=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmp30dbszq3\\l8gz_juk.json', 'output', 'file=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmp30dbszq3\\prophet_modelovsr8gqm\\prophet_model-20260128180851.csv', 'method=optimize', 'algorithm=newton', 'iter=10000']
+2026-01-28 18:08:51,308 - INFO - Chain [1] start processing
+2026-01-28 18:08:52,234 - INFO - Chain [1] done processing
+2026-01-28 18:08:52,256 - INFO - Prophet - MAE: 0.00, RMSE: 0.00, MAPE: 0.00%
+2026-01-28 18:08:52,275 - INFO - Prophet forecast saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_forecast_prophet.csv
+2026-01-28 18:08:52,769 - INFO - Forecast comparison saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\Acme Corp_forecast_comparison.png
+2026-01-28 18:08:53,118 - INFO - Components plot saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\Acme Corp_forecast_components.png

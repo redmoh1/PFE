@@ -8,6 +8,22 @@ This module is the CANONICAL AUTHORITY for:
 4. Orchestrating pipeline execution in DETERMINISTIC ORDER:
    EDA -> Cleaning -> Forecasting -> RFM -> Recommendations -> Sentiment
 
+=============================================================================
+PROBLEM #4: Pipeline Rigidity
+=============================================================================
+Previously, the pipeline assumed all datasets support all analyses
+(forecasting, RFM, recommendations, sentiment).
+
+CONCEPTUAL CORRECTION:
+Each analysis module is now CONDITIONAL - enabled/disabled based on:
+1. Available data columns (semantic field resolution)
+2. Minimum data requirements (row counts)
+3. Dataset type compatibility
+
+The pipeline gracefully SKIPS incompatible analyses instead of failing.
+
+=============================================================================
+
 CRITICAL RULES:
 - NO caching of DataFrames - always read fresh from disk
 - DELETE old outputs before generating new ones
@@ -15,7 +31,7 @@ CRITICAL RULES:
 - All state must be deterministic and reproducible
 
 Author: AI Assistant
-Version: 1.0.0
+Version: 2.0.0 - Added conditional pipeline execution
 """
 
 import sys
@@ -61,6 +77,24 @@ logger = logging.getLogger("PipelineController")
 
 
 # ============================================================================
+# Import Schema Resolver for Conditional Execution
+# ============================================================================
+
+try:
+    from schema_resolver import (
+        SchemaResolver, 
+        SemanticField, 
+        ANALYSIS_REQUIREMENTS,
+        can_perform_analysis
+    )
+    SCHEMA_RESOLVER_AVAILABLE = True
+    logger.info("Schema Resolver imported successfully")
+except ImportError as e:
+    SCHEMA_RESOLVER_AVAILABLE = False
+    logger.warning(f"Schema Resolver not available: {e}. Using fallback logic.")
+
+
+# ============================================================================
 # File Definitions - SINGLE SOURCE OF TRUTH
 # ============================================================================
 
@@ -98,14 +132,141 @@ ADDITIONAL_OUTPUT_FILES = [
 ]
 
 # Pipeline script execution order (DETERMINISTIC)
+# NOTE: 02_cleaning is now integrated into 01_eda.py which creates both
+# merged_data.csv and cleaned_dataset.csv directly
 PIPELINE_SCRIPTS = {
     "01_eda": "01_eda.py",
-    "02_cleaning": "02_cleaning_features.py",
+    # "02_cleaning": "02_cleaning_features.py",  # Integrated into 01_eda
     "03_forecasting": "03_forecasting.py",
     "04_rfm": "04_rfm.py",
     "05_recommendation": "05_recommendation.py",
     "06_sentiment": "06_sentiment.py",
 }
+
+
+# ============================================================================
+# Conditional Pipeline Execution - Data Availability Check
+# ============================================================================
+
+def determine_available_analyses(data_path: Path = None) -> Dict[str, Dict[str, Any]]:
+    """
+    Determine which analyses can be performed on the current data.
+    
+    This is the KEY FUNCTION for making pipeline execution conditional.
+    It checks data availability and returns a dict of available analyses.
+    
+    Args:
+        data_path: Path to the data file to check (defaults to cleaned_dataset.csv)
+        
+    Returns:
+        Dict mapping analysis_name -> {available: bool, reason: str}
+    """
+    import pandas as pd
+    
+    result = {
+        "eda": {"available": True, "reason": "Always required"},
+        "forecasting": {"available": False, "reason": "Not checked yet"},
+        "rfm": {"available": False, "reason": "Not checked yet"},
+        "recommendation": {"available": False, "reason": "Not checked yet"},
+        "sentiment": {"available": False, "reason": "Not checked yet"}
+    }
+    
+    # Check for sales data
+    if data_path is None:
+        data_path = DATA_DIR / "cleaned_dataset.csv"
+        if not data_path.exists():
+            data_path = DATA_DIR / "sales.csv"
+    
+    if not data_path.exists():
+        for key in result:
+            if key != "eda":
+                result[key] = {"available": False, "reason": "No sales data found"}
+        return result
+    
+    try:
+        df = pd.read_csv(data_path)
+        row_count = len(df)
+        columns = set(df.columns)
+        
+        # Use Schema Resolver if available
+        if SCHEMA_RESOLVER_AVAILABLE:
+            resolver = SchemaResolver()
+            resolution = resolver.resolve(df, "sales")
+            
+            # Check each analysis type
+            for analysis_name in ["forecasting", "rfm", "recommendation"]:
+                can_do, reason = can_perform_analysis(df, analysis_name)
+                result[analysis_name] = {"available": can_do, "reason": reason}
+        else:
+            # Fallback: Manual column detection
+            logger.info("[AVAILABILITY] Using fallback column detection")
+            
+            # Forecasting: needs date + value
+            date_cols = ["OrderDate", "order_date", "Date", "Sale_Date"]
+            value_cols = ["TotalPrice", "Revenue", "Sales", "Amount", "total_price"]
+            has_date = any(c in columns for c in date_cols)
+            has_value = any(c in columns for c in value_cols)
+            
+            if has_date and has_value and row_count >= 30:
+                result["forecasting"] = {"available": True, "reason": "Date and value columns found"}
+            else:
+                missing = []
+                if not has_date: missing.append("date column")
+                if not has_value: missing.append("value column")
+                if row_count < 30: missing.append(f"min rows (have {row_count}, need 30)")
+                result["forecasting"] = {"available": False, "reason": f"Missing: {', '.join(missing)}"}
+            
+            # RFM: needs date + customer_id + value
+            customer_cols = ["CustomerID", "customer_id", "Customer_ID", "cust_id"]
+            has_customer = any(c in columns for c in customer_cols)
+            
+            if has_date and has_customer and has_value and row_count >= 10:
+                result["rfm"] = {"available": True, "reason": "All required columns found"}
+            else:
+                missing = []
+                if not has_date: missing.append("date column")
+                if not has_customer: missing.append("customer_id column")
+                if not has_value: missing.append("value column")
+                result["rfm"] = {"available": False, "reason": f"Missing: {', '.join(missing)}"}
+            
+            # Recommendation: needs product column
+            product_cols = ["Product", "product", "ProductName", "Item", "Description"]
+            has_product = any(c in columns for c in product_cols)
+            
+            if has_product and row_count >= 50:
+                result["recommendation"] = {"available": True, "reason": "Product column found"}
+            else:
+                missing = []
+                if not has_product: missing.append("product column")
+                if row_count < 50: missing.append(f"min rows (have {row_count}, need 50)")
+                result["recommendation"] = {"available": False, "reason": f"Missing: {', '.join(missing)}"}
+        
+        # Sentiment: check for reviews file separately
+        reviews_path = DATA_DIR / "customer_reviews.csv"
+        if reviews_path.exists():
+            try:
+                reviews_df = pd.read_csv(reviews_path)
+                text_cols = ["Review", "review", "Comment", "Feedback", "Text"]
+                has_text = any(c in reviews_df.columns for c in text_cols)
+                if has_text and len(reviews_df) >= 5:
+                    result["sentiment"] = {"available": True, "reason": "Reviews file with text column found"}
+                else:
+                    result["sentiment"] = {"available": False, "reason": "Reviews file missing text column"}
+            except Exception as e:
+                result["sentiment"] = {"available": False, "reason": f"Error reading reviews: {e}"}
+        else:
+            result["sentiment"] = {"available": False, "reason": "No customer_reviews.csv found"}
+        
+        logger.info(f"[AVAILABILITY] Analysis availability determined: "
+                   f"{[k for k, v in result.items() if v['available']]}")
+        
+    except Exception as e:
+        logger.error(f"[AVAILABILITY] Error checking data: {e}")
+        for key in result:
+            if key != "eda":
+                result[key] = {"available": False, "reason": f"Error: {str(e)}"}
+    
+    return result
 
 
 # ============================================================================
@@ -122,12 +283,18 @@ class PipelineState:
         self.last_execution_time: Optional[datetime] = None
         self.last_execution_status: Dict[str, Any] = {}
         self.is_running: bool = False
+        self.available_analyses: Dict[str, Dict[str, Any]] = {}
     
     def reset(self):
         """Reset all state - called before new pipeline execution."""
         self.last_execution_time = None
         self.last_execution_status = {}
         self.is_running = False
+        self.available_analyses = {}
+    
+    def update_availability(self, data_path: Path = None):
+        """Update which analyses are available based on current data."""
+        self.available_analyses = determine_available_analyses(data_path)
 
 
 # Global singleton instance
@@ -477,10 +644,18 @@ def run_full_sales_pipeline(source_file: Optional[Path] = None) -> Dict[str, Any
     Run the COMPLETE sales pipeline in DETERMINISTIC order:
     1. Clear all derived outputs (HARD RESET)
     2. Copy source file to canonical location (if provided)
-    3. Run EDA (01_eda.py) - creates merged_data.csv
-    4. Run Cleaning (02_cleaning_features.py) - creates cleaned_dataset.csv
-    5. Run RFM (04_rfm.py) - creates rfm_table.csv (optional)
-    6. Run Recommendations (05_recommendation.py) - creates product_recommendations.csv
+    3. Run EDA (01_eda.py) - creates merged_data.csv, cleaned_dataset.csv
+    4. CONDITIONAL: Determine which analyses are available
+    5. Run Forecasting (03_forecasting.py) - IF data supports it
+    6. Run RFM (04_rfm.py) - IF CustomerID available
+    7. Run Recommendations (05_recommendation.py) - IF Product available
+    
+    =========================================================================
+    PROBLEM #4 FIX: Pipeline Rigidity
+    =========================================================================
+    Previously, all stages ran unconditionally and could fail silently.
+    Now, each stage is CONDITIONAL based on data availability.
+    Incompatible analyses are SKIPPED with clear logging.
     
     Args:
         source_file: Optional path to uploaded sales file
@@ -498,12 +673,14 @@ def run_full_sales_pipeline(source_file: Optional[Path] = None) -> Dict[str, Any
     state.reset()
     
     logger.info("=" * 70)
-    logger.info("[SALES PIPELINE] STARTING FULL SALES PIPELINE")
+    logger.info("[SALES PIPELINE] STARTING FULL SALES PIPELINE (Conditional Execution)")
     logger.info("=" * 70)
     
     results = {
         "success": True,
         "steps": {},
+        "skipped_analyses": [],
+        "available_analyses": [],
         "timestamp_start": datetime.utcnow().isoformat()
     }
     
@@ -528,7 +705,7 @@ def run_full_sales_pipeline(source_file: Optional[Path] = None) -> Dict[str, Any
                 return results
             results["steps"]["copy_file"] = {"success": True, "source": "existing sales.csv"}
         
-        # Step 3: Run EDA
+        # Step 3: Run EDA (always required)
         logger.info("[SALES PIPELINE] Step 3: Running EDA (01_eda.py)")
         eda_result = run_script("01_eda.py", timeout=120)
         results["steps"]["eda"] = eda_result
@@ -537,7 +714,7 @@ def run_full_sales_pipeline(source_file: Optional[Path] = None) -> Dict[str, Any
             results["success"] = False
             return results
         
-        # Step 4: Verify cleaned_dataset.csv was created (01_eda.py creates it directly)
+        # Step 4: Verify cleaned_dataset.csv was created
         logger.info("[SALES PIPELINE] Step 4: Verifying cleaned_dataset.csv exists")
         cleaned_path = DATA_DIR / "cleaned_dataset.csv"
         if not cleaned_path.exists():
@@ -548,26 +725,67 @@ def run_full_sales_pipeline(source_file: Optional[Path] = None) -> Dict[str, Any
         results["steps"]["verify_cleaned"] = {"success": True, "file": str(cleaned_path)}
         logger.info("[SALES PIPELINE] ✓ cleaned_dataset.csv verified")
         
-        # Step 5: Run RFM Segmentation (conditional - requires CustomerID)
-        logger.info("[SALES PIPELINE] Step 5: Running RFM (04_rfm.py)")
-        rfm_result = run_script("04_rfm.py", timeout=120)
-        results["steps"]["rfm"] = rfm_result
-        if rfm_result["success"]:
-            logger.info("[SALES PIPELINE] ✓ RFM segmentation completed")
-        else:
-            logger.info("[SALES PIPELINE] ⊘ RFM skipped or failed (may lack CustomerID)")
+        # Step 5: CONDITIONAL ANALYSIS - Determine what's available
+        logger.info("[SALES PIPELINE] Step 5: Determining available analyses")
+        availability = determine_available_analyses(cleaned_path)
+        results["steps"]["availability_check"] = availability
+        state.available_analyses = availability
         
-        # Step 6: Run Recommendations (conditional - requires multi-product orders)
-        logger.info("[SALES PIPELINE] Step 6: Running Recommendations (05_recommendation.py)")
-        rec_result = run_script("05_recommendation.py", timeout=180)
-        results["steps"]["recommendations"] = rec_result
-        if rec_result["success"]:
-            logger.info("[SALES PIPELINE] ✓ Recommendations completed")
+        for name, info in availability.items():
+            if info["available"]:
+                results["available_analyses"].append(name)
+                logger.info(f"[AVAILABILITY] ✓ {name}: AVAILABLE")
+            else:
+                if name not in ["eda"]:  # eda is always run
+                    results["skipped_analyses"].append({"name": name, "reason": info["reason"]})
+                logger.info(f"[AVAILABILITY] ✗ {name}: SKIPPED - {info['reason']}")
+        
+        # Step 6: Run Forecasting (CONDITIONAL)
+        if availability.get("forecasting", {}).get("available", False):
+            logger.info("[SALES PIPELINE] Step 6: Running Forecasting (03_forecasting.py)")
+            forecast_result = run_script("03_forecasting.py", timeout=180)
+            results["steps"]["forecasting"] = forecast_result
+            if forecast_result["success"]:
+                logger.info("[SALES PIPELINE] ✓ Forecasting completed")
+            else:
+                logger.warning("[SALES PIPELINE] ⚠ Forecasting failed (non-critical)")
         else:
-            logger.info("[SALES PIPELINE] ⊘ Recommendations skipped or failed (may lack multi-product orders)")
+            reason = availability.get("forecasting", {}).get("reason", "Unknown")
+            logger.info(f"[SALES PIPELINE] Step 6: SKIPPING Forecasting - {reason}")
+            results["steps"]["forecasting"] = {"skipped": True, "reason": reason}
+        
+        # Step 7: Run RFM Segmentation (CONDITIONAL - requires CustomerID)
+        if availability.get("rfm", {}).get("available", False):
+            logger.info("[SALES PIPELINE] Step 7: Running RFM (04_rfm.py)")
+            rfm_result = run_script("04_rfm.py", timeout=120)
+            results["steps"]["rfm"] = rfm_result
+            if rfm_result["success"]:
+                logger.info("[SALES PIPELINE] ✓ RFM segmentation completed")
+            else:
+                logger.warning("[SALES PIPELINE] ⚠ RFM failed (non-critical)")
+        else:
+            reason = availability.get("rfm", {}).get("reason", "Unknown")
+            logger.info(f"[SALES PIPELINE] Step 7: SKIPPING RFM - {reason}")
+            results["steps"]["rfm"] = {"skipped": True, "reason": reason}
+        
+        # Step 8: Run Recommendations (CONDITIONAL - requires Product column)
+        if availability.get("recommendation", {}).get("available", False):
+            logger.info("[SALES PIPELINE] Step 8: Running Recommendations (05_recommendation.py)")
+            rec_result = run_script("05_recommendation.py", timeout=180)
+            results["steps"]["recommendations"] = rec_result
+            if rec_result["success"]:
+                logger.info("[SALES PIPELINE] ✓ Recommendations completed")
+            else:
+                logger.warning("[SALES PIPELINE] ⚠ Recommendations failed (non-critical)")
+        else:
+            reason = availability.get("recommendation", {}).get("reason", "Unknown")
+            logger.info(f"[SALES PIPELINE] Step 8: SKIPPING Recommendations - {reason}")
+            results["steps"]["recommendations"] = {"skipped": True, "reason": reason}
         
         logger.info("=" * 70)
         logger.info("[SALES PIPELINE] COMPLETED")
+        logger.info(f"[SALES PIPELINE] Available: {results['available_analyses']}")
+        logger.info(f"[SALES PIPELINE] Skipped: {[s['name'] for s in results['skipped_analyses']]}")
         logger.info("=" * 70)
         
     except Exception as e:

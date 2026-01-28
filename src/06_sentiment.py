@@ -1,10 +1,35 @@
 """
 Sales Intelligence Project - Phase 6: Customer Sentiment Analysis
-NLP-based analysis of customer reviews using TextBlob.
+NLP-based analysis of customer reviews.
+
+=============================================================================
+PROBLEM #2 FIX: Hard-Coded Column Assumptions
+=============================================================================
+This module now uses the Schema Resolver (when available) to auto-detect
+column names, making it work with different data schemas.
+
+=============================================================================
+PROBLEM #4 FIX: Pipeline Rigidity  
+=============================================================================
+Sentiment Analysis REQUIRES review text. If the dataset doesn't have text
+reviews, this analysis will gracefully skip.
+The pipeline controller checks for REVIEW_TEXT availability before calling
+this module.
+=============================================================================
+
+Supports:
+- English text using TextBlob
+- Arabic text detection with fallback to keyword-based sentiment
+
+LIMITATION: TextBlob does not support Arabic. For production Arabic NLP, consider:
+- CAMeL Tools (https://github.com/CAMeL-Lab/camel_tools)
+- AraBERT via HuggingFace transformers
+- ArabicSentiment (pip install arabic-sentiment)
 """
 
 import logging
 import sys
+import re
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -34,9 +59,81 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# -------------------------------------------------
+# Schema Resolver Integration
+# -------------------------------------------------
+try:
+    from schema_resolver import SchemaResolver, SemanticField, can_perform_analysis
+    SCHEMA_RESOLVER_AVAILABLE = True
+    logger.info("Schema Resolver loaded successfully")
+except ImportError:
+    SCHEMA_RESOLVER_AVAILABLE = False
+    logger.warning("Schema Resolver not available - using fallback column detection")
+
+
+def resolve_sentiment_columns(df: pd.DataFrame) -> Dict[str, Optional[str]]:
+    """
+    Resolve required columns for sentiment analysis.
+    
+    Sentiment Analysis requires:
+    - review_text column (REVIEW_TEXT) - for text analysis
+    - rating column (RATING) - optional, for validation
+    
+    Returns dict with resolved column names or None if not found.
+    """
+    if SCHEMA_RESOLVER_AVAILABLE:
+        resolver = SchemaResolver()
+        result = resolver.resolve(df, "reviews")
+        
+        return {
+            "text": result.get_column(SemanticField.REVIEW_TEXT),
+            "rating": result.get_column(SemanticField.RATING)
+        }
+    else:
+        # Fallback detection
+        text_candidates = ["ReviewText", "review_text", "Review", "text", "Text", "comment", "Comment", "feedback", "Feedback"]
+        rating_candidates = ["Rating", "rating", "Score", "score", "Stars", "stars"]
+        
+        text_col = next((c for c in text_candidates if c in df.columns), None)
+        rating_col = next((c for c in rating_candidates if c in df.columns), None)
+        
+        return {"text": text_col, "rating": rating_col}
+
 
 # -------------------------------------------------
-# Text Column Detection
+# Language Detection
+# -------------------------------------------------
+# Arabic Unicode range: \u0600-\u06FF (Arabic), \u0750-\u077F (Arabic Supplement)
+ARABIC_PATTERN = re.compile(r'[\u0600-\u06FF\u0750-\u077F]')
+
+# Common Arabic sentiment keywords (basic lexicon)
+ARABIC_POSITIVE_WORDS = [
+    'ممتاز', 'رائع', 'جيد', 'حلو', 'جميل', 'مذهل', 'عظيم', 'أحب', 'سعيد', 'شكرا',
+    'مبدع', 'متميز', 'افضل', 'أفضل', 'محترم', 'راضي', 'سريع', 'مريح', 'نظيف'
+]
+ARABIC_NEGATIVE_WORDS = [
+    'سيء', 'رديء', 'سيئ', 'فظيع', 'مقرف', 'بطيء', 'غالي', 'مشكلة', 'خراب', 'كذب',
+    'نصب', 'احتيال', 'زفت', 'وسخ', 'متأخر', 'خسارة', 'ضعيف', 'محبط', 'زعلان'
+]
+
+
+def is_arabic(text: str) -> bool:
+    """Check if text contains Arabic characters."""
+    if not text:
+        return False
+    arabic_chars = len(ARABIC_PATTERN.findall(text))
+    return arabic_chars > len(text) * 0.3  # >30% Arabic chars
+
+
+def detect_language(text: str) -> str:
+    """Detect language of text (simplified: Arabic vs English)."""
+    if is_arabic(text):
+        return "arabic"
+    return "english"
+
+
+# -------------------------------------------------
+# Text Column Detection (Legacy - now uses resolve_sentiment_columns)
 # -------------------------------------------------
 TEXT_CANDIDATES = ["ReviewText", "review_text", "Review", "text", "Text", "comment", "Comment", "feedback", "Feedback"]
 RATING_CANDIDATES = ["Rating", "rating", "Score", "score", "Stars", "stars"]
@@ -44,6 +141,10 @@ RATING_CANDIDATES = ["Rating", "rating", "Score", "score", "Stars", "stars"]
 
 def find_text_column(df: pd.DataFrame) -> Optional[str]:
     """Find the text column in the dataframe."""
+    resolved = resolve_sentiment_columns(df)
+    if resolved.get("text"):
+        return resolved["text"]
+    # Legacy fallback
     for col in TEXT_CANDIDATES:
         if col in df.columns:
             return col
@@ -52,30 +153,140 @@ def find_text_column(df: pd.DataFrame) -> Optional[str]:
 
 def find_rating_column(df: pd.DataFrame) -> Optional[str]:
     """Find the rating column in the dataframe."""
+    resolved = resolve_sentiment_columns(df)
+    if resolved.get("rating"):
+        return resolved["rating"]
+    # Legacy fallback
     for col in RATING_CANDIDATES:
         if col in df.columns:
             return col
     return None
 
 
+import re
+
+# -------------------------------------------------
+# Language Detection
+# -------------------------------------------------
+def detect_language(text: str) -> str:
+    """
+    Simple language detection based on character ranges.
+    
+    Returns:
+        'ar' for Arabic, 'en' for English/other
+    """
+    if not text or not str(text).strip():
+        return 'en'
+    
+    text_str = str(text)
+    # Arabic Unicode range: \u0600-\u06FF (Arabic), \u0750-\u077F (Arabic Supplement)
+    arabic_chars = len(re.findall(r'[\u0600-\u06FF\u0750-\u077F]', text_str))
+    total_chars = len(re.findall(r'\w', text_str))
+    
+    if total_chars == 0:
+        return 'en'
+    
+    # If more than 30% Arabic characters, consider it Arabic
+    if arabic_chars / total_chars > 0.3:
+        return 'ar'
+    return 'en'
+
+
 # -------------------------------------------------
 # Sentiment Analysis
 # -------------------------------------------------
+
+# Arabic sentiment words (common positive/negative terms)
+ARABIC_POSITIVE = {
+    'ممتاز', 'رائع', 'جيد', 'جميل', 'سعيد', 'أحب', 'أعجبني', 'مذهل', 'عظيم', 'مميز',
+    'أفضل', 'إيجابي', 'نظيف', 'سريع', 'محترف', 'شكرا', 'ممتازة', 'رائعة', 'جيدة'
+}
+ARABIC_NEGATIVE = {
+    'سيء', 'سيئ', 'سيئة', 'فظيع', 'كره', 'لا أحب', 'مشكلة', 'سلبي', 'بطيء', 'غالي',
+    'خطأ', 'مكسور', 'ضعيف', 'فشل', 'أسوأ', 'رديء', 'قبيح', 'مزعج', 'محبط'
+}
+
+
+def analyze_arabic_sentiment(text: str) -> Dict:
+    """
+    Analyze sentiment for Arabic text using keyword-based approach.
+    
+    NOTE: For production, consider using:
+    - CAMeL Tools (https://camel-tools.readthedocs.io/)
+    - AraBERT via HuggingFace transformers
+    - Azure Cognitive Services Arabic sentiment
+    
+    Current implementation uses simple keyword matching as a baseline.
+    """
+    if pd.isna(text) or not str(text).strip():
+        return {
+            "polarity": 0.0,
+            "subjectivity": 0.5,
+            "sentiment": "Neutral",
+            "keywords": "",
+            "language": "ar"
+        }
+    
+    text_str = str(text).strip()
+    words = set(re.findall(r'[\u0600-\u06FF]+', text_str))
+    
+    pos_count = len(words & ARABIC_POSITIVE)
+    neg_count = len(words & ARABIC_NEGATIVE)
+    total_sentiment_words = pos_count + neg_count
+    
+    if total_sentiment_words == 0:
+        polarity = 0.0
+        sentiment = "Neutral"
+    else:
+        # Simple polarity calculation
+        polarity = (pos_count - neg_count) / total_sentiment_words
+        if polarity > 0.1:
+            sentiment = "Positive"
+        elif polarity < -0.1:
+            sentiment = "Negative"
+        else:
+            sentiment = "Neutral"
+    
+    # Extract Arabic keywords (first 5 words)
+    keywords = list(words)[:5]
+    keywords_str = ", ".join(keywords) if keywords else ""
+    
+    return {
+        "polarity": round(polarity, 4),
+        "subjectivity": 0.5,  # Cannot determine subjectivity with keyword approach
+        "sentiment": sentiment,
+        "keywords": keywords_str,
+        "language": "ar"
+    }
+
+
 def analyze_sentiment(text: str) -> Dict:
     """
-    Analyze sentiment of a single text using TextBlob.
+    Analyze sentiment of a single text.
+    
+    Automatically detects language and uses appropriate analyzer:
+    - English/Latin: TextBlob
+    - Arabic: Keyword-based approach
     
     Returns:
-        Dict with polarity, subjectivity, and sentiment label
+        Dict with polarity, subjectivity, sentiment label, and detected language
     """
     if pd.isna(text) or not str(text).strip():
         return {
             "polarity": 0.0,
             "subjectivity": 0.0,
             "sentiment": "Neutral",
-            "keywords": ""
+            "keywords": "",
+            "language": "unknown"
         }
     
+    # Detect language
+    lang = detect_language(text)
+    
+    if lang == 'ar':
+        return analyze_arabic_sentiment(text)
+    
+    # English/other languages: use TextBlob
     try:
         blob = TextBlob(str(text))
         polarity = blob.sentiment.polarity
@@ -97,7 +308,8 @@ def analyze_sentiment(text: str) -> Dict:
             "polarity": round(polarity, 4),
             "subjectivity": round(subjectivity, 4),
             "sentiment": sentiment,
-            "keywords": keywords_str
+            "keywords": keywords_str,
+            "language": "en"
         }
     except Exception as e:
         logger.warning(f"Error analyzing text: {e}")
@@ -105,7 +317,8 @@ def analyze_sentiment(text: str) -> Dict:
             "polarity": 0.0,
             "subjectivity": 0.0,
             "sentiment": "Neutral",
-            "keywords": ""
+            "keywords": "",
+            "language": "unknown"
         }
 
 
