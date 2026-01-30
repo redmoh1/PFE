@@ -80,12 +80,13 @@ except ImportError:
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 LOGS_DIR = BASE_DIR / "logs"
+OUTPUT_DIR = BASE_DIR / "output"
 MODEL_PATH = BASE_DIR / "src" / "ml_lifecycle" / "model_registry" / "sales_forecast_model.pkl"
 DB_PATH = DATA_DIR / "datasets.db"
 PIPELINE_LOCK_PATH = DATA_DIR / ".pipeline.lock"
 
 DATA_DIR.mkdir(exist_ok=True)
-
+OUTPUT_DIR.mkdir(exist_ok=True)
 LOGS_DIR.mkdir(exist_ok=True)
 
 logging.basicConfig(
@@ -2275,6 +2276,347 @@ def get_summary():
         "model_loaded": model is not None,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+    return summary
+
+
+# =============================================================================
+# NEW: Business Alerts API (Proactive Intelligence)
+# =============================================================================
+
+@app.get("/api/alerts", tags=["Intelligence"])
+def get_business_alerts(
+    request: Request,
+    refresh: bool = Query(False, description="Force regeneration of alerts")
+):
+    """
+    Get proactive business alerts for the company.
+    
+    Alerts are generated from:
+    - Sales patterns (revenue decline, anomalies)
+    - Customer behavior (churn risk, VIP inactivity)
+    - Sentiment analysis (aspect complaints)
+    - Forecasts (predicted shortfall)
+    
+    This endpoint transforms the dashboard from passive to proactive.
+    """
+    company_id = request.headers.get("X-Company-ID", "Acme Corp")
+    
+    # Check for cached alerts
+    alerts_path = OUTPUT_DIR / f"{company_id}_alerts.json"
+    
+    if alerts_path.exists() and not refresh:
+        try:
+            with open(alerts_path, "r", encoding="utf-8") as f:
+                alerts_data = json.load(f)
+            logger.info(f"[ALERTS API] Returning cached alerts for {company_id}")
+            return alerts_data
+        except Exception as e:
+            logger.warning(f"Failed to load cached alerts: {e}")
+    
+    # Generate fresh alerts
+    try:
+        # Import and run alert engine
+        sys.path.insert(0, str(BASE_DIR / "src"))
+        from alert_engine import run_alert_engine  # type: ignore
+        
+        alerts_data = run_alert_engine(company_id)
+        logger.info(f"[ALERTS API] Generated {alerts_data.get('total_alerts', 0)} alerts for {company_id}")
+        return alerts_data
+        
+    except ImportError:
+        # Fallback: return empty alerts structure
+        logger.warning("Alert engine not available, returning empty alerts")
+        return {
+            "company": company_id,
+            "generated_at": datetime.now().isoformat(),
+            "total_alerts": 0,
+            "alerts": [],
+            "by_severity": {"critical": 0, "warning": 0, "info": 0},
+            "by_category": {"sales": 0, "customer": 0, "sentiment": 0, "forecast": 0}
+        }
+    except Exception as e:
+        logger.error(f"Failed to generate alerts: {e}")
+        raise HTTPException(status_code=500, detail=f"Alert generation failed: {str(e)}")
+
+
+@app.post("/api/alerts/generate", tags=["Intelligence"])
+def generate_alerts(request: Request):
+    """Force regeneration of all business alerts."""
+    company_id = request.headers.get("X-Company-ID", "Acme Corp")
+    
+    try:
+        sys.path.insert(0, str(BASE_DIR / "src"))
+        from alert_engine import run_alert_engine  # type: ignore
+        
+        alerts_data = run_alert_engine(company_id)
+        return {
+            "status": "success",
+            "message": f"Generated {alerts_data.get('total_alerts', 0)} alerts",
+            "alerts": alerts_data
+        }
+    except Exception as e:
+        logger.error(f"Alert generation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
+# NEW: Advanced Sentiment Analysis API (Arabic-First)
+# =============================================================================
+
+@app.get("/api/advanced-sentiment", tags=["Intelligence"])
+def get_advanced_sentiment(
+    request: Request,
+    refresh: bool = Query(False, description="Force reanalysis of reviews")
+):
+    """
+    Get advanced aspect-based sentiment analysis.
+    
+    Features:
+    - Arabic language support
+    - Aspect extraction (quality, price, delivery, service, packaging)
+    - Per-aspect sentiment scoring
+    - Actionable recommendations
+    
+    This is the KILLER FEATURE for MENA market differentiation.
+    """
+    company_id = request.headers.get("X-Company-ID", "Acme Corp")
+    
+    # Check for cached analysis
+    sentiment_path = OUTPUT_DIR / f"{company_id}_advanced_sentiment.json"
+    
+    if sentiment_path.exists() and not refresh:
+        try:
+            with open(sentiment_path, "r", encoding="utf-8") as f:
+                sentiment_data = json.load(f)
+            logger.info(f"[ADV SENTIMENT API] Returning cached analysis for {company_id}")
+            return sentiment_data
+        except Exception as e:
+            logger.warning(f"Failed to load cached sentiment: {e}")
+    
+    # Generate fresh analysis
+    try:
+        sys.path.insert(0, str(BASE_DIR / "src"))
+        from advanced_sentiment import run_advanced_sentiment_analysis  # type: ignore
+        
+        sentiment_data = run_advanced_sentiment_analysis(company_id)
+        logger.info(f"[ADV SENTIMENT API] Analyzed {sentiment_data.get('total_reviews', 0)} reviews for {company_id}")
+        return sentiment_data
+        
+    except ImportError:
+        logger.warning("Advanced sentiment module not available")
+        return {
+            "company": company_id,
+            "error": "Advanced sentiment analysis module not available",
+            "total_reviews": 0,
+            "aspect_analysis": {},
+            "alerts": [],
+            "recommendations": []
+        }
+    except Exception as e:
+        logger.error(f"Sentiment analysis failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
+# NEW: Customer Lifetime Value (CLV) API
+# =============================================================================
+
+@app.get("/api/clv", tags=["Intelligence"])
+def get_customer_clv(
+    request: Request,
+    refresh: bool = Query(False, description="Force recalculation of CLV")
+):
+    """
+    Get Customer Lifetime Value analysis.
+    
+    Provides:
+    - Historical and Predictive CLV per customer
+    - CLV-based segmentation (Platinum, Gold, Silver, Bronze)
+    - Acquisition cost recommendations
+    - Top customer identification
+    """
+    company_id = request.headers.get("X-Company-ID", "Acme Corp")
+    
+    # Check for cached CLV data
+    clv_path = OUTPUT_DIR / f"{company_id}_clv_insights.json"
+    
+    if clv_path.exists() and not refresh:
+        try:
+            with open(clv_path, "r", encoding="utf-8") as f:
+                clv_data = json.load(f)
+            logger.info(f"[CLV API] Returning cached CLV data for {company_id}")
+            return clv_data
+        except Exception as e:
+            logger.warning(f"Failed to load cached CLV: {e}")
+    
+    # Calculate fresh CLV
+    try:
+        sys.path.insert(0, str(BASE_DIR / "src"))
+        from clv_calculation import run_clv_analysis  # type: ignore
+        
+        clv_data = run_clv_analysis(company_id)
+        logger.info(f"[CLV API] Calculated CLV for {company_id}")
+        return clv_data
+        
+    except ImportError:
+        logger.warning("CLV calculation module not available")
+        return {
+            "company": company_id,
+            "error": "CLV calculation module not available",
+            "insights": {"summary": {}, "segments": {}, "recommendations": []},
+            "top_customers": []
+        }
+    except Exception as e:
+        logger.error(f"CLV calculation failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/clv/segments", tags=["Intelligence"])
+def get_clv_segments(request: Request):
+    """Get CLV segment breakdown."""
+    company_id = request.headers.get("X-Company-ID", "Acme Corp")
+    
+    clv_csv_path = OUTPUT_DIR / f"{company_id}_clv_analysis.csv"
+    
+    if not clv_csv_path.exists():
+        # Try to generate it
+        return get_customer_clv(request, refresh=True)
+    
+    try:
+        clv_df = pd.read_csv(clv_csv_path)
+        
+        if 'clv_segment' not in clv_df.columns:
+            return {"error": "CLV segments not calculated", "segments": {}}
+        
+        segment_summary = clv_df.groupby('clv_segment').agg({
+            'average_clv': ['count', 'sum', 'mean']
+        }).round(2)
+        
+        segment_summary.columns = ['customer_count', 'total_clv', 'avg_clv']
+        
+        return {
+            "company": company_id,
+            "segments": segment_summary.to_dict('index'),
+            "total_customers": len(clv_df),
+            "total_clv": float(clv_df['average_clv'].sum())
+        }
+    except Exception as e:
+        logger.error(f"Failed to get CLV segments: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
+# NEW: Intelligence Dashboard Summary
+# =============================================================================
+
+@app.get("/api/intelligence-summary", tags=["Intelligence"])
+def get_intelligence_summary(request: Request):
+    """
+    Get a complete intelligence summary for the dashboard.
+    
+    This is the main endpoint for the enhanced dashboard, combining:
+    - Key alerts requiring attention
+    - Sentiment insights
+    - CLV highlights
+    - Actionable recommendations
+    
+    Designed for the "proactive intelligence" user experience.
+    """
+    company_id = request.headers.get("X-Company-ID", "Acme Corp")
+    
+    summary = {
+        "company": company_id,
+        "generated_at": datetime.now().isoformat(),
+        "alerts": [],
+        "sentiment_highlights": {},
+        "clv_highlights": {},
+        "top_recommendations": []
+    }
+    
+    # Load alerts
+    alerts_path = OUTPUT_DIR / f"{company_id}_alerts.json"
+    if alerts_path.exists():
+        try:
+            with open(alerts_path, "r", encoding="utf-8") as f:
+                alerts_data = json.load(f)
+            # Get top 5 alerts
+            summary["alerts"] = alerts_data.get("alerts", [])[:5]
+            summary["alert_counts"] = alerts_data.get("by_severity", {})
+        except Exception:
+            pass
+    
+    # Load sentiment highlights
+    sentiment_path = OUTPUT_DIR / f"{company_id}_advanced_sentiment.json"
+    if sentiment_path.exists():
+        try:
+            with open(sentiment_path, "r", encoding="utf-8") as f:
+                sentiment_data = json.load(f)
+            summary["sentiment_highlights"] = {
+                "total_reviews": sentiment_data.get("total_reviews", 0),
+                "positive_rate": sentiment_data.get("sentiment_distribution", {}).get("positive_rate", 0),
+                "arabic_percentage": sentiment_data.get("language_distribution", {}).get("arabic_percentage", 0),
+                "top_issue": None
+            }
+            # Find top issue
+            aspects = sentiment_data.get("aspect_analysis", {})
+            worst_aspect = max(aspects.items(), key=lambda x: x[1].get("negative_pct", 0), default=(None, {}))
+            if worst_aspect[0] and worst_aspect[1].get("negative_pct", 0) > 30:
+                summary["sentiment_highlights"]["top_issue"] = {
+                    "aspect": worst_aspect[0],
+                    "negative_pct": worst_aspect[1].get("negative_pct", 0),
+                    "icon": worst_aspect[1].get("icon", "⚠️")
+                }
+        except Exception:
+            pass
+    
+    # Load CLV highlights
+    clv_path = OUTPUT_DIR / f"{company_id}_clv_insights.json"
+    if clv_path.exists():
+        try:
+            with open(clv_path, "r", encoding="utf-8") as f:
+                clv_data = json.load(f)
+            insights = clv_data.get("insights", {})
+            summary["clv_highlights"] = {
+                "average_clv": insights.get("summary", {}).get("average_clv", 0),
+                "total_customers": insights.get("summary", {}).get("total_customers", 0),
+                "platinum_customers": insights.get("segments", {}).get("Platinum", {}).get("count", 0),
+                "platinum_value_pct": insights.get("segments", {}).get("Platinum", {}).get("pct_of_total", 0)
+            }
+        except Exception:
+            pass
+    
+    # Compile top recommendations from all sources
+    all_recommendations = []
+    
+    # From alerts
+    for alert in summary.get("alerts", []):
+        if alert.get("severity") in ["critical", "warning"]:
+            all_recommendations.append({
+                "source": "alert",
+                "priority": "high" if alert.get("severity") == "critical" else "medium",
+                "title": alert.get("title", ""),
+                "action": alert.get("recommendation", ""),
+                "icon": alert.get("icon", "⚠️")
+            })
+    
+    # From sentiment
+    if sentiment_path.exists():
+        try:
+            with open(sentiment_path, "r", encoding="utf-8") as f:
+                sentiment_data = json.load(f)
+            for rec in sentiment_data.get("recommendations", [])[:2]:
+                all_recommendations.append({
+                    "source": "sentiment",
+                    "priority": "medium",
+                    "title": rec.get("message_en", ""),
+                    "action": rec.get("action", ""),
+                    "icon": rec.get("icon", "💡")
+                })
+        except Exception:
+            pass
+    
+    summary["top_recommendations"] = all_recommendations[:5]
+    
     return summary
 
 

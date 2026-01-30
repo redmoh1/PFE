@@ -1,0 +1,7 @@
+2026-01-30 19:44:12,680 - INFO - ============================================================
+2026-01-30 19:44:12,680 - INFO - ALERT ENGINE - Acme Corp
+2026-01-30 19:44:12,680 - INFO - ============================================================
+2026-01-30 19:44:12,687 - INFO - Loaded forecast data
+2026-01-30 19:44:12,688 - INFO - Running alert checks for Acme Corp
+2026-01-30 19:44:12,688 - INFO - Generated 1 alerts
+2026-01-30 19:44:12,689 - INFO - Alerts saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_alerts.json

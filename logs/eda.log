@@ -306,3 +306,226 @@
 2026-01-28 19:08:08,503 - INFO - Performing EDA...
 2026-01-28 19:08:08,503 - INFO - [SKIP] City-based EDA skipped
 2026-01-28 19:08:08,803 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-29 00:09:09,925 - INFO - Schema Resolver loaded successfully
+2026-01-29 00:09:09,925 - INFO - ============================================================
+2026-01-29 00:09:09,925 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-29 00:09:09,925 - INFO - ============================================================
+2026-01-29 00:09:09,925 - INFO - ============================================================
+2026-01-29 00:09:09,925 - INFO - DATA LOADING PHASE
+2026-01-29 00:09:09,925 - INFO - ============================================================
+2026-01-29 00:09:09,989 - INFO - [OK] Loaded 128975 sales records (MANDATORY)
+2026-01-29 00:09:09,989 - WARNING - [WARN] customers.csv not found – continuing without customers
+2026-01-29 00:09:09,992 - INFO - ========================================
+2026-01-29 00:09:09,992 - INFO - SCHEMA RESOLUTION RESULTS
+2026-01-29 00:09:09,992 - INFO -   order_date -> 'OrderDate'
+2026-01-29 00:09:09,992 - INFO -   order_id -> 'OrderID'
+2026-01-29 00:09:09,992 - INFO -   total_price -> 'TotalPrice'
+2026-01-29 00:09:09,992 - INFO -   city -> 'City'
+2026-01-29 00:09:09,992 - INFO -   Unmapped: ['ProductID']
+2026-01-29 00:09:09,992 - INFO - ========================================
+2026-01-29 00:09:10,001 - WARNING - No CustomerID column found - RFM analysis will be unavailable
+2026-01-29 00:09:10,001 - WARNING - No Product column found - Recommendations will be unavailable
+2026-01-29 00:09:10,003 - INFO - Cleaning data...
+2026-01-29 00:09:10,010 - INFO - Data cleaning completed
+2026-01-29 00:09:10,011 - INFO - ============================================================
+2026-01-29 00:09:10,011 - INFO - DATA MERGING PHASE
+2026-01-29 00:09:10,011 - INFO - ============================================================
+2026-01-29 00:09:10,013 - INFO - [SKIP] No customer enrichment applied
+2026-01-29 00:09:10,243 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-29 00:09:10,460 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-29 00:09:10,465 - INFO - Total Sales Revenue: 78,592,678.30
+2026-01-29 00:09:10,465 - INFO - Total Orders: 128,975.00
+2026-01-29 00:09:10,465 - INFO - Total Customers: 0.00
+2026-01-29 00:09:10,465 - INFO - Average Order Value: 609.36
+2026-01-29 00:09:10,465 - INFO - Median Order Value: 583.00
+2026-01-29 00:09:10,465 - INFO - Total Products Sold: 0.00
+2026-01-29 00:09:10,465 - INFO - Performing EDA...
+2026-01-29 00:09:10,513 - ERROR - Pipeline failed: 'Product'
+2026-01-29 00:10:58,752 - INFO - Schema Resolver loaded successfully
+2026-01-29 00:10:58,752 - INFO - ============================================================
+2026-01-29 00:10:58,752 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-29 00:10:58,752 - INFO - ============================================================
+2026-01-29 00:10:58,752 - INFO - ============================================================
+2026-01-29 00:10:58,752 - INFO - DATA LOADING PHASE
+2026-01-29 00:10:58,752 - INFO - ============================================================
+2026-01-29 00:10:58,814 - INFO - [OK] Loaded 1465 sales records (MANDATORY)
+2026-01-29 00:10:58,814 - WARNING - [WARN] customers.csv not found – continuing without customers
+2026-01-29 00:10:58,815 - INFO - ========================================
+2026-01-29 00:10:58,815 - INFO - SCHEMA RESOLUTION RESULTS
+2026-01-29 00:10:58,815 - INFO -   customer_id -> 'user_id'
+2026-01-29 00:10:58,815 - INFO -   product -> 'product_name'
+2026-01-29 00:10:58,815 - INFO -   review_text -> 'review_content'
+2026-01-29 00:10:58,815 - INFO -   rating -> 'rating'
+2026-01-29 00:10:58,815 - INFO -   Unmapped: ['product_id', 'category', 'discounted_price', 'actual_price', 'discount_percentage', 'rating_count', 'about_product', 'user_name', 'review_id', 'review_title', 'img_link', 'product_link']
+2026-01-29 00:10:58,815 - INFO - ========================================
+2026-01-29 00:10:58,815 - ERROR - Pipeline failed: Sales data requires a date column. Expected one of: OrderDate, order_date, Sale_Date, Date. Found: ['product_id', 'product_name', 'category', 'discounted_price', 'actual_price', 'discount_percentage', 'rating', 'rating_count', 'about_product', 'user_id', 'user_name', 'review_id', 'review_title', 'review_content', 'img_link', 'product_link']
+2026-01-29 00:12:44,197 - INFO - Schema Resolver loaded successfully
+2026-01-29 00:12:44,198 - INFO - ============================================================
+2026-01-29 00:12:44,198 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-29 00:12:44,198 - INFO - ============================================================
+2026-01-29 00:12:44,198 - INFO - ============================================================
+2026-01-29 00:12:44,198 - INFO - DATA LOADING PHASE
+2026-01-29 00:12:44,198 - INFO - ============================================================
+2026-01-29 00:12:44,228 - INFO - [OK] Loaded 9800 sales records (MANDATORY)
+2026-01-29 00:12:44,228 - WARNING - [WARN] customers.csv not found – continuing without customers
+2026-01-29 00:12:44,230 - INFO - ========================================
+2026-01-29 00:12:44,230 - INFO - SCHEMA RESOLUTION RESULTS
+2026-01-29 00:12:44,230 - INFO -   total_price -> 'Sales'
+2026-01-29 00:12:44,230 - INFO -   city -> 'City'
+2026-01-29 00:12:44,230 - INFO -   Unmapped: ['Row ID', 'Order ID', 'Order Date', 'Ship Date', 'Ship Mode', 'Customer ID', 'Customer Name', 'Segment', 'Country', 'State', 'Postal Code', 'Region', 'Product ID', 'Category', 'Sub-Category', 'Product Name']
+2026-01-29 00:12:44,230 - INFO - ========================================
+2026-01-29 00:12:44,230 - ERROR - Pipeline failed: Sales data requires a date column. Expected one of: OrderDate, order_date, Sale_Date, Date. Found: ['Row ID', 'Order ID', 'Order Date', 'Ship Date', 'Ship Mode', 'Customer ID', 'Customer Name', 'Segment', 'Country', 'City', 'State', 'Postal Code', 'Region', 'Product ID', 'Category', 'Sub-Category', 'Product Name', 'Sales']
+2026-01-29 00:14:10,808 - INFO - Schema Resolver loaded successfully
+2026-01-29 00:14:10,808 - INFO - ============================================================
+2026-01-29 00:14:10,808 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-29 00:14:10,809 - INFO - ============================================================
+2026-01-29 00:14:10,809 - INFO - ============================================================
+2026-01-29 00:14:10,809 - INFO - DATA LOADING PHASE
+2026-01-29 00:14:10,809 - INFO - ============================================================
+2026-01-29 00:14:10,871 - INFO - [OK] Loaded 1465 sales records (MANDATORY)
+2026-01-29 00:14:10,872 - WARNING - [WARN] customers.csv not found – continuing without customers
+2026-01-29 00:14:10,873 - INFO - ========================================
+2026-01-29 00:14:10,873 - INFO - SCHEMA RESOLUTION RESULTS
+2026-01-29 00:14:10,873 - INFO -   customer_id -> 'user_id'
+2026-01-29 00:14:10,874 - INFO -   product -> 'product_name'
+2026-01-29 00:14:10,874 - INFO -   review_text -> 'review_content'
+2026-01-29 00:14:10,874 - INFO -   rating -> 'rating'
+2026-01-29 00:14:10,874 - INFO -   Unmapped: ['product_id', 'category', 'discounted_price', 'actual_price', 'discount_percentage', 'rating_count', 'about_product', 'user_name', 'review_id', 'review_title', 'img_link', 'product_link']
+2026-01-29 00:14:10,874 - INFO - ========================================
+2026-01-29 00:14:10,874 - ERROR - Pipeline failed: Sales data requires a date column. Expected one of: OrderDate, order_date, Sale_Date, Date. Found: ['product_id', 'product_name', 'category', 'discounted_price', 'actual_price', 'discount_percentage', 'rating', 'rating_count', 'about_product', 'user_id', 'user_name', 'review_id', 'review_title', 'review_content', 'img_link', 'product_link']
+2026-01-29 00:19:01,228 - INFO - Schema Resolver loaded successfully
+2026-01-29 00:19:01,228 - INFO - ============================================================
+2026-01-29 00:19:01,228 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-29 00:19:01,228 - INFO - ============================================================
+2026-01-29 00:19:01,228 - INFO - ============================================================
+2026-01-29 00:19:01,228 - INFO - DATA LOADING PHASE
+2026-01-29 00:19:01,228 - INFO - ============================================================
+2026-01-29 00:19:01,262 - ERROR - Pipeline failed: 'utf-8' codec can't decode byte 0xa3 in position 79780: invalid start byte
+2026-01-29 00:40:04,362 - INFO - Schema Resolver loaded successfully
+2026-01-29 00:40:04,362 - INFO - ============================================================
+2026-01-29 00:40:04,362 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-29 00:40:04,362 - INFO - ============================================================
+2026-01-29 00:40:04,362 - INFO - ============================================================
+2026-01-29 00:40:04,362 - INFO - DATA LOADING PHASE
+2026-01-29 00:40:04,362 - INFO - ============================================================
+2026-01-29 00:40:04,379 - ERROR - Pipeline failed: 'utf-8' codec can't decode byte 0xa3 in position 79780: invalid start byte
+2026-01-30 19:19:30,403 - INFO - Schema Resolver loaded successfully
+2026-01-30 19:19:30,403 - INFO - ============================================================
+2026-01-30 19:19:30,403 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-30 19:19:30,403 - INFO - ============================================================
+2026-01-30 19:19:30,403 - INFO - ============================================================
+2026-01-30 19:19:30,403 - INFO - DATA LOADING PHASE
+2026-01-30 19:19:30,403 - INFO - ============================================================
+2026-01-30 19:19:30,403 - INFO - [OK] Loaded 18 sales records (MANDATORY)
+2026-01-30 19:19:30,413 - WARNING - [WARN] customers.csv not found – continuing without customers
+2026-01-30 19:19:30,413 - INFO - ========================================
+2026-01-30 19:19:30,413 - INFO - SCHEMA RESOLUTION RESULTS
+2026-01-30 19:19:30,413 - INFO -   order_date -> 'OrderDate'
+2026-01-30 19:19:30,413 - INFO -   customer_id -> 'CustomerID'
+2026-01-30 19:19:30,413 - INFO -   order_id -> 'OrderID'
+2026-01-30 19:19:30,413 - INFO -   product -> 'Product'
+2026-01-30 19:19:30,413 - INFO -   quantity -> 'Quantity'
+2026-01-30 19:19:30,413 - INFO -   unit_price -> 'Price'
+2026-01-30 19:19:30,413 - INFO -   Unmapped: ['Category']
+2026-01-30 19:19:30,413 - INFO - ========================================
+2026-01-30 19:19:30,413 - INFO - Computed TotalPrice from Price × Quantity
+2026-01-30 19:19:30,413 - INFO - Cleaning data...
+2026-01-30 19:19:30,419 - INFO - Data cleaning completed
+2026-01-30 19:19:30,419 - INFO - ============================================================
+2026-01-30 19:19:30,419 - INFO - DATA MERGING PHASE
+2026-01-30 19:19:30,419 - INFO - ============================================================
+2026-01-30 19:19:30,419 - INFO - [SKIP] No customer enrichment applied
+2026-01-30 19:19:30,420 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-30 19:19:30,420 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-30 19:19:30,426 - INFO - Total Sales Revenue: 6,340.00
+2026-01-30 19:19:30,426 - INFO - Total Orders: 7.00
+2026-01-30 19:19:30,426 - INFO - Total Customers: 5.00
+2026-01-30 19:19:30,426 - INFO - Average Order Value: 352.22
+2026-01-30 19:19:30,426 - INFO - Median Order Value: 45.00
+2026-01-30 19:19:30,426 - INFO - Total Products Sold: 9.00
+2026-01-30 19:19:30,426 - INFO - Performing EDA...
+2026-01-30 19:19:30,429 - INFO - [SKIP] City-based EDA skipped
+2026-01-30 19:19:30,864 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-30 19:20:15,321 - INFO - Schema Resolver loaded successfully
+2026-01-30 19:20:15,321 - INFO - ============================================================
+2026-01-30 19:20:15,321 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-30 19:20:15,321 - INFO - ============================================================
+2026-01-30 19:20:15,321 - INFO - ============================================================
+2026-01-30 19:20:15,321 - INFO - DATA LOADING PHASE
+2026-01-30 19:20:15,321 - INFO - ============================================================
+2026-01-30 19:20:15,321 - INFO - [OK] Loaded 307 sales records (MANDATORY)
+2026-01-30 19:20:15,321 - WARNING - [WARN] customers.csv not found – continuing without customers
+2026-01-30 19:20:15,321 - INFO - ========================================
+2026-01-30 19:20:15,321 - INFO - SCHEMA RESOLUTION RESULTS
+2026-01-30 19:20:15,321 - INFO -   order_date -> 'OrderDate'
+2026-01-30 19:20:15,321 - INFO -   customer_id -> 'CustomerID'
+2026-01-30 19:20:15,321 - INFO -   order_id -> 'OrderID'
+2026-01-30 19:20:15,321 - INFO -   product -> 'Product'
+2026-01-30 19:20:15,321 - INFO -   quantity -> 'Quantity'
+2026-01-30 19:20:15,321 - INFO -   unit_price -> 'UnitPrice'
+2026-01-30 19:20:15,321 - INFO -   total_price -> 'TotalPrice'
+2026-01-30 19:20:15,321 - INFO -   city -> 'City'
+2026-01-30 19:20:15,321 - INFO -   Unmapped: ['ProductID']
+2026-01-30 19:20:15,321 - INFO - ========================================
+2026-01-30 19:20:15,321 - INFO - Mapped 'UnitPrice' -> 'Price'
+2026-01-30 19:20:15,321 - INFO - Cleaning data...
+2026-01-30 19:20:15,321 - INFO - Data cleaning completed
+2026-01-30 19:20:15,321 - INFO - ============================================================
+2026-01-30 19:20:15,321 - INFO - DATA MERGING PHASE
+2026-01-30 19:20:15,321 - INFO - ============================================================
+2026-01-30 19:20:15,321 - INFO - [SKIP] No customer enrichment applied
+2026-01-30 19:20:15,338 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-30 19:20:15,339 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-30 19:20:15,339 - INFO - Total Sales Revenue: 201,370.00
+2026-01-30 19:20:15,339 - INFO - Total Orders: 150.00
+2026-01-30 19:20:15,339 - INFO - Total Customers: 29.00
+2026-01-30 19:20:15,339 - INFO - Average Order Value: 655.93
+2026-01-30 19:20:15,339 - INFO - Median Order Value: 180.00
+2026-01-30 19:20:15,339 - INFO - Total Products Sold: 5.00
+2026-01-30 19:20:15,339 - INFO - Performing EDA...
+2026-01-30 19:20:15,756 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-01-30 19:21:03,254 - INFO - Schema Resolver loaded successfully
+2026-01-30 19:21:03,254 - INFO - ============================================================
+2026-01-30 19:21:03,254 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-01-30 19:21:03,254 - INFO - ============================================================
+2026-01-30 19:21:03,254 - INFO - ============================================================
+2026-01-30 19:21:03,254 - INFO - DATA LOADING PHASE
+2026-01-30 19:21:03,254 - INFO - ============================================================
+2026-01-30 19:21:03,254 - INFO - [OK] Loaded 307 sales records (MANDATORY)
+2026-01-30 19:21:03,254 - INFO - ========================================
+2026-01-30 19:21:03,254 - INFO - SCHEMA RESOLUTION RESULTS
+2026-01-30 19:21:03,254 - INFO -   order_date -> 'OrderDate'
+2026-01-30 19:21:03,254 - INFO -   customer_id -> 'CustomerID'
+2026-01-30 19:21:03,254 - INFO -   order_id -> 'OrderID'
+2026-01-30 19:21:03,254 - INFO -   product -> 'Product'
+2026-01-30 19:21:03,254 - INFO -   quantity -> 'Quantity'
+2026-01-30 19:21:03,254 - INFO -   unit_price -> 'UnitPrice'
+2026-01-30 19:21:03,254 - INFO -   total_price -> 'TotalPrice'
+2026-01-30 19:21:03,254 - INFO -   city -> 'City'
+2026-01-30 19:21:03,254 - INFO -   Unmapped: ['ProductID']
+2026-01-30 19:21:03,254 - INFO - ========================================
+2026-01-30 19:21:03,271 - INFO - Mapped 'UnitPrice' -> 'Price'
+2026-01-30 19:21:03,271 - INFO - ========================================
+2026-01-30 19:21:03,271 - INFO - SCHEMA RESOLUTION RESULTS
+2026-01-30 19:21:03,271 - INFO -   customer_id -> 'CustomerID'
+2026-01-30 19:21:03,271 - INFO -   city -> 'City'
+2026-01-30 19:21:03,271 - INFO -   customer_name -> 'CustomerName'
+2026-01-30 19:21:03,271 - INFO -   Unmapped: ['JoinDate']
+2026-01-30 19:21:03,271 - INFO - ========================================
+2026-01-30 19:21:03,271 - INFO - Cleaning data...
+2026-01-30 19:21:03,271 - INFO - Data cleaning completed
+2026-01-30 19:21:03,271 - INFO - ============================================================
+2026-01-30 19:21:03,271 - INFO - DATA MERGING PHASE
+2026-01-30 19:21:03,271 - INFO - ============================================================
+2026-01-30 19:21:03,271 - INFO - [OK] Merge complete: 307 records
+2026-01-30 19:21:03,271 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-01-30 19:21:03,271 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-01-30 19:21:03,271 - INFO - Total Sales Revenue: 201,370.00
+2026-01-30 19:21:03,271 - INFO - Total Orders: 150.00
+2026-01-30 19:21:03,271 - INFO - Total Customers: 29.00
+2026-01-30 19:21:03,271 - INFO - Average Order Value: 655.93
+2026-01-30 19:21:03,271 - INFO - Median Order Value: 180.00
+2026-01-30 19:21:03,271 - INFO - Total Products Sold: 5.00
+2026-01-30 19:21:03,271 - INFO - Performing EDA...
+2026-01-30 19:21:03,271 - INFO - [SKIP] City-based EDA skipped
+2026-01-30 19:21:03,571 - INFO - PHASE 1 COMPLETED SUCCESSFULLY

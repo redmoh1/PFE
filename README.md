@@ -4,11 +4,48 @@
 
 This is a complete sales intelligence platform that brings together data analytics, machine learning, and modern web technologies. The system is designed to help businesses understand their sales patterns, predict future trends, and make data-driven decisions.
 
+**🎯 Target Market:** MENA SME Retail Analytics  
+**💎 Killer Feature:** Arabic-First Customer Feedback Intelligence + Proactive Business Alerts
+
 The project consists of three main components:
 
 - **Python Backend**: Handles data processing, sales forecasting, sentiment analysis, and product recommendations using FastAPI
 - **React Frontend**: A modern interactive dashboard built with TypeScript and Vite for data visualization
-- **Machine Learning Pipeline**: Linear Regression model with a full lifecycle including training, evaluation, prediction, and retraining capabilities
+- **Machine Learning Pipeline**: Prophet-based forecasting with full lifecycle including training, evaluation, prediction, and retraining capabilities
+
+---
+
+## 🚀 Key Differentiators
+
+| Feature | Description |
+|---------|-------------|
+| **Arabic NLP** | Aspect-based sentiment analysis for Arabic reviews (rare in open-source) |
+| **Proactive Alerts** | Business intelligence that tells you what needs attention |
+| **Customer Lifetime Value** | CLV-based segmentation (Platinum/Gold/Silver/Bronze) |
+| **Multi-Tenant** | Company-based data isolation for SaaS deployment |
+| **Schema Resolver** | Works with any CSV column names |
+
+---
+
+## 📊 Intelligence Modules
+
+### New in v2.0
+
+1. **Advanced Sentiment Analysis** (`07_advanced_sentiment.py`)
+   - Arabic language detection and processing
+   - Aspect extraction: Quality, Price, Delivery, Service, Packaging
+   - Per-aspect sentiment scoring with recommendations
+
+2. **Alert Engine** (`08_alert_engine.py`)
+   - Revenue decline detection
+   - Customer churn risk alerts
+   - Sentiment decline warnings
+   - Forecast shortfall predictions
+
+3. **Customer Lifetime Value** (`09_clv_calculation.py`)
+   - Historical, Average, and Predictive CLV
+   - Segment customers by value tier
+   - Acquisition cost recommendations
 
 ---
 
@@ -46,7 +83,7 @@ Sales_Intelligence_Project/
 │   └── requirements.txt        # Python dependencies
 ├── frontend/                   # React + TypeScript + Vite
 │   ├── pages/                  # Page components
-│   ├── components/             # UI components
+│   ├── components/             # UI components (incl. AlertsPanel, SentimentInsights)
 │   ├── store/                  # State management
 │   └── package.json
 ├── src/

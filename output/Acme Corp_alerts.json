@@ -1,0 +1,42 @@
+{
+  "company": "Acme Corp",
+  "generated_at": "2026-01-30T19:51:34.116313",
+  "total_alerts": 2,
+  "by_severity": {
+    "critical": 0,
+    "warning": 2,
+    "info": 0
+  },
+  "by_category": {
+    "sales": 0,
+    "customer": 0,
+    "sentiment": 1,
+    "forecast": 1
+  },
+  "alerts": [
+    {
+      "id": "ALT-ACM-0001",
+      "category": "sentiment",
+      "severity": "warning",
+      "title": "Quality Complaints High",
+      "message": "43% of quality mentions are negative",
+      "recommendation": "Conduct quality audit with suppliers. Review return/complaint data.",
+      "metric_value": 42.9,
+      "threshold": 40,
+      "created_at": "2026-01-30T19:51:34.115969",
+      "icon": "✨"
+    },
+    {
+      "id": "ALT-ACM-0002",
+      "category": "forecast",
+      "severity": "warning",
+      "title": "Forecasted Revenue Below Target",
+      "message": "Forecast predicts $23,067 vs. target $241,644 (90.5% gap)",
+      "recommendation": "Consider additional promotions or sales initiatives to close the gap.",
+      "metric_value": 23066.662355142085,
+      "threshold": 217479.6,
+      "created_at": "2026-01-30T19:51:34.116253",
+      "icon": "🔮"
+    }
+  ]
+}

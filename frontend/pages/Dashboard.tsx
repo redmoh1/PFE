@@ -25,6 +25,10 @@ import {
   Cell
 } from 'recharts';
 
+// Import new intelligence components
+import AlertsPanel from '../components/AlertsPanel';
+import SentimentInsights from '../components/SentimentInsights';
+
 const Dashboard: React.FC = () => {
   const { sales, forecast, segments, kpis, lastTrainingDate, isLoading, error, refreshData } = useData();
 
@@ -104,13 +108,16 @@ const Dashboard: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Executive Overview</h2>
-          <p className="text-text-secondary dark:text-text-secondaryDark">Real-time performance metrics and ML-driven summaries.</p>
+          <p className="text-text-secondary dark:text-text-secondaryDark">Real-time performance metrics and ML-driven insights.</p>
         </div>
         <div className="flex items-center gap-2 text-xs font-medium text-text-secondary bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
           <span className="w-2 h-2 bg-success rounded-full animate-pulse" />
           Last updated: {lastTrainingDate ? new Date(lastTrainingDate).toLocaleString() : 'Never'}
         </div>
       </div>
+
+      {/* Business Alerts - Proactive Intelligence */}
+      <AlertsPanel />
 
       {/* KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -213,6 +220,9 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Customer Feedback Intelligence - Arabic-First NLP */}
+      <SentimentInsights />
     </div>
   );
 };

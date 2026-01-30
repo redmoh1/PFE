@@ -440,3 +440,113 @@
 2026-01-28 19:08:10,639 - INFO - ============================================================
 2026-01-28 19:08:10,639 - INFO - PHASE 4: RFM ANALYSIS COMPLETED SUCCESSFULLY
 2026-01-28 19:08:10,639 - INFO - ============================================================
+2026-01-30 19:19:31,518 - INFO - Schema Resolver loaded successfully
+2026-01-30 19:19:31,518 - INFO - ============================================================
+2026-01-30 19:19:31,518 - INFO - PHASE 4: RFM ANALYSIS STARTED
+2026-01-30 19:19:31,518 - INFO - ============================================================
+2026-01-30 19:19:31,518 - INFO - ============================================================
+2026-01-30 19:19:31,518 - INFO - RFM ANALYSIS - DATA VALIDATION
+2026-01-30 19:19:31,518 - INFO - ============================================================
+2026-01-30 19:19:31,518 - INFO - Found data file at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-30 19:19:31,518 - INFO - ✓ Loaded 18 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-30 19:19:31,518 - INFO - Column resolution: date='OrderDate', customer='CustomerID', value='TotalPrice'
+2026-01-30 19:19:31,518 - INFO - ✓ Using columns: CustomerID=CustomerID, OrderDate=OrderDate, TotalPrice=TotalPrice
+2026-01-30 19:19:31,518 - INFO - ✓ Created OrderValue column from TotalPrice
+2026-01-30 19:19:31,518 - INFO - ✓ Validated 18 records for RFM analysis
+2026-01-30 19:19:31,518 - INFO - ============================================================
+2026-01-30 19:19:31,518 - INFO - Calculating RFM metrics...
+2026-01-30 19:19:31,518 - INFO - Reference date: 2025-01-25
+2026-01-30 19:19:31,518 - INFO - Calculated RFM for 5 unique customers
+2026-01-30 19:19:31,518 - INFO - Recency range: 0-13 days
+2026-01-30 19:19:31,518 - INFO - Frequency range: 2-5 orders
+2026-01-30 19:19:31,518 - INFO - Monetary range: 430.00-2,495.00
+2026-01-30 19:19:31,518 - INFO - Computing RFM scores (1-5 scale using quantile binning)...
+2026-01-30 19:19:31,535 - INFO - Created 5 unique RFM segments
+2026-01-30 19:19:31,535 - INFO - Customer segments:
+2026-01-30 19:19:31,535 - INFO -   At Risk: 1 customers
+2026-01-30 19:19:31,535 - INFO -   Champions: 1 customers
+2026-01-30 19:19:31,535 - INFO -   Lost: 1 customers
+2026-01-30 19:19:31,535 - INFO -   Potential Loyalists: 1 customers
+2026-01-30 19:19:31,535 - INFO -   Loyal Customers: 1 customers
+2026-01-30 19:19:31,535 - INFO - Generating RFM visualizations...
+2026-01-30 19:19:31,952 - INFO - RFM heatmap saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rfm_heatmap.png
+2026-01-30 19:19:32,169 - INFO - Segment distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rfm_segments.png
+2026-01-30 19:19:32,551 - INFO - Metrics distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rfm_metrics_distribution.png
+2026-01-30 19:19:32,551 - INFO - RFM table saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv with 5 customers
+2026-01-30 19:19:32,551 - INFO - ============================================================
+2026-01-30 19:19:32,551 - INFO - PHASE 4: RFM ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-30 19:19:32,551 - INFO - ============================================================
+2026-01-30 19:20:18,473 - INFO - Schema Resolver loaded successfully
+2026-01-30 19:20:18,474 - INFO - ============================================================
+2026-01-30 19:20:18,474 - INFO - PHASE 4: RFM ANALYSIS STARTED
+2026-01-30 19:20:18,474 - INFO - ============================================================
+2026-01-30 19:20:18,474 - INFO - ============================================================
+2026-01-30 19:20:18,474 - INFO - RFM ANALYSIS - DATA VALIDATION
+2026-01-30 19:20:18,474 - INFO - ============================================================
+2026-01-30 19:20:18,474 - INFO - Found data file at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-30 19:20:18,476 - INFO - ✓ Loaded 307 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-30 19:20:18,477 - INFO - Column resolution: date='OrderDate', customer='CustomerID', value='TotalPrice'
+2026-01-30 19:20:18,478 - INFO - ✓ Using columns: CustomerID=CustomerID, OrderDate=OrderDate, TotalPrice=TotalPrice
+2026-01-30 19:20:18,481 - INFO - ✓ Created OrderValue column from TotalPrice
+2026-01-30 19:20:18,482 - INFO - ✓ Validated 307 records for RFM analysis
+2026-01-30 19:20:18,482 - INFO - ============================================================
+2026-01-30 19:20:18,482 - INFO - Calculating RFM metrics...
+2026-01-30 19:20:18,482 - INFO - Reference date: 2024-05-30
+2026-01-30 19:20:18,492 - INFO - Calculated RFM for 29 unique customers
+2026-01-30 19:20:18,492 - INFO - Recency range: 0-150 days
+2026-01-30 19:20:18,492 - INFO - Frequency range: 1-24 orders
+2026-01-30 19:20:18,493 - INFO - Monetary range: 315.00-14,720.00
+2026-01-30 19:20:18,493 - INFO - Computing RFM scores (1-5 scale using quantile binning)...
+2026-01-30 19:20:18,496 - INFO - Created 22 unique RFM segments
+2026-01-30 19:20:18,497 - INFO - Customer segments:
+2026-01-30 19:20:18,497 - INFO -   Lost: 9 customers
+2026-01-30 19:20:18,497 - INFO -   Potential Loyalists: 7 customers
+2026-01-30 19:20:18,497 - INFO -   Champions: 7 customers
+2026-01-30 19:20:18,497 - INFO -   At Risk: 3 customers
+2026-01-30 19:20:18,497 - INFO -   Loyal Customers: 2 customers
+2026-01-30 19:20:18,497 - INFO -   New Customers: 1 customers
+2026-01-30 19:20:18,497 - INFO - Generating RFM visualizations...
+2026-01-30 19:20:18,976 - INFO - RFM heatmap saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rfm_heatmap.png
+2026-01-30 19:20:19,235 - INFO - Segment distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rfm_segments.png
+2026-01-30 19:20:19,687 - INFO - Metrics distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rfm_metrics_distribution.png
+2026-01-30 19:20:19,689 - INFO - RFM table saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv with 29 customers
+2026-01-30 19:20:19,689 - INFO - ============================================================
+2026-01-30 19:20:19,689 - INFO - PHASE 4: RFM ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-30 19:20:19,689 - INFO - ============================================================
+2026-01-30 19:21:05,565 - INFO - Schema Resolver loaded successfully
+2026-01-30 19:21:05,565 - INFO - ============================================================
+2026-01-30 19:21:05,565 - INFO - PHASE 4: RFM ANALYSIS STARTED
+2026-01-30 19:21:05,565 - INFO - ============================================================
+2026-01-30 19:21:05,565 - INFO - ============================================================
+2026-01-30 19:21:05,565 - INFO - RFM ANALYSIS - DATA VALIDATION
+2026-01-30 19:21:05,565 - INFO - ============================================================
+2026-01-30 19:21:05,565 - INFO - Found data file at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-30 19:21:05,567 - INFO - ✓ Loaded 307 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-01-30 19:21:05,568 - INFO - Column resolution: date='OrderDate', customer='CustomerID', value='TotalPrice'
+2026-01-30 19:21:05,569 - INFO - ✓ Using columns: CustomerID=CustomerID, OrderDate=OrderDate, TotalPrice=TotalPrice
+2026-01-30 19:21:05,570 - INFO - ✓ Created OrderValue column from TotalPrice
+2026-01-30 19:21:05,570 - INFO - ✓ Validated 307 records for RFM analysis
+2026-01-30 19:21:05,570 - INFO - ============================================================
+2026-01-30 19:21:05,570 - INFO - Calculating RFM metrics...
+2026-01-30 19:21:05,570 - INFO - Reference date: 2024-05-30
+2026-01-30 19:21:05,570 - INFO - Calculated RFM for 29 unique customers
+2026-01-30 19:21:05,570 - INFO - Recency range: 0-150 days
+2026-01-30 19:21:05,570 - INFO - Frequency range: 1-24 orders
+2026-01-30 19:21:05,570 - INFO - Monetary range: 315.00-14,720.00
+2026-01-30 19:21:05,570 - INFO - Computing RFM scores (1-5 scale using quantile binning)...
+2026-01-30 19:21:05,570 - INFO - Created 22 unique RFM segments
+2026-01-30 19:21:05,570 - INFO - Customer segments:
+2026-01-30 19:21:05,570 - INFO -   Lost: 9 customers
+2026-01-30 19:21:05,570 - INFO -   Potential Loyalists: 7 customers
+2026-01-30 19:21:05,570 - INFO -   Champions: 7 customers
+2026-01-30 19:21:05,570 - INFO -   At Risk: 3 customers
+2026-01-30 19:21:05,570 - INFO -   Loyal Customers: 2 customers
+2026-01-30 19:21:05,570 - INFO -   New Customers: 1 customers
+2026-01-30 19:21:05,570 - INFO - Generating RFM visualizations...
+2026-01-30 19:21:05,987 - INFO - RFM heatmap saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rfm_heatmap.png
+2026-01-30 19:21:06,205 - INFO - Segment distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rfm_segments.png
+2026-01-30 19:21:06,605 - INFO - Metrics distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rfm_metrics_distribution.png
+2026-01-30 19:21:06,605 - INFO - RFM table saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv with 29 customers
+2026-01-30 19:21:06,605 - INFO - ============================================================
+2026-01-30 19:21:06,605 - INFO - PHASE 4: RFM ANALYSIS COMPLETED SUCCESSFULLY
+2026-01-30 19:21:06,605 - INFO - ============================================================
