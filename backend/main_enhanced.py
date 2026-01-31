@@ -271,7 +271,7 @@ async def get_latest_forecast(
     
     # Get explanation
     try:
-        from src.explainability import explain_forecast
+        from explainability import explain_forecast
         forecast_df = pd.DataFrame(forecast.forecast_data)
         explanation = explain_forecast(
             forecast_df,
@@ -404,7 +404,7 @@ async def explain_rfm_segment(
         raise HTTPException(status_code=404, detail=f"Customer {request.customer_id} not found")
     
     # Generate explanation
-    from src.explainability import explain_rfm_segment
+    from explainability import explain_rfm_segment
     
     explanation = explain_rfm_segment(
         recency=rfm.recency,
@@ -428,7 +428,7 @@ async def explain_product_recommendation(
     # This would typically fetch from stored association rules
     # For demo, we use placeholder values
     
-    from src.explainability import explain_recommendation
+    from explainability import explain_recommendation
     
     # In production, look up actual rule metrics from database
     explanation = explain_recommendation(
@@ -475,7 +475,7 @@ async def get_model_health(
     db: Session = Depends(get_db)
 ):
     """Get model health summary for monitoring dashboard (Admin only)."""
-    from src.ml_lifecycle.monitor_model import get_model_health_summary
+    from ml_lifecycle.monitor_model import get_model_health_summary
     
     summary = get_model_health_summary(company_id)
     return {"success": True, "data": summary}
@@ -492,7 +492,7 @@ async def check_data_drift(
     if not company:
         raise HTTPException(status_code=404, detail="Company not found")
     
-    from src.ml_lifecycle.monitor_model import detect_data_drift
+    from ml_lifecycle.monitor_model import detect_data_drift
     
     try:
         drift_results = detect_data_drift(company.data_directory)
@@ -514,7 +514,7 @@ async def trigger_retraining(
     if not company:
         raise HTTPException(status_code=404, detail="Company not found")
     
-    from src.ml_lifecycle.monitor_model import should_retrain_model
+    from ml_lifecycle.monitor_model import should_retrain_model
     
     decision = should_retrain_model(company_id, company.data_directory, force)
     

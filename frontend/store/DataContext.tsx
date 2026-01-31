@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { useAuth, useAuthFetch } from './AuthContext';
 import { SalesData, ForecastPoint, RFMSegment, Recommendation, SentimentData, KPIData } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE || '';
 
 interface DataContextType {
   sales: SalesData[];

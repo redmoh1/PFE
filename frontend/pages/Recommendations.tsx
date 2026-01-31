@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../store/AuthContext';
 import { Lightbulb, ShoppingCart, Percent, Zap, Upload } from 'lucide-react';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 interface Recommendation {
   if_product: string;

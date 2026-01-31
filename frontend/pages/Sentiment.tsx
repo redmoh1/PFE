@@ -4,7 +4,7 @@ import { useAuth, useAuthFetch } from '../store/AuthContext';
 import { Smile, Meh, Frown, MessageCircle, Upload, Globe, Brain, Loader2, RefreshCw } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 interface SentimentAnalysis {
   total_reviews: number;

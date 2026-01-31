@@ -1,0 +1,23 @@
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.venv
+**/venv
+**/*.pyc
+
+# Node
+**/node_modules
+**/dist
+
+# Local artifacts
+logs/
+output/
+*.log
+
+# Data can be large; mount it at runtime instead
+data/
+
+# Git
+.git
+.gitignore

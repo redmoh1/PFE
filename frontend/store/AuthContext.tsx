@@ -4,7 +4,7 @@ import { User, UserRole } from '../types';
 
 // API Configuration
 // API Configuration - Use VITE_API_BASE for consistency across all components
-const API_BASE_URL = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE || '';
 
 interface AuthState {
   user: User | null;
@@ -43,6 +43,37 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+async function safeReadJson(response: Response): Promise<any | null> {
+  // 204/205 have no body by definition
+  if (response.status === 204 || response.status === 205) return null;
+
+  const contentType = response.headers.get('content-type') || '';
+  const text = await response.text();
+  if (!text) return null;
+
+  // Prefer JSON only when it looks like JSON (avoids HTML parsing issues)
+  const looksJson = contentType.includes('application/json') || text.trim().startsWith('{') || text.trim().startsWith('[');
+  if (!looksJson) return { _nonJson: true, text, contentType };
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { _invalidJson: true, text, contentType };
+  }
+}
+
+function formatHttpError(response: Response, body: any | null, fallback: string): string {
+  const base = `${fallback} (HTTP ${response.status})`;
+  if (!body) return base;
+  if (typeof body === 'object') {
+    const detail = (body as any).detail;
+    if (typeof detail === 'string' && detail.trim()) return detail;
+    if ((body as any)._nonJson) return `${base}: Non-JSON response from server. Check API URL/proxy and backend status.`;
+    if ((body as any)._invalidJson) return `${base}: Invalid JSON response from server. Check backend logs.`;
+  }
+  return base;
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<AuthState>({
@@ -110,11 +141,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Login failed');
+        const errorBody = await safeReadJson(response);
+        throw new Error(formatHttpError(response, errorBody, 'Login failed'));
       }
       
-      const data: LoginResponse = await response.json();
+      const body = await safeReadJson(response);
+      if (!body || (body as any)._nonJson || (body as any)._invalidJson) {
+        throw new Error('Login failed: server returned an unexpected response. Ensure the backend is running and the API URL/proxy is correct.');
+      }
+
+      const data: LoginResponse = body as LoginResponse;
       
       const user: User = {
         id: String(data.user.id),
@@ -129,6 +165,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Save to localStorage
       localStorage.setItem('auth_token', data.access_token);
       localStorage.setItem('auth_user', JSON.stringify(user));
+      // Convenience: some components read the active tenant from localStorage
+      localStorage.setItem('company', user.company);
       
       setState({
         user,
@@ -174,8 +212,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Registration failed');
+        const errorBody = await safeReadJson(response);
+        throw new Error(formatHttpError(response, errorBody, 'Registration failed'));
       }
       
       // Registration successful, now login
@@ -194,6 +232,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = useCallback(() => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
+    localStorage.removeItem('company');
     setState({
       user: null,
       token: null,

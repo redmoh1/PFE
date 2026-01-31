@@ -18,8 +18,28 @@ import {
   ThumbsDown,
   Globe,
   RefreshCw,
-  AlertTriangle
+  AlertTriangle,
+  Star,
+  DollarSign,
+  Truck,
+  Headphones,
+  Package,
+  CheckCircle2,
+  XCircle
 } from 'lucide-react';
+
+// Professional icon mapping for aspects
+const ASPECT_ICONS: Record<string, React.ReactNode> = {
+  quality: <Star size={18} className="text-amber-500" />,
+  price: <DollarSign size={18} className="text-emerald-600" />,
+  delivery: <Truck size={18} className="text-blue-600" />,
+  service: <Headphones size={18} className="text-violet-600" />,
+  packaging: <Package size={18} className="text-slate-600" />,
+};
+
+const getAspectIcon = (aspect: string): React.ReactNode => {
+  return ASPECT_ICONS[aspect.toLowerCase()] || <CheckCircle2 size={18} className="text-slate-500" />;
+};
 
 interface AspectData {
   total_mentions: number;
@@ -200,7 +220,7 @@ const SentimentInsights: React.FC = () => {
               <div key={aspect} className="group">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">{stats.icon}</span>
+                    {getAspectIcon(aspect)}
                     <span className="font-medium capitalize">{aspect}</span>
                     {isProblematic && (
                       <AlertTriangle size={14} className="text-amber-500" />
@@ -262,7 +282,7 @@ const SentimentInsights: React.FC = () => {
                 className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg"
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span>{alert.icon}</span>
+                  {getAspectIcon(alert.aspect)}
                   <span className="font-medium text-amber-700 dark:text-amber-300">
                     {alert.message_en}
                   </span>
@@ -291,7 +311,7 @@ const SentimentInsights: React.FC = () => {
                 className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg"
               >
                 <div className="flex items-center gap-2">
-                  <span>{rec.icon}</span>
+                  {getAspectIcon(rec.aspect)}
                   <span className="font-medium text-green-700 dark:text-green-300">
                     {rec.message_en}
                   </span>

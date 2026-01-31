@@ -10057,3 +10057,200 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2026-01-30 19:33:53,913 - backend.main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
 2026-01-30 19:33:53,928 - backend.main - INFO - [RFM API] Loaded rfm_table.csv: 29 rows
 2026-01-30 19:33:53,930 - backend.main - INFO - [RFM API] Returning 6 segments for 29 customers
+2026-01-31 17:03:03,797 - PipelineController - INFO - Schema Resolver imported successfully
+2026-01-31 17:03:03,797 - root - INFO - Pipeline Controller imported successfully
+2026-01-31 17:03:03,866 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-01-31 17:03:03,866 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-01-31 17:03:03,898 - backend.main - INFO - ============================================================
+2026-01-31 17:03:03,898 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-01-31 17:03:03,898 - backend.main - INFO - ============================================================
+2026-01-31 17:03:03,911 - backend.main - INFO - [DATA RELOAD] Loaded cleaned_dataset.csv: 307 rows
+2026-01-31 17:03:03,913 - backend.main - INFO - [DATA RELOAD] Loaded sales_forecast.csv: 6 rows
+2026-01-31 17:03:03,915 - backend.main - INFO - [DATA RELOAD] Loaded sentiment_results.csv: 120 rows
+2026-01-31 17:03:03,916 - backend.main - INFO - [DATA RELOAD] Loaded product_recommendations.csv: 3 rows
+2026-01-31 17:03:03,916 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': True, 'forecast': True, 'sentiment': True, 'recommendations': True, 'model': False}
+2026-01-31 17:03:03,916 - backend.main - INFO - ============================================================
+2026-01-31 17:12:18,674 - backend.main - INFO - User logged in: analyst@acme.com
+2026-01-31 17:13:59,948 - backend.main - INFO - User logged in: admin@acme.com
+2026-01-31 17:13:59,987 - backend.main - WARNING - Failed to load cached alerts: name 'json' is not defined
+2026-01-31 17:13:59,987 - backend.main - WARNING - Failed to load cached sentiment: name 'json' is not defined
+2026-01-31 17:14:00,005 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:14:00,005 - 08_alert_engine - INFO - ALERT ENGINE - Acme Corp
+2026-01-31 17:14:00,005 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:14:00,005 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:14:00,005 - 07_advanced_sentiment - INFO - ADVANCED SENTIMENT ANALYSIS - Acme Corp
+2026-01-31 17:14:00,005 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:14:00,005 - 08_alert_engine - INFO - Loaded advanced sentiment data
+2026-01-31 17:14:00,020 - 07_advanced_sentiment - INFO - Loaded 120 reviews from 20260130182139_customer_reviews_big.csv
+2026-01-31 17:14:00,068 - 07_advanced_sentiment - INFO - Results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_advanced_sentiment.json
+2026-01-31 17:14:00,068 - 07_advanced_sentiment - INFO - Found 1 alerts and 1 recommendations
+2026-01-31 17:14:00,068 - backend.main - INFO - [ADV SENTIMENT API] Analyzed 120 reviews for Acme Corp
+2026-01-31 17:14:00,068 - 08_alert_engine - INFO - Loaded forecast data
+2026-01-31 17:14:00,068 - 08_alert_engine - INFO - Running alert checks for Acme Corp
+2026-01-31 17:14:00,068 - 08_alert_engine - INFO - Generated 2 alerts
+2026-01-31 17:14:00,084 - 08_alert_engine - INFO - Alerts saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_alerts.json
+2026-01-31 17:14:00,084 - backend.main - INFO - [ALERTS API] Generated 2 alerts for Acme Corp
+2026-01-31 17:14:00,385 - backend.main - WARNING - Failed to load cached sentiment: name 'json' is not defined
+2026-01-31 17:14:00,385 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:14:00,385 - 07_advanced_sentiment - INFO - ADVANCED SENTIMENT ANALYSIS - Acme Corp
+2026-01-31 17:14:00,386 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:14:00,389 - 07_advanced_sentiment - INFO - Loaded 120 reviews from 20260130182139_customer_reviews_big.csv
+2026-01-31 17:14:00,426 - backend.main - WARNING - Failed to load cached alerts: name 'json' is not defined
+2026-01-31 17:14:00,426 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:14:00,426 - 07_advanced_sentiment - INFO - Results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_advanced_sentiment.json
+2026-01-31 17:14:00,428 - 08_alert_engine - INFO - ALERT ENGINE - Acme Corp
+2026-01-31 17:14:00,428 - 07_advanced_sentiment - INFO - Found 1 alerts and 1 recommendations
+2026-01-31 17:14:00,428 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:14:00,428 - backend.main - INFO - [ADV SENTIMENT API] Analyzed 120 reviews for Acme Corp
+2026-01-31 17:14:00,430 - 08_alert_engine - INFO - Loaded advanced sentiment data
+2026-01-31 17:14:00,436 - 08_alert_engine - INFO - Loaded forecast data
+2026-01-31 17:14:00,436 - 08_alert_engine - INFO - Running alert checks for Acme Corp
+2026-01-31 17:14:00,436 - 08_alert_engine - INFO - Generated 2 alerts
+2026-01-31 17:14:00,436 - 08_alert_engine - INFO - Alerts saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_alerts.json
+2026-01-31 17:14:00,436 - backend.main - INFO - [ALERTS API] Generated 2 alerts for Acme Corp
+2026-01-31 17:14:00,986 - backend.main - INFO - Computed 5 monthly sales for None
+2026-01-31 17:14:00,986 - backend.main - INFO - [FORECAST] Loaded forecast from sales_forecast.csv: 6 rows
+2026-01-31 17:14:00,986 - backend.main - INFO - Added 6 forecast records
+2026-01-31 17:14:00,986 - backend.main - INFO - Returning 11 combined monthly sales records for None
+2026-01-31 17:14:01,219 - backend.main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-31 17:14:01,219 - backend.main - INFO - [RECOMMENDATIONS API] Loaded product_recommendations.csv: 3 rows
+2026-01-31 17:14:01,219 - backend.main - INFO - [RECOMMENDATIONS API] Returning 3 recommendation rules
+2026-01-31 17:14:01,317 - backend.main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-31 17:14:01,317 - backend.main - INFO - [RFM API] Loaded rfm_table.csv: 29 rows
+2026-01-31 17:14:01,332 - backend.main - INFO - [RFM API] Returning 6 segments for 29 customers
+2026-01-31 17:14:01,534 - backend.main - WARNING - Failed to load cached alerts: name 'json' is not defined
+2026-01-31 17:14:01,534 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:14:01,534 - 08_alert_engine - INFO - ALERT ENGINE - Acme Corp
+2026-01-31 17:14:01,534 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:14:01,534 - 08_alert_engine - INFO - Loaded advanced sentiment data
+2026-01-31 17:14:01,550 - 08_alert_engine - INFO - Loaded forecast data
+2026-01-31 17:14:01,550 - 08_alert_engine - INFO - Running alert checks for Acme Corp
+2026-01-31 17:14:01,556 - 08_alert_engine - INFO - Generated 2 alerts
+2026-01-31 17:14:01,556 - 08_alert_engine - INFO - Alerts saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_alerts.json
+2026-01-31 17:14:01,556 - backend.main - INFO - [ALERTS API] Generated 2 alerts for Acme Corp
+2026-01-31 17:14:01,660 - backend.main - WARNING - Failed to load cached alerts: name 'json' is not defined
+2026-01-31 17:14:01,661 - backend.main - WARNING - Failed to load cached sentiment: name 'json' is not defined
+2026-01-31 17:14:01,661 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:14:01,661 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:14:01,662 - 08_alert_engine - INFO - ALERT ENGINE - Acme Corp
+2026-01-31 17:14:01,662 - 07_advanced_sentiment - INFO - ADVANCED SENTIMENT ANALYSIS - Acme Corp
+2026-01-31 17:14:01,662 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:14:01,662 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:14:01,664 - 08_alert_engine - INFO - Loaded advanced sentiment data
+2026-01-31 17:14:01,667 - 07_advanced_sentiment - INFO - Loaded 120 reviews from 20260130182139_customer_reviews_big.csv
+2026-01-31 17:14:01,702 - 07_advanced_sentiment - INFO - Results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_advanced_sentiment.json
+2026-01-31 17:14:01,702 - 07_advanced_sentiment - INFO - Found 1 alerts and 1 recommendations
+2026-01-31 17:14:01,706 - backend.main - INFO - [ADV SENTIMENT API] Analyzed 120 reviews for Acme Corp
+2026-01-31 17:14:01,719 - 08_alert_engine - INFO - Loaded forecast data
+2026-01-31 17:14:01,719 - 08_alert_engine - INFO - Running alert checks for Acme Corp
+2026-01-31 17:14:01,719 - 08_alert_engine - INFO - Generated 2 alerts
+2026-01-31 17:14:01,719 - 08_alert_engine - INFO - Alerts saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_alerts.json
+2026-01-31 17:14:01,719 - backend.main - INFO - [ALERTS API] Generated 2 alerts for Acme Corp
+2026-01-31 17:14:01,869 - backend.main - WARNING - Failed to load cached sentiment: name 'json' is not defined
+2026-01-31 17:14:01,869 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:14:01,869 - 07_advanced_sentiment - INFO - ADVANCED SENTIMENT ANALYSIS - Acme Corp
+2026-01-31 17:14:01,869 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:14:01,869 - 07_advanced_sentiment - INFO - Loaded 120 reviews from 20260130182139_customer_reviews_big.csv
+2026-01-31 17:14:01,914 - 07_advanced_sentiment - INFO - Results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_advanced_sentiment.json
+2026-01-31 17:14:01,915 - 07_advanced_sentiment - INFO - Found 1 alerts and 1 recommendations
+2026-01-31 17:14:01,915 - backend.main - INFO - [ADV SENTIMENT API] Analyzed 120 reviews for Acme Corp
+2026-01-31 17:14:23,882 - backend.main - WARNING - Failed to load cached sentiment: name 'json' is not defined
+2026-01-31 17:14:23,883 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:14:23,883 - 07_advanced_sentiment - INFO - ADVANCED SENTIMENT ANALYSIS - Acme Corp
+2026-01-31 17:14:23,884 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:14:23,887 - 07_advanced_sentiment - INFO - Loaded 120 reviews from 20260130182139_customer_reviews_big.csv
+2026-01-31 17:14:23,921 - 07_advanced_sentiment - INFO - Results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_advanced_sentiment.json
+2026-01-31 17:14:23,921 - 07_advanced_sentiment - INFO - Found 1 alerts and 1 recommendations
+2026-01-31 17:14:23,921 - backend.main - INFO - [ADV SENTIMENT API] Analyzed 120 reviews for Acme Corp
+2026-01-31 17:17:29,233 - backend.main - WARNING - Failed to load cached alerts: name 'json' is not defined
+2026-01-31 17:17:29,233 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:17:29,233 - 08_alert_engine - INFO - ALERT ENGINE - Acme Corp
+2026-01-31 17:17:29,233 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:17:29,233 - 08_alert_engine - INFO - Loaded advanced sentiment data
+2026-01-31 17:17:29,252 - 08_alert_engine - INFO - Loaded forecast data
+2026-01-31 17:17:29,252 - 08_alert_engine - INFO - Running alert checks for Acme Corp
+2026-01-31 17:17:29,253 - 08_alert_engine - INFO - Generated 2 alerts
+2026-01-31 17:17:29,254 - 08_alert_engine - INFO - Alerts saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_alerts.json
+2026-01-31 17:17:29,255 - backend.main - INFO - [ALERTS API] Generated 2 alerts for Acme Corp
+2026-01-31 17:17:29,262 - backend.main - WARNING - Failed to load cached sentiment: name 'json' is not defined
+2026-01-31 17:17:29,262 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:17:29,262 - 07_advanced_sentiment - INFO - ADVANCED SENTIMENT ANALYSIS - Acme Corp
+2026-01-31 17:17:29,263 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:17:29,266 - 07_advanced_sentiment - INFO - Loaded 120 reviews from 20260130182139_customer_reviews_big.csv
+2026-01-31 17:17:29,299 - 07_advanced_sentiment - INFO - Results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_advanced_sentiment.json
+2026-01-31 17:17:29,299 - 07_advanced_sentiment - INFO - Found 1 alerts and 1 recommendations
+2026-01-31 17:17:29,301 - backend.main - INFO - [ADV SENTIMENT API] Analyzed 120 reviews for Acme Corp
+2026-01-31 17:17:29,301 - backend.main - WARNING - Failed to load cached alerts: name 'json' is not defined
+2026-01-31 17:17:29,301 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:17:29,301 - 08_alert_engine - INFO - ALERT ENGINE - Acme Corp
+2026-01-31 17:17:29,301 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:17:29,309 - 08_alert_engine - INFO - Loaded advanced sentiment data
+2026-01-31 17:17:29,321 - 08_alert_engine - INFO - Loaded forecast data
+2026-01-31 17:17:29,321 - 08_alert_engine - INFO - Running alert checks for Acme Corp
+2026-01-31 17:17:29,321 - 08_alert_engine - INFO - Generated 2 alerts
+2026-01-31 17:17:29,321 - 08_alert_engine - INFO - Alerts saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_alerts.json
+2026-01-31 17:17:29,321 - backend.main - INFO - [ALERTS API] Generated 2 alerts for Acme Corp
+2026-01-31 17:17:29,586 - backend.main - WARNING - Failed to load cached sentiment: name 'json' is not defined
+2026-01-31 17:17:29,588 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:17:29,589 - 07_advanced_sentiment - INFO - ADVANCED SENTIMENT ANALYSIS - Acme Corp
+2026-01-31 17:17:29,592 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:17:29,597 - 07_advanced_sentiment - INFO - Loaded 120 reviews from 20260130182139_customer_reviews_big.csv
+2026-01-31 17:17:29,632 - 07_advanced_sentiment - INFO - Results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_advanced_sentiment.json
+2026-01-31 17:17:29,632 - 07_advanced_sentiment - INFO - Found 1 alerts and 1 recommendations
+2026-01-31 17:17:29,632 - backend.main - INFO - [ADV SENTIMENT API] Analyzed 120 reviews for Acme Corp
+2026-01-31 17:17:29,935 - backend.main - INFO - Computed 5 monthly sales for None
+2026-01-31 17:17:29,942 - backend.main - INFO - [FORECAST] Loaded forecast from sales_forecast.csv: 6 rows
+2026-01-31 17:17:29,943 - backend.main - INFO - Added 6 forecast records
+2026-01-31 17:17:29,944 - backend.main - INFO - Returning 11 combined monthly sales records for None
+2026-01-31 17:17:29,951 - backend.main - INFO - Computed 5 monthly sales for None
+2026-01-31 17:17:29,951 - backend.main - INFO - [FORECAST] Loaded forecast from sales_forecast.csv: 6 rows
+2026-01-31 17:17:29,965 - backend.main - INFO - Added 6 forecast records
+2026-01-31 17:17:29,965 - backend.main - INFO - Returning 11 combined monthly sales records for None
+2026-01-31 17:17:30,264 - backend.main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-31 17:17:30,267 - backend.main - INFO - [RECOMMENDATIONS API] Loaded product_recommendations.csv: 3 rows
+2026-01-31 17:17:30,270 - backend.main - INFO - [RECOMMENDATIONS API] Returning 3 recommendation rules
+2026-01-31 17:17:30,580 - backend.main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-31 17:17:30,580 - backend.main - INFO - [RECOMMENDATIONS API] Checking for data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-01-31 17:17:30,584 - backend.main - INFO - [RECOMMENDATIONS API] Loaded product_recommendations.csv: 3 rows
+2026-01-31 17:17:30,587 - backend.main - INFO - [RFM API] Loaded rfm_table.csv: 29 rows
+2026-01-31 17:17:30,588 - backend.main - INFO - [RECOMMENDATIONS API] Returning 3 recommendation rules
+2026-01-31 17:17:30,594 - backend.main - INFO - [RFM API] Returning 6 segments for 29 customers
+2026-01-31 17:17:30,849 - backend.main - INFO - [RFM API] Checking for RFM data at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\rfm_table.csv
+2026-01-31 17:17:30,853 - backend.main - INFO - [RFM API] Loaded rfm_table.csv: 29 rows
+2026-01-31 17:17:30,853 - backend.main - INFO - [RFM API] Returning 6 segments for 29 customers
+2026-01-31 17:17:30,918 - backend.main - WARNING - Failed to load cached alerts: name 'json' is not defined
+2026-01-31 17:17:30,919 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:17:30,919 - backend.main - WARNING - Failed to load cached sentiment: name 'json' is not defined
+2026-01-31 17:17:30,919 - 08_alert_engine - INFO - ALERT ENGINE - Acme Corp
+2026-01-31 17:17:30,919 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:17:30,919 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:17:30,919 - 07_advanced_sentiment - INFO - ADVANCED SENTIMENT ANALYSIS - Acme Corp
+2026-01-31 17:17:30,919 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:17:30,919 - 08_alert_engine - INFO - Loaded advanced sentiment data
+2026-01-31 17:17:30,919 - 07_advanced_sentiment - INFO - Loaded 120 reviews from 20260130182139_customer_reviews_big.csv
+2026-01-31 17:17:30,969 - 07_advanced_sentiment - INFO - Results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_advanced_sentiment.json
+2026-01-31 17:17:30,969 - 07_advanced_sentiment - INFO - Found 1 alerts and 1 recommendations
+2026-01-31 17:17:30,969 - backend.main - INFO - [ADV SENTIMENT API] Analyzed 120 reviews for Acme Corp
+2026-01-31 17:17:30,972 - 08_alert_engine - INFO - Loaded forecast data
+2026-01-31 17:17:30,972 - 08_alert_engine - INFO - Running alert checks for Acme Corp
+2026-01-31 17:17:30,972 - 08_alert_engine - INFO - Generated 2 alerts
+2026-01-31 17:17:30,972 - 08_alert_engine - INFO - Alerts saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_alerts.json
+2026-01-31 17:17:30,972 - backend.main - INFO - [ALERTS API] Generated 2 alerts for Acme Corp
+2026-01-31 17:17:30,972 - backend.main - WARNING - Failed to load cached sentiment: name 'json' is not defined
+2026-01-31 17:17:30,972 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:17:30,980 - 07_advanced_sentiment - INFO - ADVANCED SENTIMENT ANALYSIS - Acme Corp
+2026-01-31 17:17:30,980 - 07_advanced_sentiment - INFO - ============================================================
+2026-01-31 17:17:30,983 - 07_advanced_sentiment - INFO - Loaded 120 reviews from 20260130182139_customer_reviews_big.csv
+2026-01-31 17:17:31,014 - 07_advanced_sentiment - INFO - Results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_advanced_sentiment.json
+2026-01-31 17:17:31,014 - 07_advanced_sentiment - INFO - Found 1 alerts and 1 recommendations
+2026-01-31 17:17:31,015 - backend.main - INFO - [ADV SENTIMENT API] Analyzed 120 reviews for Acme Corp
+2026-01-31 17:17:31,299 - backend.main - WARNING - Failed to load cached alerts: name 'json' is not defined
+2026-01-31 17:17:31,300 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:17:31,300 - 08_alert_engine - INFO - ALERT ENGINE - Acme Corp
+2026-01-31 17:17:31,300 - 08_alert_engine - INFO - ============================================================
+2026-01-31 17:17:31,302 - 08_alert_engine - INFO - Loaded advanced sentiment data
+2026-01-31 17:17:31,318 - 08_alert_engine - INFO - Loaded forecast data
+2026-01-31 17:17:31,318 - 08_alert_engine - INFO - Running alert checks for Acme Corp
+2026-01-31 17:17:31,319 - 08_alert_engine - INFO - Generated 2 alerts
+2026-01-31 17:17:31,320 - 08_alert_engine - INFO - Alerts saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_alerts.json
+2026-01-31 17:17:31,320 - backend.main - INFO - [ALERTS API] Generated 2 alerts for Acme Corp

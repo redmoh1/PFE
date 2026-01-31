@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      args:
+        INSTALL_FULL: "false"
+    environment:
+      # Keep development by default; if you set ENVIRONMENT=production you MUST set JWT_SECRET_KEY
+      ENVIRONMENT: development
+      # If you host frontend separately, set CORS_ORIGINS to your frontend domain
+      # CORS_ORIGINS: "https://your-frontend.example"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./output:/app/output
+    ports:
+      - "8001:8001"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+

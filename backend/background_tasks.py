@@ -22,6 +22,7 @@ from typing import Dict, Optional
 from datetime import datetime
 from enum import Enum
 import json
+import importlib.util
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -30,6 +31,20 @@ from backend.database.models import ForecastResult, SentimentResult, Company
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+SRC_DIR = BASE_DIR / "src"
+
+
+def _load_module_from_path(module_name: str, file_path: Path):
+    spec = importlib.util.spec_from_file_location(module_name, str(file_path))
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Could not load module spec: {module_name} from {file_path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 class TaskStatus(str, Enum):
@@ -72,18 +87,16 @@ async def run_forecast_async(
     
     try:
         logger.info(f"Starting forecast task {task_id} for {company_name}")
-        
-        # Import forecasting module
-        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-        
-        if use_prophet:
-            from src.forecast_prophet import run_forecasting
-        else:
-            from src.forecasting import run_forecasting
+
+        forecasting_module = _load_module_from_path(
+            "forecasting_prophet",
+            SRC_DIR / "03_forecasting_prophet.py",
+        )
+        run_forecasting = forecasting_module.run_forecasting
         
         # Run forecast
         TASK_REGISTRY[task_id]["progress"] = 50
-        results = run_forecasting(company_name, periods, use_prophet)
+        results = run_forecasting(company_name, periods=periods, use_prophet=use_prophet)
         
         # Save to database
         db = SessionLocal()
@@ -160,18 +173,16 @@ async def run_sentiment_async(
     
     try:
         logger.info(f"Starting sentiment task {task_id} for {company_name}")
-        
-        # Import sentiment module
-        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
-        
-        if use_arabic:
-            from src.sentiment_arabic import analyze_reviews
-        else:
-            from src.sentiment import analyze_reviews
+
+        sentiment_module = _load_module_from_path(
+            "sentiment_arabic",
+            SRC_DIR / "06_sentiment_arabic.py",
+        )
+        analyze_reviews = sentiment_module.analyze_reviews
         
         # Run analysis
         TASK_REGISTRY[task_id]["progress"] = 50
-        results_df = analyze_reviews(company_name, use_arabic)
+        results_df = analyze_reviews(company_name, use_arabic_model=use_arabic)
         
         # Save to database
         db = SessionLocal()

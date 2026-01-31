@@ -5,7 +5,7 @@ import { useAuth } from '../store/AuthContext';
 import { Upload, FileText, CheckCircle2, AlertCircle, Loader2, Sparkles, Eye, RefreshCw, Trash2, ArchiveRestore } from 'lucide-react';
 import { DatasetMeta, DatasetPreview } from '../types';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const DataUpload: React.FC = () => {
   const { uploadData, isProcessing, refreshData, resetAllAnalytics } = useData();

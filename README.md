@@ -104,6 +104,61 @@ Sales_Intelligence_Project/
 
 ## Getting Started
 
+## 🧰 Hosting (Docker) — Recommended
+
+This repo includes a ready-to-run Docker setup that:
+
+- Runs the **FastAPI backend** on port **8001**
+- Serves the **frontend** on port **3000**
+- Proxies frontend requests from **`/api` → backend** (so you can host behind one domain)
+
+### Prerequisites
+
+- Docker Desktop (Windows/macOS) or Docker Engine (Linux)
+
+### Run (local or VPS)
+
+From the project root:
+
+```bash
+cd Sales_Intelligence_Project
+docker compose up --build
+```
+
+Open:
+
+- Frontend: http://localhost:3000
+- Backend: http://localhost:8001
+- API Docs: http://localhost:8001/docs
+
+### Data persistence
+
+`docker-compose.yml` mounts:
+
+- `./data` → `/app/data`
+- `./logs` → `/app/logs`
+- `./output` → `/app/output`
+
+So your uploads and generated outputs persist on the host.
+
+### Full ML/NLP dependencies (optional)
+
+By default the backend image is **lite** (faster build). To build with the full dependency set, edit `docker-compose.yml` and set:
+
+```yaml
+args:
+   INSTALL_FULL: "true"
+```
+
+Note: full mode can be very large (NLP/ML libs).
+
+### Production notes
+
+- If you set `ENVIRONMENT=production` on the backend, you must set `JWT_SECRET_KEY` (required by the backend).
+- If you host the frontend separately (different domain), set backend `CORS_ORIGINS` to your frontend URL.
+
+---
+
 ### Step 1: Start the Backend API
 
 Open a terminal in the project root directory and run:
