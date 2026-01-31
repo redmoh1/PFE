@@ -390,15 +390,7 @@ ALLOWED_ORIGINS = os.getenv(
 # Allow broad localhost/127.0.0.1 in dev to avoid CORS flakiness across ports
 ALLOWED_ORIGIN_REGEX = os.getenv("CORS_ORIGIN_REGEX", r"http://(localhost|127\.0\.0\.1):\d{2,5}")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_origin_regex=ALLOWED_ORIGIN_REGEX,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-    max_age=3600,  # Cache preflight requests for 1 hour
-)
+
 logger.info(f"CORS enabled for origins: {ALLOWED_ORIGINS}")
 
 
