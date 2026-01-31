@@ -358,6 +358,15 @@ app = FastAPI(
     description="Backend API for Intelligent Sales Analytics Dashboard",
     version="1.0.0",
 )
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # مؤقتًا للعرض
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Setup Rate Limiting
 if RATE_LIMITING_ENABLED:
