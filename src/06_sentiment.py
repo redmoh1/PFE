@@ -292,7 +292,7 @@ def analyze_sentiment(text: str) -> Dict:
         polarity = blob.sentiment.polarity
         subjectivity = blob.sentiment.subjectivity
         
-        # Classify sentiment
+        # Classify sentiment based on polarity
         if polarity > 0.1:
             sentiment = "Positive"
         elif polarity < -0.1:
@@ -300,8 +300,16 @@ def analyze_sentiment(text: str) -> Dict:
         else:
             sentiment = "Neutral"
         
-        # Extract keywords (nouns from the text)
-        keywords = [word for word, tag in blob.tags if tag.startswith('NN')][:5]
+        # Extract keywords using simple word extraction (no NLTK POS tagging required)
+        # This avoids the need for downloading NLTK corpora
+        words = str(text).split()
+        # Filter meaningful words (length > 3, not common stop words)
+        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 
+                      'it', 'to', 'for', 'of', 'in', 'on', 'with', 'this', 'that', 'i', 
+                      'you', 'he', 'she', 'we', 'they', 'my', 'your', 'his', 'her', 'its',
+                      'very', 'really', 'just', 'so', 'too', 'also', 'been', 'have', 'has'}
+        keywords = [w.strip('.,!?";:()[]') for w in words 
+                    if len(w) > 3 and w.lower() not in stop_words][:5]
         keywords_str = ", ".join(keywords) if keywords else ""
         
         return {
