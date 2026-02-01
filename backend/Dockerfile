@@ -24,8 +24,8 @@ RUN python -m pip install --upgrade pip \
     && pip install --no-cache-dir -r /app/backend/requirements.txt \
     && if [ "$INSTALL_FULL" = "true" ]; then pip install --no-cache-dir -r /app/requirements.txt; fi
 
-# --- Download NLTK data for TextBlob sentiment analysis ---
-RUN python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab'); nltk.download('averaged_perceptron_tagger'); nltk.download('averaged_perceptron_tagger_eng'); nltk.download('brown'); nltk.download('wordnet')"
+# --- Download NLTK/TextBlob data for sentiment analysis ---
+RUN python -m textblob.download_corpora
 
 # --- App code ---
 COPY backend /app/backend
