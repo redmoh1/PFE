@@ -13,6 +13,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useAuth, useAuthFetch } from '../store/AuthContext';
 import { 
   AlertTriangle, 
   AlertCircle, 
@@ -59,25 +60,30 @@ interface AlertsData {
 }
 
 const AlertsPanel: React.FC = () => {
+  const { user } = useAuth();
+  const authFetch = useAuthFetch();
   const [alertsData, setAlertsData] = useState<AlertsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
-    fetchAlerts();
-  }, []);
+    if (!user) return;
+    fetchAlerts(false);
+  }, [user]);
 
-  const fetchAlerts = async () => {
+  const fetchAlerts = async (forceRefresh: boolean) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const response = await fetch('/api/alerts', {
-        headers: {
-          'X-Company-ID': localStorage.getItem('company') || 'Acme Corp'
-        }
-      });
+      if (!user) {
+        setAlertsData(null);
+        return;
+      }
+
+      const url = `/api/alerts${forceRefresh ? '?refresh=true' : ''}`;
+      const response = await authFetch(url, { cache: 'no-store' });
       
       if (!response.ok) {
         throw new Error('Failed to fetch alerts');
@@ -162,7 +168,7 @@ const AlertsPanel: React.FC = () => {
           <AlertTriangle className="text-red-500" size={20} />
           <span className="text-red-700 dark:text-red-300">Failed to load alerts: {error}</span>
           <button 
-            onClick={fetchAlerts}
+            onClick={() => fetchAlerts(false)}
             className="ml-auto text-sm text-red-600 hover:text-red-800 underline"
           >
             Retry
@@ -212,7 +218,7 @@ const AlertsPanel: React.FC = () => {
           )}
           
           <button 
-            onClick={(e) => { e.stopPropagation(); fetchAlerts(); }}
+            onClick={(e) => { e.stopPropagation(); fetchAlerts(true); }}
             className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition"
             title="Refresh alerts"
           >
