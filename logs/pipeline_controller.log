@@ -10280,3 +10280,81 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2026-02-01 20:54:40,533 - analytics_persistence - INFO - Saved forecast (LinearRegression) to database: 6 records
 2026-02-01 20:54:40,534 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': True, 'sentiment': True, 'recommendations': True, 'forecast': True}
 2026-02-01 20:54:40,534 - main - INFO - [STARTUP] Database sync complete: {'rfm': True, 'sentiment': True, 'recommendations': True, 'forecast': True}
+2026-02-01 20:59:42,028 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-01 20:59:42,028 - root - INFO - Pipeline Controller imported successfully
+2026-02-01 20:59:42,229 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-01 20:59:42,263 - main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-01 20:59:42,263 - main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-01 20:59:42,308 - main - INFO - ============================================================
+2026-02-01 20:59:42,308 - main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-01 20:59:42,308 - main - INFO - ============================================================
+2026-02-01 20:59:42,316 - main - INFO - [DATA RELOAD] Loaded cleaned_dataset.csv: 307 rows
+2026-02-01 20:59:42,318 - main - INFO - [DATA RELOAD] Loaded sales_forecast.csv: 6 rows
+2026-02-01 20:59:42,319 - main - INFO - [DATA RELOAD] Loaded sentiment_results.csv: 120 rows
+2026-02-01 20:59:42,320 - main - INFO - [DATA RELOAD] Loaded product_recommendations.csv: 3 rows
+2026-02-01 20:59:42,321 - main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': True, 'forecast': True, 'sentiment': True, 'recommendations': True, 'model': False}
+2026-02-01 20:59:42,321 - main - INFO - ============================================================
+2026-02-01 20:59:42,321 - main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-01 20:59:42,351 - analytics_persistence - INFO - Saved 29 RFM records to database for company Acme Corp
+2026-02-01 20:59:42,412 - analytics_persistence - INFO - Saved 120 sentiment records to database for company Acme Corp
+2026-02-01 20:59:42,424 - analytics_persistence - INFO - Saved 3 recommendation records to database for company Acme Corp
+2026-02-01 20:59:42,434 - analytics_persistence - INFO - Saved forecast (LinearRegression) to database: 6 records
+2026-02-01 20:59:42,434 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': True, 'sentiment': True, 'recommendations': True, 'forecast': True}
+2026-02-01 20:59:42,434 - main - INFO - [STARTUP] Database sync complete: {'rfm': True, 'sentiment': True, 'recommendations': True, 'forecast': True}
+2026-02-01 21:22:58,199 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-01 21:22:58,199 - root - INFO - Pipeline Controller imported successfully
+2026-02-01 21:22:58,382 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-01 21:22:58,415 - main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-01 21:22:58,415 - main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-01 21:22:58,451 - main - INFO - ============================================================
+2026-02-01 21:22:58,452 - main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-01 21:22:58,452 - main - INFO - ============================================================
+2026-02-01 21:22:58,457 - main - INFO - [DATA RELOAD] Loaded cleaned_dataset.csv: 307 rows
+2026-02-01 21:22:58,459 - main - INFO - [DATA RELOAD] Loaded sales_forecast.csv: 6 rows
+2026-02-01 21:22:58,460 - main - INFO - [DATA RELOAD] Loaded sentiment_results.csv: 120 rows
+2026-02-01 21:22:58,461 - main - INFO - [DATA RELOAD] Loaded product_recommendations.csv: 3 rows
+2026-02-01 21:22:58,462 - main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': True, 'forecast': True, 'sentiment': True, 'recommendations': True, 'model': False}
+2026-02-01 21:22:58,462 - main - INFO - ============================================================
+2026-02-01 21:22:58,462 - main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-01 21:22:58,488 - analytics_persistence - INFO - Saved 29 RFM records to database for company Acme Corp
+2026-02-01 21:22:58,544 - analytics_persistence - INFO - Saved 120 sentiment records to database for company Acme Corp
+2026-02-01 21:22:58,554 - analytics_persistence - INFO - Saved 3 recommendation records to database for company Acme Corp
+2026-02-01 21:22:58,561 - analytics_persistence - INFO - Saved forecast (LinearRegression) to database: 6 records
+2026-02-01 21:22:58,561 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': True, 'sentiment': True, 'recommendations': True, 'forecast': True}
+2026-02-01 21:22:58,562 - main - INFO - [STARTUP] Database sync complete: {'rfm': True, 'sentiment': True, 'recommendations': True, 'forecast': True}
+2026-02-01 21:23:52,971 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-01 21:23:52,972 - root - INFO - Pipeline Controller imported successfully
+2026-02-01 21:23:53,155 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-01 21:23:53,190 - main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-01 21:23:53,190 - main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-01 21:23:53,230 - main - INFO - ============================================================
+2026-02-01 21:23:53,230 - main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-01 21:23:53,231 - main - INFO - ============================================================
+2026-02-01 21:23:53,236 - main - INFO - [DATA RELOAD] Loaded cleaned_dataset.csv: 307 rows
+2026-02-01 21:23:53,238 - main - INFO - [DATA RELOAD] Loaded sales_forecast.csv: 6 rows
+2026-02-01 21:23:53,241 - main - INFO - [DATA RELOAD] Loaded sentiment_results.csv: 120 rows
+2026-02-01 21:23:53,243 - main - INFO - [DATA RELOAD] Loaded product_recommendations.csv: 3 rows
+2026-02-01 21:23:53,244 - main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': True, 'forecast': True, 'sentiment': True, 'recommendations': True, 'model': False}
+2026-02-01 21:23:53,244 - main - INFO - ============================================================
+2026-02-01 21:23:53,244 - main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-01 21:23:53,271 - analytics_persistence - INFO - Saved 29 RFM records to database for company Acme Corp
+2026-02-01 21:23:53,326 - analytics_persistence - INFO - Saved 120 sentiment records to database for company Acme Corp
+2026-02-01 21:23:53,335 - analytics_persistence - INFO - Saved 3 recommendation records to database for company Acme Corp
+2026-02-01 21:23:53,343 - analytics_persistence - INFO - Saved forecast (LinearRegression) to database: 6 records
+2026-02-01 21:23:53,343 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': True, 'sentiment': True, 'recommendations': True, 'forecast': True}
+2026-02-01 21:23:53,344 - main - INFO - [STARTUP] Database sync complete: {'rfm': True, 'sentiment': True, 'recommendations': True, 'forecast': True}
+2026-02-01 21:24:06,382 - main - INFO - [SENTIMENT DIAGNOSTIC] ========== API HIT ==========
+2026-02-01 21:24:06,382 - main - INFO - [SENTIMENT DIAGNOSTIC] Company: Acme Corp
+2026-02-01 21:24:06,383 - main - INFO - [SENTIMENT DIAGNOSTIC] CSV Path: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-02-01 21:24:06,383 - main - INFO - [SENTIMENT DIAGNOSTIC] CSV Exists: True
+2026-02-01 21:24:06,385 - main - INFO - [SENTIMENT DIAGNOSTIC] Loaded from CSV: 120 rows
+2026-02-01 21:24:06,385 - main - INFO - [SENTIMENT DIAGNOSTIC] Columns: ['CustomerID', 'ProductID', 'ReviewText', 'ReviewDate', 'Polarity', 'Subjectivity', 'Sentiment', 'Keywords']
+2026-02-01 21:24:06,388 - main - INFO - [SENTIMENT DIAGNOSTIC] df['Sentiment'].value_counts(): {'Positive': 65, 'Negative': 55}
+2026-02-01 21:24:06,389 - main - INFO - [SENTIMENT DIAGNOSTIC] Using column: 'Sentiment'
+2026-02-01 21:24:06,389 - main - INFO - [SENTIMENT DIAGNOSTIC] Raw sentiment_counts: {'Positive': 65, 'Negative': 55}
+2026-02-01 21:24:06,389 - main - INFO - [SENTIMENT DIAGNOSTIC] Total reviews: 120
+2026-02-01 21:24:06,389 - main - INFO - [SENTIMENT DIAGNOSTIC] Data source: CSV (database bypassed)
+2026-02-01 21:24:06,390 - main - INFO - [SENTIMENT DIAGNOSTIC] Final breakdown: Positive=65, Neutral=0, Negative=55
+2026-02-01 21:24:06,393 - main - INFO - [SENTIMENT API] Returning analysis for 120 reviews
+2026-02-01 21:24:39,346 - analytics_persistence - INFO - Loaded 29 RFM records from database
+2026-02-01 21:24:39,346 - main - INFO - [RFM API] Loaded 29 records from DATABASE
