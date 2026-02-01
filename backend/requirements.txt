@@ -6,6 +6,7 @@ pydantic==2.12.5
 # Data Processing (Python 3.14+ compatible)
 pandas>=2.0.0
 numpy<2.0
+textblob>=0.17
 
 
 # Machine Learning
