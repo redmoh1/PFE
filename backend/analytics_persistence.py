@@ -31,10 +31,16 @@ import logging
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 from pathlib import Path
+import sys
 
 import pandas as pd
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, Column, Integer, String, Float, DateTime, ForeignKey, Text, JSON
+
+# Ensure backend directory is in path for imports
+BACKEND_DIR = Path(__file__).resolve().parent
+if str(BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(BACKEND_DIR))
 
 from database.connection import SessionLocal, engine
 from database.models import (

@@ -60,6 +60,11 @@ except ImportError as e:
     PIPELINE_CONTROLLER_AVAILABLE = False
     logging.warning(f"Pipeline Controller not available: {e}. Using fallback implementation.")
 
+# Ensure backend directory is in path for analytics_persistence import
+_BACKEND_DIR = Path(__file__).resolve().parent
+if str(_BACKEND_DIR) not in sys.path:
+    sys.path.insert(0, str(_BACKEND_DIR))
+
 # Import Analytics Persistence Layer - DATABASE STORAGE
 try:
     from analytics_persistence import (

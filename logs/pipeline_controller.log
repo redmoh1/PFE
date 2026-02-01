@@ -10254,3 +10254,8 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2026-01-31 17:17:31,319 - 08_alert_engine - INFO - Generated 2 alerts
 2026-01-31 17:17:31,320 - 08_alert_engine - INFO - Alerts saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_alerts.json
 2026-01-31 17:17:31,320 - backend.main - INFO - [ALERTS API] Generated 2 alerts for Acme Corp
+2026-02-01 01:26:33,587 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-01 01:26:33,591 - root - INFO - Pipeline Controller imported successfully
+2026-02-01 01:26:33,800 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-01 01:26:33,879 - main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-01 01:26:33,879 - main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
