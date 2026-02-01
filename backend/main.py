@@ -1438,7 +1438,6 @@ def trigger_pipeline(company_id: str, dataset_type: str, action: str, file_path:
             # Clear cached "intelligence" outputs so dashboard stops showing stale insights
             try:
                 for cached_name in [
-                    f"{company_id}_advanced_sentiment.json",
                     f"{company_id}_clv_insights.json",
                 ]:
                     cached_path = OUTPUT_DIR / cached_name
@@ -2485,69 +2484,6 @@ def get_summary():
 
 
 # =============================================================================
-# NEW: Advanced Sentiment Analysis API (Arabic-First)
-# =============================================================================
-
-@app.get("/api/advanced-sentiment", tags=["Intelligence"])
-def get_advanced_sentiment(
-    request: Request,
-    refresh: bool = Query(True, description="Force reanalysis of reviews (default: true to avoid stale results)")
-):
-    """
-    Get advanced aspect-based sentiment analysis.
-    
-    Features:
-    - Arabic language support
-    - Aspect extraction (quality, price, delivery, service, packaging)
-    - Per-aspect sentiment scoring
-    - Actionable recommendations
-    
-    This is the KILLER FEATURE for MENA market differentiation.
-    """
-    company_id = request.headers.get("X-Company-ID", "Acme Corp")
-    
-    # Check for cached analysis
-    sentiment_path = OUTPUT_DIR / f"{company_id}_advanced_sentiment.json"
-    
-    if sentiment_path.exists() and not refresh:
-        try:
-            with open(sentiment_path, "r", encoding="utf-8") as f:
-                sentiment_data = json.load(f)
-            # Never return legacy "alerts" payloads
-            if isinstance(sentiment_data, dict):
-                sentiment_data.pop("alerts", None)
-            logger.info(f"[ADV SENTIMENT API] Returning cached analysis for {company_id}")
-            return JSONResponse(content=jsonable_encoder(sentiment_data), headers={"Cache-Control": "no-store"})
-        except Exception as e:
-            logger.warning(f"Failed to load cached sentiment: {e}")
-    
-    # Generate fresh analysis
-    try:
-        sys.path.insert(0, str(BASE_DIR / "src"))
-        from advanced_sentiment import run_advanced_sentiment_analysis  # type: ignore
-        
-        sentiment_data = run_advanced_sentiment_analysis(company_id)
-        # Never return legacy "alerts" payloads
-        if isinstance(sentiment_data, dict):
-            sentiment_data.pop("alerts", None)
-        logger.info(f"[ADV SENTIMENT API] Analyzed {sentiment_data.get('total_reviews', 0)} reviews for {company_id}")
-        return JSONResponse(content=jsonable_encoder(sentiment_data), headers={"Cache-Control": "no-store"})
-        
-    except ImportError:
-        logger.warning("Advanced sentiment module not available")
-        return JSONResponse(content={
-            "company": company_id,
-            "error": "Advanced sentiment analysis module not available",
-            "total_reviews": 0,
-            "aspect_analysis": {},
-            "recommendations": []
-        }, headers={"Cache-Control": "no-store"})
-    except Exception as e:
-        logger.error(f"Sentiment analysis failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-# =============================================================================
 # NEW: Customer Lifetime Value (CLV) API
 # =============================================================================
 
@@ -2645,45 +2581,17 @@ def get_intelligence_summary(request: Request):
     Get a complete intelligence summary for the dashboard.
     
     This is the main endpoint for the enhanced dashboard, combining:
-    - Sentiment insights
     - CLV highlights
     - Actionable recommendations
-    
-    Designed for the "proactive intelligence" user experience.
     """
     company_id = request.headers.get("X-Company-ID", "Acme Corp")
     
     summary = {
         "company": company_id,
         "generated_at": datetime.now().isoformat(),
-        "sentiment_highlights": {},
         "clv_highlights": {},
         "top_recommendations": []
     }
-    
-    # Load sentiment highlights
-    sentiment_path = OUTPUT_DIR / f"{company_id}_advanced_sentiment.json"
-    if sentiment_path.exists():
-        try:
-            with open(sentiment_path, "r", encoding="utf-8") as f:
-                sentiment_data = json.load(f)
-            summary["sentiment_highlights"] = {
-                "total_reviews": sentiment_data.get("total_reviews", 0),
-                "positive_rate": sentiment_data.get("sentiment_distribution", {}).get("positive_rate", 0),
-                "arabic_percentage": sentiment_data.get("language_distribution", {}).get("arabic_percentage", 0),
-                "top_issue": None
-            }
-            # Find top issue
-            aspects = sentiment_data.get("aspect_analysis", {})
-            worst_aspect = max(aspects.items(), key=lambda x: x[1].get("negative_pct", 0), default=(None, {}))
-            if worst_aspect[0] and worst_aspect[1].get("negative_pct", 0) > 30:
-                summary["sentiment_highlights"]["top_issue"] = {
-                    "aspect": worst_aspect[0],
-                    "negative_pct": worst_aspect[1].get("negative_pct", 0),
-                    "icon": worst_aspect[1].get("icon", "⚠️")
-                }
-        except Exception:
-            pass
     
     # Load CLV highlights
     clv_path = OUTPUT_DIR / f"{company_id}_clv_insights.json"
@@ -2703,22 +2611,6 @@ def get_intelligence_summary(request: Request):
     
     # Compile top recommendations from all sources
     all_recommendations = []
-    
-    # From sentiment
-    if sentiment_path.exists():
-        try:
-            with open(sentiment_path, "r", encoding="utf-8") as f:
-                sentiment_data = json.load(f)
-            for rec in sentiment_data.get("recommendations", [])[:2]:
-                all_recommendations.append({
-                    "source": "sentiment",
-                    "priority": "medium",
-                    "title": rec.get("message_en", ""),
-                    "action": rec.get("action", ""),
-                    "icon": rec.get("icon", "💡")
-                })
-        except Exception:
-            pass
     
     summary["top_recommendations"] = all_recommendations[:5]
     

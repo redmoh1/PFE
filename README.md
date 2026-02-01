@@ -5,7 +5,7 @@
 This is a complete sales intelligence platform that brings together data analytics, machine learning, and modern web technologies. The system is designed to help businesses understand their sales patterns, predict future trends, and make data-driven decisions.
 
 **🎯 Target Market:** MENA SME Retail Analytics  
-**💎 Killer Feature:** Arabic-First Customer Feedback Intelligence
+**💎 Killer Feature:** End-to-end sales analytics + forecasting
 
 The project consists of three main components:
 
@@ -19,7 +19,6 @@ The project consists of three main components:
 
 | Feature | Description |
 |---------|-------------|
-| **Arabic NLP** | Aspect-based sentiment analysis for Arabic reviews (rare in open-source) |
 | **Customer Lifetime Value** | CLV-based segmentation (Platinum/Gold/Silver/Bronze) |
 | **Multi-Tenant** | Company-based data isolation for SaaS deployment |
 | **Schema Resolver** | Works with any CSV column names |
@@ -30,12 +29,7 @@ The project consists of three main components:
 
 ### New in v2.0
 
-1. **Advanced Sentiment Analysis** (`07_advanced_sentiment.py`)
-   - Arabic language detection and processing
-   - Aspect extraction: Quality, Price, Delivery, Service, Packaging
-   - Per-aspect sentiment scoring with recommendations
-
-2. **Customer Lifetime Value** (`09_clv_calculation.py`)
+1. **Customer Lifetime Value** (`09_clv_calculation.py`)
    - Historical, Average, and Predictive CLV
    - Segment customers by value tier
    - Acquisition cost recommendations
@@ -76,7 +70,7 @@ Sales_Intelligence_Project/
 │   └── requirements.txt        # Python dependencies
 ├── frontend/                   # React + TypeScript + Vite
 │   ├── pages/                  # Page components
-│   ├── components/             # UI components (incl. AlertsPanel, SentimentInsights)
+│   ├── components/             # UI components
 │   ├── store/                  # State management
 │   └── package.json
 ├── src/

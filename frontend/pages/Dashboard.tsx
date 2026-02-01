@@ -25,9 +25,6 @@ import {
   Cell
 } from 'recharts';
 
-// Import new intelligence components
-import SentimentInsights from '../components/SentimentInsights';
-
 const Dashboard: React.FC = () => {
   const { sales, forecast, segments, kpis, lastTrainingDate, isLoading, error, refreshData } = useData();
 
@@ -216,9 +213,6 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Customer Feedback Intelligence - Arabic-First NLP */}
-      <SentimentInsights />
     </div>
   );
 };
