@@ -12,6 +12,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useAuth, useAuthFetch } from '../store/AuthContext';
+import { useData } from '../store/DataContext';
 import { 
   MessageSquare, 
   ThumbsUp, 
@@ -79,24 +81,41 @@ interface SentimentData {
 }
 
 const SentimentInsights: React.FC = () => {
+  const { user } = useAuth();
+  const authFetch = useAuthFetch();
+  const { lastTrainingDate } = useData();
   const [data, setData] = useState<SentimentData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasAutoRefreshed, setHasAutoRefreshed] = useState(false);
 
   useEffect(() => {
-    fetchSentiment();
-  }, []);
+    if (!user) return;
+    fetchSentiment(false);
+  }, [user]);
 
-  const fetchSentiment = async () => {
+  // After a successful analytics refresh (e.g., upload), force reanalysis once.
+  useEffect(() => {
+    if (!user) return;
+    if (!lastTrainingDate) return;
+    if (hasAutoRefreshed) return;
+
+    setHasAutoRefreshed(true);
+    fetchSentiment(true);
+  }, [user, lastTrainingDate, hasAutoRefreshed]);
+
+  const fetchSentiment = async (forceRefresh: boolean) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      const response = await fetch('/api/advanced-sentiment', {
-        headers: {
-          'X-Company-ID': localStorage.getItem('company') || 'Acme Corp'
-        }
-      });
+      if (!user) {
+        setData(null);
+        return;
+      }
+
+      const url = `/api/advanced-sentiment${forceRefresh ? '?refresh=true' : ''}`;
+      const response = await authFetch(url, { cache: 'no-store' });
       
       if (!response.ok) {
         throw new Error('Failed to fetch sentiment data');
@@ -155,7 +174,7 @@ const SentimentInsights: React.FC = () => {
           </div>
           
           <button 
-            onClick={fetchSentiment}
+            onClick={() => fetchSentiment(true)}
             className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition"
             title="Refresh analysis"
           >

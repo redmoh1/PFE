@@ -14,6 +14,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth, useAuthFetch } from '../store/AuthContext';
+import { useData } from '../store/DataContext';
 import { 
   AlertTriangle, 
   AlertCircle, 
@@ -62,15 +63,27 @@ interface AlertsData {
 const AlertsPanel: React.FC = () => {
   const { user } = useAuth();
   const authFetch = useAuthFetch();
+  const { lastTrainingDate } = useData();
   const [alertsData, setAlertsData] = useState<AlertsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [hasAutoRefreshed, setHasAutoRefreshed] = useState(false);
 
   useEffect(() => {
     if (!user) return;
     fetchAlerts(false);
   }, [user]);
+
+  // After a successful analytics refresh (e.g., upload), force regenerate alerts once.
+  useEffect(() => {
+    if (!user) return;
+    if (!lastTrainingDate) return;
+    if (hasAutoRefreshed) return;
+
+    setHasAutoRefreshed(true);
+    fetchAlerts(true);
+  }, [user, lastTrainingDate, hasAutoRefreshed]);
 
   const fetchAlerts = async (forceRefresh: boolean) => {
     setIsLoading(true);
