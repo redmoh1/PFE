@@ -34,8 +34,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import pandas as pd
-# Note: TextBlob removed - using pure Python lexicon-based sentiment analysis
-# This eliminates NLTK dependency issues in Docker
+from textblob import TextBlob
 
 # -------------------------------------------------
 # Paths & Logging
@@ -294,10 +293,10 @@ def analyze_arabic_sentiment(text: str) -> Dict:
 
 def analyze_sentiment(text: str) -> Dict:
     """
-    Analyze sentiment of a single text using lexicon-based approach.
+    Analyze sentiment of a single text using TextBlob.
     
     Automatically detects language and uses appropriate analyzer:
-    - English/Latin: Lexicon-based (no external dependencies)
+    - English/Latin: TextBlob
     - Arabic: Keyword-based approach
     
     Returns:
@@ -318,73 +317,32 @@ def analyze_sentiment(text: str) -> Dict:
     if lang == 'ar':
         return analyze_arabic_sentiment(text)
     
-    # English: use lexicon-based approach (no NLTK/TextBlob dependency)
+    # English: use TextBlob
     try:
-        text_str = str(text).lower()
-        words = re.findall(r'\b[a-z]+\b', text_str)
-        
-        pos_score = 0
-        neg_score = 0
-        intensifier_next = False
-        negate_next = False
-        
-        for i, word in enumerate(words):
-            # Check for intensifiers
-            if word in INTENSIFIERS:
-                intensifier_next = True
-                continue
-            
-            # Check for negators
-            if word in NEGATORS or word.endswith("n't"):
-                negate_next = True
-                continue
-            
-            # Calculate sentiment contribution
-            multiplier = 1.5 if intensifier_next else 1.0
-            
-            if word in ENGLISH_POSITIVE:
-                if negate_next:
-                    neg_score += multiplier
-                else:
-                    pos_score += multiplier
-            elif word in ENGLISH_NEGATIVE:
-                if negate_next:
-                    pos_score += multiplier * 0.5  # Negated negative is weakly positive
-                else:
-                    neg_score += multiplier
-            
-            # Reset flags after use
-            intensifier_next = False
-            negate_next = False
-        
-        # Calculate polarity (-1 to 1)
-        total = pos_score + neg_score
-        if total == 0:
-            polarity = 0.0
-        else:
-            polarity = (pos_score - neg_score) / (pos_score + neg_score + 1)
-        
-        # Normalize to -1 to 1 range
-        polarity = max(-1.0, min(1.0, polarity))
+        blob = TextBlob(str(text))
+        polarity = blob.sentiment.polarity
+        subjectivity = blob.sentiment.subjectivity
         
         # Classify sentiment based on polarity
-        if polarity > 0.05:
+        if polarity > 0.1:
             sentiment = "Positive"
-        elif polarity < -0.05:
+        elif polarity < -0.1:
             sentiment = "Negative"
         else:
             sentiment = "Neutral"
         
-        # Extract keywords (meaningful words)
-        stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 
-                      'it', 'to', 'for', 'of', 'in', 'on', 'with', 'this', 'that', 'i', 
-                      'you', 'he', 'she', 'we', 'they', 'my', 'your', 'his', 'her', 'its',
-                      'very', 'really', 'just', 'so', 'too', 'also', 'been', 'have', 'has'}
-        keywords = [w for w in words if len(w) > 3 and w not in stop_words][:5]
-        keywords_str = ", ".join(keywords) if keywords else ""
-        
-        # Subjectivity: based on how many sentiment words found
-        subjectivity = min(1.0, total / max(len(words), 1) * 5)
+        # Extract keywords (nouns and adjectives)
+        try:
+            keywords = [word for word, tag in blob.tags if tag in ('NN', 'NNS', 'JJ', 'JJR', 'JJS')][:5]
+            keywords_str = ", ".join(keywords) if keywords else ""
+        except:
+            # Fallback if POS tagging fails
+            words = str(text).split()
+            stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 
+                          'it', 'to', 'for', 'of', 'in', 'on', 'with', 'this', 'that', 'i'}
+            keywords = [w.strip('.,!?";:()[]') for w in words 
+                        if len(w) > 3 and w.lower() not in stop_words][:5]
+            keywords_str = ", ".join(keywords) if keywords else ""
         
         return {
             "polarity": round(polarity, 4),
