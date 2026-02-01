@@ -8,6 +8,7 @@ import sys
 import logging
 import os
 import sqlite3
+import json
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta, timezone
@@ -2208,53 +2209,54 @@ def get_top_cities(
 @app.get("/api/sentiment-analysis", response_model=SentimentAnalysisResponse, tags=["Analytics"])
 def get_sentiment_analysis(request: Request):
     """
-    Compute sentiment percentages and keywords from DATABASE first, then CSV fallback.
+    Compute sentiment percentages and keywords from CSV file ONLY.
     
-    PRIORITY ORDER:
-    1. Database (SQLite) - persists across container restarts
-    2. CSV file fallback - for backward compatibility
+    FIX: Skip database entirely - always read fresh from CSV to ensure
+    the pre-calculated Sentiment column (Positive/Negative) is used.
     
     Returns 204 (No Content) when data is missing or empty.
     """
     company_id = request.headers.get("X-Company-ID") or "Acme Corp"
     local_sentiment_df = None
+    data_source_used = "none"
     
-    # Try database first (persistent storage)
-    if ANALYTICS_PERSISTENCE_AVAILABLE:
-        try:
-            local_sentiment_df = get_sentiment_results(company_id)
-            if local_sentiment_df is not None and not local_sentiment_df.empty:
-                logger.info(f"[SENTIMENT API] Loaded {len(local_sentiment_df)} records from DATABASE")
-        except Exception as e:
-            logger.warning(f"[SENTIMENT API] Database read failed: {e}, falling back to CSV")
-            local_sentiment_df = None
-    
-    # Fallback to CSV file
-    if local_sentiment_df is None or local_sentiment_df.empty:
-        sentiment_path = DATA_DIR / "sentiment_results.csv"
-        logger.info(f"[SENTIMENT API] Checking for data at CSV: {sentiment_path}")
+    # =========================================================================
+    # DIAGNOSTIC: Always load from CSV to use the pre-calculated Sentiment column
+    # The CSV contains accurate Positive/Negative labels from TextBlob polarity.
+    # Database may have stale or incorrectly synced data.
+    # =========================================================================
+    sentiment_path = DATA_DIR / "sentiment_results.csv"
+    logger.info(f"[SENTIMENT DIAGNOSTIC] ========== API HIT ==========")
+    logger.info(f"[SENTIMENT DIAGNOSTIC] Company: {company_id}")
+    logger.info(f"[SENTIMENT DIAGNOSTIC] CSV Path: {sentiment_path}")
+    logger.info(f"[SENTIMENT DIAGNOSTIC] CSV Exists: {sentiment_path.exists()}")
 
-        if not sentiment_path.exists():
-            logger.info("[SENTIMENT API] sentiment_results.csv not found - returning 204")
-            return Response(status_code=204)
+    if not sentiment_path.exists():
+        logger.info("[SENTIMENT DIAGNOSTIC] sentiment_results.csv NOT FOUND - returning 204")
+        return Response(status_code=204)
 
-        try:
-            local_sentiment_df = pd.read_csv(sentiment_path)
-            logger.info(f"[SENTIMENT API] Loaded sentiment_results.csv: {len(local_sentiment_df)} rows")
+    try:
+        local_sentiment_df = pd.read_csv(sentiment_path)
+        data_source_used = f"CSV:{sentiment_path}"
+        logger.info(f"[SENTIMENT DIAGNOSTIC] Loaded from CSV: {len(local_sentiment_df)} rows")
+        logger.info(f"[SENTIMENT DIAGNOSTIC] Columns: {local_sentiment_df.columns.tolist()}")
+        
+        # Log value_counts for Sentiment column
+        if "Sentiment" in local_sentiment_df.columns:
+            value_counts = local_sentiment_df["Sentiment"].value_counts().to_dict()
+            logger.info(f"[SENTIMENT DIAGNOSTIC] df['Sentiment'].value_counts(): {value_counts}")
+        elif "SentimentLabel" in local_sentiment_df.columns:
+            value_counts = local_sentiment_df["SentimentLabel"].value_counts().to_dict()
+            logger.info(f"[SENTIMENT DIAGNOSTIC] df['SentimentLabel'].value_counts(): {value_counts}")
+        else:
+            logger.warning(f"[SENTIMENT DIAGNOSTIC] No Sentiment column found!")
             
-            # Sync to database for future requests
-            if ANALYTICS_PERSISTENCE_AVAILABLE and not local_sentiment_df.empty:
-                try:
-                    save_sentiment_results(local_sentiment_df, company_id)
-                    logger.info("[SENTIMENT API] Synced CSV data to database")
-                except Exception as e:
-                    logger.warning(f"[SENTIMENT API] Failed to sync to database: {e}")
-        except Exception as exc:
-            logger.error(f"[SENTIMENT API] Failed to read sentiment_results.csv: {exc}")
-            raise HTTPException(status_code=500, detail="Unable to read sentiment_results.csv") from exc
+    except Exception as exc:
+        logger.error(f"[SENTIMENT DIAGNOSTIC] Failed to read CSV: {exc}")
+        raise HTTPException(status_code=500, detail="Unable to read sentiment_results.csv") from exc
 
     if local_sentiment_df.empty:
-        logger.info("[SENTIMENT API] sentiment_results.csv is empty - returning 204")
+        logger.info("[SENTIMENT DIAGNOSTIC] CSV is empty - returning 204")
         return Response(status_code=204)
 
     sentiment_col = None
@@ -2264,11 +2266,17 @@ def get_sentiment_analysis(request: Request):
             break
 
     if sentiment_col is None:
-        logger.warning("[SENTIMENT API] Sentiment label column missing - returning 204")
+        logger.warning("[SENTIMENT DIAGNOSTIC] Sentiment label column missing - returning 204")
         return Response(status_code=204)
 
     total = len(local_sentiment_df)
     sentiment_counts = local_sentiment_df[sentiment_col].value_counts().to_dict()
+    
+    # DIAGNOSTIC: Log the actual counts being used for aggregation
+    logger.info(f"[SENTIMENT DIAGNOSTIC] Using column: '{sentiment_col}'")
+    logger.info(f"[SENTIMENT DIAGNOSTIC] Raw sentiment_counts: {sentiment_counts}")
+    logger.info(f"[SENTIMENT DIAGNOSTIC] Total reviews: {total}")
+    logger.info(f"[SENTIMENT DIAGNOSTIC] Data source: CSV (database bypassed)")
 
     sentiment_breakdown = [
         SentimentDetail(
@@ -2278,6 +2286,9 @@ def get_sentiment_analysis(request: Request):
         )
         for label in ["Positive", "Neutral", "Negative"]
     ]
+    
+    # DIAGNOSTIC: Log the final breakdown being sent to frontend
+    logger.info(f"[SENTIMENT DIAGNOSTIC] Final breakdown: Positive={sentiment_counts.get('Positive', 0)}, Neutral={sentiment_counts.get('Neutral', 0)}, Negative={sentiment_counts.get('Negative', 0)}")
 
     text_col = None
     if "CleanedText" in local_sentiment_df.columns:
