@@ -72,7 +72,7 @@ const AlertsPanel: React.FC = () => {
 
   useEffect(() => {
     if (!user) return;
-    fetchAlerts(false);
+    fetchAlerts(true);
   }, [user]);
 
   // After a successful analytics refresh (e.g., upload), force regenerate alerts once.

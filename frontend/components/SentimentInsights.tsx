@@ -91,7 +91,7 @@ const SentimentInsights: React.FC = () => {
 
   useEffect(() => {
     if (!user) return;
-    fetchSentiment(false);
+    fetchSentiment(true);
   }, [user]);
 
   // After a successful analytics refresh (e.g., upload), force reanalysis once.

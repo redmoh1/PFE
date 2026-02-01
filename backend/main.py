@@ -2492,7 +2492,7 @@ def get_summary():
 @app.get("/api/alerts", tags=["Intelligence"])
 def get_business_alerts(
     request: Request,
-    refresh: bool = Query(False, description="Force regeneration of alerts")
+    refresh: bool = Query(True, description="Force regeneration of alerts (default: true to avoid stale results)")
 ):
     """
     Get proactive business alerts for the company.
@@ -2515,7 +2515,7 @@ def get_business_alerts(
             with open(alerts_path, "r", encoding="utf-8") as f:
                 alerts_data = json.load(f)
             logger.info(f"[ALERTS API] Returning cached alerts for {company_id}")
-            return alerts_data
+            return JSONResponse(content=jsonable_encoder(alerts_data), headers={"Cache-Control": "no-store"})
         except Exception as e:
             logger.warning(f"Failed to load cached alerts: {e}")
     
@@ -2527,19 +2527,19 @@ def get_business_alerts(
         
         alerts_data = run_alert_engine(company_id)
         logger.info(f"[ALERTS API] Generated {alerts_data.get('total_alerts', 0)} alerts for {company_id}")
-        return alerts_data
+        return JSONResponse(content=jsonable_encoder(alerts_data), headers={"Cache-Control": "no-store"})
         
     except ImportError:
         # Fallback: return empty alerts structure
         logger.warning("Alert engine not available, returning empty alerts")
-        return {
+        return JSONResponse(content={
             "company": company_id,
             "generated_at": datetime.now().isoformat(),
             "total_alerts": 0,
             "alerts": [],
             "by_severity": {"critical": 0, "warning": 0, "info": 0},
             "by_category": {"sales": 0, "customer": 0, "sentiment": 0, "forecast": 0}
-        }
+        }, headers={"Cache-Control": "no-store"})
     except Exception as e:
         logger.error(f"Failed to generate alerts: {e}")
         raise HTTPException(status_code=500, detail=f"Alert generation failed: {str(e)}")
@@ -2572,7 +2572,7 @@ def generate_alerts(request: Request):
 @app.get("/api/advanced-sentiment", tags=["Intelligence"])
 def get_advanced_sentiment(
     request: Request,
-    refresh: bool = Query(False, description="Force reanalysis of reviews")
+    refresh: bool = Query(True, description="Force reanalysis of reviews (default: true to avoid stale results)")
 ):
     """
     Get advanced aspect-based sentiment analysis.
@@ -2595,7 +2595,7 @@ def get_advanced_sentiment(
             with open(sentiment_path, "r", encoding="utf-8") as f:
                 sentiment_data = json.load(f)
             logger.info(f"[ADV SENTIMENT API] Returning cached analysis for {company_id}")
-            return sentiment_data
+            return JSONResponse(content=jsonable_encoder(sentiment_data), headers={"Cache-Control": "no-store"})
         except Exception as e:
             logger.warning(f"Failed to load cached sentiment: {e}")
     
@@ -2606,18 +2606,18 @@ def get_advanced_sentiment(
         
         sentiment_data = run_advanced_sentiment_analysis(company_id)
         logger.info(f"[ADV SENTIMENT API] Analyzed {sentiment_data.get('total_reviews', 0)} reviews for {company_id}")
-        return sentiment_data
+        return JSONResponse(content=jsonable_encoder(sentiment_data), headers={"Cache-Control": "no-store"})
         
     except ImportError:
         logger.warning("Advanced sentiment module not available")
-        return {
+        return JSONResponse(content={
             "company": company_id,
             "error": "Advanced sentiment analysis module not available",
             "total_reviews": 0,
             "aspect_analysis": {},
             "alerts": [],
             "recommendations": []
-        }
+        }, headers={"Cache-Control": "no-store"})
     except Exception as e:
         logger.error(f"Sentiment analysis failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -2630,7 +2630,7 @@ def get_advanced_sentiment(
 @app.get("/api/clv", tags=["Intelligence"])
 def get_customer_clv(
     request: Request,
-    refresh: bool = Query(False, description="Force recalculation of CLV")
+    refresh: bool = Query(True, description="Force recalculation of CLV (default: true to avoid stale results)")
 ):
     """
     Get Customer Lifetime Value analysis.
@@ -2651,7 +2651,7 @@ def get_customer_clv(
             with open(clv_path, "r", encoding="utf-8") as f:
                 clv_data = json.load(f)
             logger.info(f"[CLV API] Returning cached CLV data for {company_id}")
-            return clv_data
+            return JSONResponse(content=jsonable_encoder(clv_data), headers={"Cache-Control": "no-store"})
         except Exception as e:
             logger.warning(f"Failed to load cached CLV: {e}")
     
@@ -2662,16 +2662,16 @@ def get_customer_clv(
         
         clv_data = run_clv_analysis(company_id)
         logger.info(f"[CLV API] Calculated CLV for {company_id}")
-        return clv_data
+        return JSONResponse(content=jsonable_encoder(clv_data), headers={"Cache-Control": "no-store"})
         
     except ImportError:
         logger.warning("CLV calculation module not available")
-        return {
+        return JSONResponse(content={
             "company": company_id,
             "error": "CLV calculation module not available",
             "insights": {"summary": {}, "segments": {}, "recommendations": []},
             "top_customers": []
-        }
+        }, headers={"Cache-Control": "no-store"})
     except Exception as e:
         logger.error(f"CLV calculation failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
