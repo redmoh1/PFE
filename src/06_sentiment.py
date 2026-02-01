@@ -34,7 +34,8 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import pandas as pd
-from textblob import TextBlob
+# Note: TextBlob removed - using pure Python lexicon-based sentiment analysis
+# This eliminates NLTK dependency issues in Docker
 
 # -------------------------------------------------
 # Paths & Logging
@@ -206,6 +207,37 @@ ARABIC_NEGATIVE = {
     'خطأ', 'مكسور', 'ضعيف', 'فشل', 'أسوأ', 'رديء', 'قبيح', 'مزعج', 'محبط'
 }
 
+# -------------------------------------------------
+# English Sentiment Lexicon (No external dependencies)
+# -------------------------------------------------
+ENGLISH_POSITIVE = {
+    'good', 'great', 'excellent', 'amazing', 'wonderful', 'fantastic', 'awesome',
+    'love', 'loved', 'loving', 'like', 'liked', 'best', 'better', 'beautiful',
+    'happy', 'glad', 'pleased', 'satisfied', 'perfect', 'nice', 'brilliant',
+    'outstanding', 'superb', 'incredible', 'impressive', 'exceptional', 'positive',
+    'recommend', 'recommended', 'helpful', 'useful', 'easy', 'fast', 'quick',
+    'friendly', 'professional', 'quality', 'reliable', 'efficient', 'comfortable',
+    'pleasant', 'enjoy', 'enjoyed', 'enjoying', 'delicious', 'tasty', 'fresh',
+    'clean', 'smooth', 'well', 'worth', 'affordable', 'reasonable', 'fair',
+    'thank', 'thanks', 'grateful', 'appreciate', 'appreciated', 'value', 'valuable'
+}
+
+ENGLISH_NEGATIVE = {
+    'bad', 'terrible', 'horrible', 'awful', 'poor', 'worst', 'worse', 'hate',
+    'hated', 'hating', 'dislike', 'disappointed', 'disappointing', 'disappointment',
+    'angry', 'annoyed', 'annoying', 'frustrating', 'frustrated', 'frustration',
+    'problem', 'problems', 'issue', 'issues', 'broken', 'defective', 'faulty',
+    'slow', 'delayed', 'late', 'wrong', 'error', 'mistake', 'fail', 'failed',
+    'failure', 'useless', 'waste', 'wasted', 'overpriced', 'expensive', 'cheap',
+    'rude', 'unprofessional', 'incompetent', 'unreliable', 'difficult', 'hard',
+    'confusing', 'complicated', 'dirty', 'ugly', 'uncomfortable', 'unpleasant',
+    'never', 'nothing', 'nobody', 'nowhere', 'neither', 'nor', 'no', 'not',
+    'refund', 'return', 'complaint', 'complain', 'regret', 'sorry', 'unfortunately'
+}
+
+INTENSIFIERS = {'very', 'really', 'extremely', 'absolutely', 'totally', 'completely', 'highly', 'super'}
+NEGATORS = {'not', "n't", 'no', 'never', 'neither', 'nobody', 'nothing', 'nowhere'}
+
 
 def analyze_arabic_sentiment(text: str) -> Dict:
     """
@@ -262,10 +294,10 @@ def analyze_arabic_sentiment(text: str) -> Dict:
 
 def analyze_sentiment(text: str) -> Dict:
     """
-    Analyze sentiment of a single text.
+    Analyze sentiment of a single text using lexicon-based approach.
     
     Automatically detects language and uses appropriate analyzer:
-    - English/Latin: TextBlob
+    - English/Latin: Lexicon-based (no external dependencies)
     - Arabic: Keyword-based approach
     
     Returns:
@@ -286,31 +318,73 @@ def analyze_sentiment(text: str) -> Dict:
     if lang == 'ar':
         return analyze_arabic_sentiment(text)
     
-    # English/other languages: use TextBlob
+    # English: use lexicon-based approach (no NLTK/TextBlob dependency)
     try:
-        blob = TextBlob(str(text))
-        polarity = blob.sentiment.polarity
-        subjectivity = blob.sentiment.subjectivity
+        text_str = str(text).lower()
+        words = re.findall(r'\b[a-z]+\b', text_str)
+        
+        pos_score = 0
+        neg_score = 0
+        intensifier_next = False
+        negate_next = False
+        
+        for i, word in enumerate(words):
+            # Check for intensifiers
+            if word in INTENSIFIERS:
+                intensifier_next = True
+                continue
+            
+            # Check for negators
+            if word in NEGATORS or word.endswith("n't"):
+                negate_next = True
+                continue
+            
+            # Calculate sentiment contribution
+            multiplier = 1.5 if intensifier_next else 1.0
+            
+            if word in ENGLISH_POSITIVE:
+                if negate_next:
+                    neg_score += multiplier
+                else:
+                    pos_score += multiplier
+            elif word in ENGLISH_NEGATIVE:
+                if negate_next:
+                    pos_score += multiplier * 0.5  # Negated negative is weakly positive
+                else:
+                    neg_score += multiplier
+            
+            # Reset flags after use
+            intensifier_next = False
+            negate_next = False
+        
+        # Calculate polarity (-1 to 1)
+        total = pos_score + neg_score
+        if total == 0:
+            polarity = 0.0
+        else:
+            polarity = (pos_score - neg_score) / (pos_score + neg_score + 1)
+        
+        # Normalize to -1 to 1 range
+        polarity = max(-1.0, min(1.0, polarity))
         
         # Classify sentiment based on polarity
-        if polarity > 0.1:
+        if polarity > 0.05:
             sentiment = "Positive"
-        elif polarity < -0.1:
+        elif polarity < -0.05:
             sentiment = "Negative"
         else:
             sentiment = "Neutral"
         
-        # Extract keywords using simple word extraction (no NLTK POS tagging required)
-        # This avoids the need for downloading NLTK corpora
-        words = str(text).split()
-        # Filter meaningful words (length > 3, not common stop words)
+        # Extract keywords (meaningful words)
         stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 
                       'it', 'to', 'for', 'of', 'in', 'on', 'with', 'this', 'that', 'i', 
                       'you', 'he', 'she', 'we', 'they', 'my', 'your', 'his', 'her', 'its',
                       'very', 'really', 'just', 'so', 'too', 'also', 'been', 'have', 'has'}
-        keywords = [w.strip('.,!?";:()[]') for w in words 
-                    if len(w) > 3 and w.lower() not in stop_words][:5]
+        keywords = [w for w in words if len(w) > 3 and w not in stop_words][:5]
         keywords_str = ", ".join(keywords) if keywords else ""
+        
+        # Subjectivity: based on how many sentiment words found
+        subjectivity = min(1.0, total / max(len(words), 1) * 5)
         
         return {
             "polarity": round(polarity, 4),
