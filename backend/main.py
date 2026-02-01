@@ -1429,13 +1429,38 @@ def trigger_pipeline(company_id: str, dataset_type: str, action: str, file_path:
         logger.info("[TRIGGER] Using Pipeline Controller (SINGLE SOURCE OF TRUTH)")
         try:
             result = orchestrate_pipeline(dataset_type, action, file_path)
-            if result.get("execution", {}).get("success", False):
+            success = bool(result.get("execution", {}).get("success", False))
+            if success:
                 logger.info(f"[TRIGGER] ✓ Pipeline Controller completed successfully")
             else:
                 logger.warning(f"[TRIGGER] ⚠ Pipeline Controller had issues: {result}")
+
+            # Clear cached "intelligence" outputs so dashboard stops showing stale alerts/insights
+            try:
+                for cached_name in [
+                    f"{company_id}_alerts.json",
+                    f"{company_id}_advanced_sentiment.json",
+                    f"{company_id}_clv_insights.json",
+                ]:
+                    cached_path = OUTPUT_DIR / cached_name
+                    if cached_path.exists():
+                        cached_path.unlink()
+                        logger.info("[TRIGGER] ✓ Deleted cached output: %s", cached_name)
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("[TRIGGER] Failed clearing cached intelligence outputs: %s", exc)
             
             # Reload data after pipeline completion
             reload_all_data_from_disk()
+
+            # CRITICAL: Sync freshly generated CSV outputs to DB so DB-first endpoints don't return stale data
+            if ANALYTICS_PERSISTENCE_AVAILABLE:
+                try:
+                    # Ensure DB reflects the latest pipeline outputs for this tenant
+                    delete_all_analytics_for_company(company_id)
+                    sync_status = sync_csv_to_database(company_id, DATA_DIR)
+                    logger.info("[TRIGGER] Database sync complete for %s: %s", company_id, sync_status)
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("[TRIGGER] Database sync failed for %s: %s", company_id, exc)
             return
             
         except Exception as e:
