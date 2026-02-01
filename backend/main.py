@@ -1820,6 +1820,7 @@ def _get_rfm_segmentation_data(request: Request):
     """
     company_id = request.headers.get("X-Company-ID") or "Acme Corp"
     rfm_df = None
+    rfm_path = DATA_DIR / "rfm_table.csv"  # Define early for use in last_calculated
     
     # Try database first (persistent storage)
     if ANALYTICS_PERSISTENCE_AVAILABLE:
@@ -1892,7 +1893,12 @@ def _get_rfm_segmentation_data(request: Request):
         )
 
     segment_stats.sort(key=lambda x: x.customer_count, reverse=True)
-    last_calculated = datetime.fromtimestamp(Path(rfm_path).stat().st_mtime).isoformat()
+    
+    # Get last_calculated timestamp from CSV file if it exists, otherwise use current time
+    if rfm_path.exists():
+        last_calculated = datetime.fromtimestamp(rfm_path.stat().st_mtime).isoformat()
+    else:
+        last_calculated = datetime.now().isoformat()
     
     logger.info(f"[RFM API] Returning {len(segment_stats)} segments for {len(rfm_df)} customers")
 
