@@ -16,6 +16,8 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
-            cd /root/PFE
-            git pull
-            docker-compose up -d --build
+  cd /home/deploy/PFE
+  git pull
+  docker-compose up -d --build
+  docker image prune -f
+
