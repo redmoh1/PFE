@@ -8,3 +8,22 @@ Traceback (most recent call last):
   File "c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\src\06_sentiment_arabic.py", line 301, in analyze_reviews
     raise FileNotFoundError(f"No reviews file found in {reviews_dir}")
 FileNotFoundError: No reviews file found in c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\reviews
+2026-02-01 01:52:36,449 - INFO - Starting sentiment analysis for Acme Corp
+2026-02-01 01:52:36,450 - INFO - Arabic model enabled: True
+2026-02-01 01:52:36,450 - INFO - Loading reviews from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\reviews\20260130182139_customer_reviews_big.csv
+2026-02-01 01:52:36,453 - INFO - Loaded 120 reviews
+2026-02-01 01:52:36,453 - INFO - Loading Arabic sentiment model: CAMeL-Lab/bert-base-arabic-camelbert-msa-sentiment
+2026-02-01 01:52:39,296 - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2026-02-01 01:55:59,705 - INFO - Arabic model loaded successfully (device: CPU)
+2026-02-01 01:55:59,705 - INFO - Arabic sentiment analyzer initialized
+2026-02-01 01:55:59,705 - INFO - Using unified analyzer (Arabic + TextBlob)
+2026-02-01 01:55:59,751 - INFO - Processed 100/120 reviews
+2026-02-01 01:55:59,754 - INFO - Sentiment analysis complete. Method distribution:
+2026-02-01 01:55:59,754 - INFO - {'textblob': 120}
+2026-02-01 01:55:59,760 - INFO - Results saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_sentiment_analysis.csv
+2026-02-01 01:55:59,762 - INFO - Sentiment Summary:
+2026-02-01 01:55:59,762 - INFO -   total_reviews: 120
+2026-02-01 01:55:59,762 - INFO -   sentiment_distribution: {'Positive': 65, 'Negative': 55}
+2026-02-01 01:55:59,763 - INFO -   average_confidence: 0.4403958333333334
+2026-02-01 01:55:59,763 - INFO -   average_polarity: 0.08331249999999998
+2026-02-01 01:55:59,763 - INFO -   methods_used: {'textblob': 120}

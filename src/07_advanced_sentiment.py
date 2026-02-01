@@ -344,12 +344,21 @@ def run_advanced_sentiment_analysis(company_name: str) -> Dict:
         logger.error("No review text column found")
         return {"error": "No review text column found", "company": company_name}
     
-    # Analyze each review
+    # Analyze each review (for aspect extraction only)
     analysis_results = []
     for idx, row in df.iterrows():
         text = row[text_col]
         result = analyze_review(str(text) if pd.notna(text) else "")
         result["original_text"] = text
+        
+        # Use existing Sentiment column if available (from TextBlob analysis)
+        # This preserves the accurate polarity-based sentiment calculation
+        if "Sentiment" in df.columns and pd.notna(row.get("Sentiment")):
+            # Map to lowercase for consistency
+            existing_sentiment = str(row["Sentiment"]).lower().strip()
+            if existing_sentiment in ["positive", "negative", "neutral"]:
+                result["overall_sentiment"] = existing_sentiment
+        
         analysis_results.append(result)
     
     # Add results to dataframe
@@ -357,7 +366,25 @@ def run_advanced_sentiment_analysis(company_name: str) -> Dict:
     
     # Calculate overall statistics
     language_dist = results_df["language"].value_counts().to_dict()
-    sentiment_dist = results_df["overall_sentiment"].value_counts().to_dict()
+    
+    # Use existing Sentiment column from CSV if available (TextBlob calculated)
+    # This is more accurate than keyword-based recalculation
+    sentiment_cols = ["Sentiment", "sentiment"]
+    sentiment_col = next((c for c in sentiment_cols if c in df.columns), None)
+    
+    if sentiment_col:
+        # Use the pre-calculated sentiment from CSV (TextBlob polarity-based)
+        csv_sentiment = df[sentiment_col].str.lower().str.strip().value_counts().to_dict()
+        sentiment_dist = {
+            "positive": csv_sentiment.get("positive", 0),
+            "negative": csv_sentiment.get("negative", 0),
+            "neutral": csv_sentiment.get("neutral", 0)
+        }
+        logger.info(f"Using existing Sentiment column: {sentiment_dist}")
+    else:
+        # Fallback to recalculated sentiment (keyword-based)
+        sentiment_dist = results_df["overall_sentiment"].value_counts().to_dict()
+        logger.warning("No existing Sentiment column found, using keyword-based analysis")
     
     total_reviews = len(results_df)
     arabic_pct = round(language_dist.get("arabic", 0) / total_reviews * 100, 1) if total_reviews > 0 else 0
