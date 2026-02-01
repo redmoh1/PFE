@@ -1435,10 +1435,9 @@ def trigger_pipeline(company_id: str, dataset_type: str, action: str, file_path:
             else:
                 logger.warning(f"[TRIGGER] ⚠ Pipeline Controller had issues: {result}")
 
-            # Clear cached "intelligence" outputs so dashboard stops showing stale alerts/insights
+            # Clear cached "intelligence" outputs so dashboard stops showing stale insights
             try:
                 for cached_name in [
-                    f"{company_id}_alerts.json",
                     f"{company_id}_advanced_sentiment.json",
                     f"{company_id}_clv_insights.json",
                 ]:
@@ -2486,86 +2485,6 @@ def get_summary():
 
 
 # =============================================================================
-# NEW: Business Alerts API (Proactive Intelligence)
-# =============================================================================
-
-@app.get("/api/alerts", tags=["Intelligence"])
-def get_business_alerts(
-    request: Request,
-    refresh: bool = Query(True, description="Force regeneration of alerts (default: true to avoid stale results)")
-):
-    """
-    Get proactive business alerts for the company.
-    
-    Alerts are generated from:
-    - Sales patterns (revenue decline, anomalies)
-    - Customer behavior (churn risk, VIP inactivity)
-    - Sentiment analysis (aspect complaints)
-    - Forecasts (predicted shortfall)
-    
-    This endpoint transforms the dashboard from passive to proactive.
-    """
-    company_id = request.headers.get("X-Company-ID", "Acme Corp")
-    
-    # Check for cached alerts
-    alerts_path = OUTPUT_DIR / f"{company_id}_alerts.json"
-    
-    if alerts_path.exists() and not refresh:
-        try:
-            with open(alerts_path, "r", encoding="utf-8") as f:
-                alerts_data = json.load(f)
-            logger.info(f"[ALERTS API] Returning cached alerts for {company_id}")
-            return JSONResponse(content=jsonable_encoder(alerts_data), headers={"Cache-Control": "no-store"})
-        except Exception as e:
-            logger.warning(f"Failed to load cached alerts: {e}")
-    
-    # Generate fresh alerts
-    try:
-        # Import and run alert engine
-        sys.path.insert(0, str(BASE_DIR / "src"))
-        from alert_engine import run_alert_engine  # type: ignore
-        
-        alerts_data = run_alert_engine(company_id)
-        logger.info(f"[ALERTS API] Generated {alerts_data.get('total_alerts', 0)} alerts for {company_id}")
-        return JSONResponse(content=jsonable_encoder(alerts_data), headers={"Cache-Control": "no-store"})
-        
-    except ImportError:
-        # Fallback: return empty alerts structure
-        logger.warning("Alert engine not available, returning empty alerts")
-        return JSONResponse(content={
-            "company": company_id,
-            "generated_at": datetime.now().isoformat(),
-            "total_alerts": 0,
-            "alerts": [],
-            "by_severity": {"critical": 0, "warning": 0, "info": 0},
-            "by_category": {"sales": 0, "customer": 0, "sentiment": 0, "forecast": 0}
-        }, headers={"Cache-Control": "no-store"})
-    except Exception as e:
-        logger.error(f"Failed to generate alerts: {e}")
-        raise HTTPException(status_code=500, detail=f"Alert generation failed: {str(e)}")
-
-
-@app.post("/api/alerts/generate", tags=["Intelligence"])
-def generate_alerts(request: Request):
-    """Force regeneration of all business alerts."""
-    company_id = request.headers.get("X-Company-ID", "Acme Corp")
-    
-    try:
-        sys.path.insert(0, str(BASE_DIR / "src"))
-        from alert_engine import run_alert_engine  # type: ignore
-        
-        alerts_data = run_alert_engine(company_id)
-        return {
-            "status": "success",
-            "message": f"Generated {alerts_data.get('total_alerts', 0)} alerts",
-            "alerts": alerts_data
-        }
-    except Exception as e:
-        logger.error(f"Alert generation failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-# =============================================================================
 # NEW: Advanced Sentiment Analysis API (Arabic-First)
 # =============================================================================
 
@@ -2594,6 +2513,9 @@ def get_advanced_sentiment(
         try:
             with open(sentiment_path, "r", encoding="utf-8") as f:
                 sentiment_data = json.load(f)
+            # Never return legacy "alerts" payloads
+            if isinstance(sentiment_data, dict):
+                sentiment_data.pop("alerts", None)
             logger.info(f"[ADV SENTIMENT API] Returning cached analysis for {company_id}")
             return JSONResponse(content=jsonable_encoder(sentiment_data), headers={"Cache-Control": "no-store"})
         except Exception as e:
@@ -2605,6 +2527,9 @@ def get_advanced_sentiment(
         from advanced_sentiment import run_advanced_sentiment_analysis  # type: ignore
         
         sentiment_data = run_advanced_sentiment_analysis(company_id)
+        # Never return legacy "alerts" payloads
+        if isinstance(sentiment_data, dict):
+            sentiment_data.pop("alerts", None)
         logger.info(f"[ADV SENTIMENT API] Analyzed {sentiment_data.get('total_reviews', 0)} reviews for {company_id}")
         return JSONResponse(content=jsonable_encoder(sentiment_data), headers={"Cache-Control": "no-store"})
         
@@ -2615,7 +2540,6 @@ def get_advanced_sentiment(
             "error": "Advanced sentiment analysis module not available",
             "total_reviews": 0,
             "aspect_analysis": {},
-            "alerts": [],
             "recommendations": []
         }, headers={"Cache-Control": "no-store"})
     except Exception as e:
@@ -2721,7 +2645,6 @@ def get_intelligence_summary(request: Request):
     Get a complete intelligence summary for the dashboard.
     
     This is the main endpoint for the enhanced dashboard, combining:
-    - Key alerts requiring attention
     - Sentiment insights
     - CLV highlights
     - Actionable recommendations
@@ -2733,23 +2656,10 @@ def get_intelligence_summary(request: Request):
     summary = {
         "company": company_id,
         "generated_at": datetime.now().isoformat(),
-        "alerts": [],
         "sentiment_highlights": {},
         "clv_highlights": {},
         "top_recommendations": []
     }
-    
-    # Load alerts
-    alerts_path = OUTPUT_DIR / f"{company_id}_alerts.json"
-    if alerts_path.exists():
-        try:
-            with open(alerts_path, "r", encoding="utf-8") as f:
-                alerts_data = json.load(f)
-            # Get top 5 alerts
-            summary["alerts"] = alerts_data.get("alerts", [])[:5]
-            summary["alert_counts"] = alerts_data.get("by_severity", {})
-        except Exception:
-            pass
     
     # Load sentiment highlights
     sentiment_path = OUTPUT_DIR / f"{company_id}_advanced_sentiment.json"
@@ -2793,17 +2703,6 @@ def get_intelligence_summary(request: Request):
     
     # Compile top recommendations from all sources
     all_recommendations = []
-    
-    # From alerts
-    for alert in summary.get("alerts", []):
-        if alert.get("severity") in ["critical", "warning"]:
-            all_recommendations.append({
-                "source": "alert",
-                "priority": "high" if alert.get("severity") == "critical" else "medium",
-                "title": alert.get("title", ""),
-                "action": alert.get("recommendation", ""),
-                "icon": alert.get("icon", "⚠️")
-            })
     
     # From sentiment
     if sentiment_path.exists():

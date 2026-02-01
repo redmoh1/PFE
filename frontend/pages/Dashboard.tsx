@@ -26,7 +26,6 @@ import {
 } from 'recharts';
 
 // Import new intelligence components
-import AlertsPanel from '../components/AlertsPanel';
 import SentimentInsights from '../components/SentimentInsights';
 
 const Dashboard: React.FC = () => {
@@ -115,9 +114,6 @@ const Dashboard: React.FC = () => {
           Last updated: {lastTrainingDate ? new Date(lastTrainingDate).toLocaleString() : 'Never'}
         </div>
       </div>
-
-      {/* Business Alerts - Proactive Intelligence */}
-      <AlertsPanel />
 
       {/* KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

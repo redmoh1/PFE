@@ -116,7 +116,6 @@ DERIVED_OUTPUT_FILES = [
     "sales_forecast_future.csv",
     # New intelligence modules outputs
     "advanced_sentiment.json",
-    "alerts.json",
     "clv_analysis.csv",
     "clv_insights.json",
 ]
@@ -147,7 +146,6 @@ PIPELINE_SCRIPTS = {
     "05_recommendation": "05_recommendation.py",
     "06_sentiment": "06_sentiment.py",
     "07_advanced_sentiment": "07_advanced_sentiment.py",  # Arabic-first aspect-based analysis
-    "08_alert_engine": "08_alert_engine.py",              # Proactive business alerts
     "09_clv_calculation": "09_clv_calculation.py",        # Customer Lifetime Value
 }
 

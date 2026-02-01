@@ -8,7 +8,7 @@
  * - Arabic review percentage indicator
  * - Aspect-based sentiment (quality, price, delivery, service, packaging)
  * - Visual progress bars for each aspect
- * - Actionable alerts for problematic aspects
+ * - Actionable recommendations for improvements
  */
 
 import React, { useState, useEffect } from 'react';
@@ -66,13 +66,6 @@ interface SentimentData {
     positive_rate: number;
   };
   aspect_analysis: Record<string, AspectData>;
-  alerts: Array<{
-    aspect: string;
-    severity: string;
-    message_en: string;
-    message_ar: string;
-    icon: string;
-  }>;
   recommendations: Array<{
     aspect: string;
     message_en: string;
@@ -285,35 +278,6 @@ const SentimentInsights: React.FC = () => {
           </p>
         )}
       </div>
-
-      {/* Alerts Section */}
-      {data.alerts && data.alerts.length > 0 && (
-        <div className="px-6 pb-6">
-          <h4 className="font-semibold mb-3 text-amber-600 dark:text-amber-400 flex items-center gap-2">
-            <AlertTriangle size={16} />
-            <span>Issues Detected</span>
-          </h4>
-          
-          <div className="space-y-2">
-            {data.alerts.map((alert, idx) => (
-              <div 
-                key={idx}
-                className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg"
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  {getAspectIcon(alert.aspect)}
-                  <span className="font-medium text-amber-700 dark:text-amber-300">
-                    {alert.message_en}
-                  </span>
-                </div>
-                <p className="text-sm text-amber-600 dark:text-amber-400 text-right" dir="rtl">
-                  {alert.message_ar}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Strengths Section */}
       {data.recommendations && data.recommendations.length > 0 && (
