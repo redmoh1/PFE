@@ -60,6 +60,26 @@ except ImportError as e:
     PIPELINE_CONTROLLER_AVAILABLE = False
     logging.warning(f"Pipeline Controller not available: {e}. Using fallback implementation.")
 
+# Import Analytics Persistence Layer - DATABASE STORAGE
+try:
+    from analytics_persistence import (
+        save_forecast_results,
+        get_forecast_results,
+        save_rfm_results,
+        get_rfm_results,
+        save_sentiment_results,
+        get_sentiment_results,
+        save_recommendation_results,
+        get_recommendation_results,
+        delete_all_analytics_for_company,
+        sync_csv_to_database,
+    )
+    ANALYTICS_PERSISTENCE_AVAILABLE = True
+    logging.info("Analytics Persistence Layer imported successfully")
+except ImportError as e:
+    ANALYTICS_PERSISTENCE_AVAILABLE = False
+    logging.warning(f"Analytics Persistence Layer not available: {e}. Using CSV-only storage.")
+
 # Rate Limiting
 try:
     from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -730,8 +750,17 @@ def reload_all_data_from_disk():
 
 @app.on_event("startup")
 def load_data():
-    """Load all data at startup."""
+    """Load all data at startup - sync CSV to database for persistence."""
     reload_all_data_from_disk()
+    
+    # Sync existing CSV files to database for persistence across restarts
+    if ANALYTICS_PERSISTENCE_AVAILABLE:
+        try:
+            logger.info("[STARTUP] Syncing existing CSV data to database...")
+            sync_status = sync_csv_to_database("Acme Corp", DATA_DIR)
+            logger.info(f"[STARTUP] Database sync complete: {sync_status}")
+        except Exception as e:
+            logger.warning(f"[STARTUP] Failed to sync CSV to database: {e}")
 
 
 def require_company_id(request: Request) -> str:
@@ -1015,7 +1044,7 @@ CANONICAL_INPUT_FILES = [
 ]
 
 
-def cascade_delete_derived_files(dataset_type: str) -> dict:
+def cascade_delete_derived_files(dataset_type: str, company_id: str = "Acme Corp") -> dict:
     """
     Delete ALL derived ML output files when any dataset is deleted.
     
@@ -1023,19 +1052,30 @@ def cascade_delete_derived_files(dataset_type: str) -> dict:
     
     ENTERPRISE BEHAVIOR:
     - Deleting ANY dataset triggers full cascade deletion
-    - No stale analytics should remain on disk
+    - No stale analytics should remain on disk OR in database
     - No stale data should remain in memory
     - APIs will return 204 until new data is uploaded and processed
     
     Args:
         dataset_type: Type of dataset being deleted (sales, customers, reviews)
+        company_id: Company identifier for multi-tenant support
         
     Returns:
         dict with deleted_files list and any errors
     """
     logger.info("=" * 60)
-    logger.info(f"[CASCADE DELETE] TRIGGERED for dataset_type={dataset_type}")
+    logger.info(f"[CASCADE DELETE] TRIGGERED for dataset_type={dataset_type}, company={company_id}")
     logger.info("=" * 60)
+    
+    # Delete from DATABASE FIRST (persistent storage)
+    db_deleted = {}
+    if ANALYTICS_PERSISTENCE_AVAILABLE:
+        logger.info("[CASCADE DELETE] Step 0: Deleting analytics from DATABASE...")
+        try:
+            db_deleted = delete_all_analytics_for_company(company_id)
+            logger.info(f"[CASCADE DELETE] Database records deleted: {db_deleted}")
+        except Exception as e:
+            logger.error(f"[CASCADE DELETE] Failed to delete from database: {e}")
     
     # Use Pipeline Controller if available (PREFERRED - Single Source of Truth)
     if PIPELINE_CONTROLLER_AVAILABLE:
@@ -1049,6 +1089,7 @@ def cascade_delete_derived_files(dataset_type: str) -> dict:
                 "deleted_files": result.get("hard_reset", {}).get("deleted_files", []),
                 "errors": result.get("hard_reset", {}).get("errors", []),
                 "total_deleted": result.get("hard_reset", {}).get("deleted_count", 0),
+                "db_deleted": db_deleted,
                 "memory_cleared": True,
             }
         except Exception as e:
@@ -1251,6 +1292,15 @@ def run_full_sales_pipeline(uploaded_file: Path) -> bool:
         logger.info("[PIPELINE] Step 6: Reloading all data from disk...")
         reload_status = reload_all_data_from_disk()
         
+        # Step 7: Sync CSV results to DATABASE for persistence
+        if ANALYTICS_PERSISTENCE_AVAILABLE:
+            logger.info("[PIPELINE] Step 7: Syncing analytics results to DATABASE...")
+            try:
+                sync_status = sync_csv_to_database("Acme Corp", DATA_DIR)
+                logger.info(f"[PIPELINE] Database sync complete: {sync_status}")
+            except Exception as e:
+                logger.warning(f"[PIPELINE] Database sync failed: {e}")
+        
         logger.info("=" * 60)
         logger.info("[PIPELINE] FULL SALES PIPELINE COMPLETED SUCCESSFULLY")
         logger.info(f"[PIPELINE] Reload status: {reload_status}")
@@ -1318,6 +1368,15 @@ def run_sentiment_pipeline(uploaded_file: Path) -> bool:
             try:
                 sentiment_df = pd.read_csv(sentiment_path)
                 logger.info(f"[SENTIMENT PIPELINE] ✓ Loaded sentiment_results.csv: {len(sentiment_df)} rows")
+                
+                # Step 4: Sync to DATABASE for persistence
+                if ANALYTICS_PERSISTENCE_AVAILABLE:
+                    logger.info("[SENTIMENT PIPELINE] Step 4: Syncing to DATABASE...")
+                    try:
+                        save_sentiment_results(sentiment_df, "Acme Corp")
+                        logger.info("[SENTIMENT PIPELINE] ✓ Synced sentiment to database")
+                    except Exception as e:
+                        logger.warning(f"[SENTIMENT PIPELINE] Database sync failed: {e}")
             except Exception as e:
                 logger.warning(f"[SENTIMENT PIPELINE] ⚠ Could not reload sentiment results: {e}")
                 sentiment_df = None
@@ -1688,8 +1747,8 @@ def delete_dataset_endpoint(dataset_id: int, request: Request):
     except Exception as exc:
         logger.warning("Could not delete raw file %s: %s", current["file_path"], exc)
 
-    # CASCADING DELETION: Delete ALL derived ML outputs
-    cascade_result = cascade_delete_derived_files(dataset_type)
+    # CASCADING DELETION: Delete ALL derived ML outputs (from disk AND database)
+    cascade_result = cascade_delete_derived_files(dataset_type, company_id)
     
     return {
         "status": "deleted",
@@ -1744,37 +1803,58 @@ def health_check():
 
 def _get_rfm_segmentation_data(request: Request):
     """
-    Internal function to read RFM segmentation data FRESH from disk.
+    Internal function to read RFM segmentation data from DATABASE first, then CSV fallback.
     
-    CRITICAL: Always reads from disk, NEVER from cached globals.
-    This ensures that after data deletion or upload, fresh results are returned.
+    PRIORITY ORDER:
+    1. Database (SQLite) - persists across container restarts
+    2. CSV file fallback - for backward compatibility
     
     Returns:
         SegmentationMetadata if data exists, Response(204) if not
     """
-    company_id = request.headers.get("X-Company-ID")
-    rfm_path = DATA_DIR / "rfm_table.csv"
+    company_id = request.headers.get("X-Company-ID") or "Acme Corp"
+    rfm_df = None
     
-    logger.info(f"[RFM API] Checking for RFM data at: {rfm_path}")
+    # Try database first (persistent storage)
+    if ANALYTICS_PERSISTENCE_AVAILABLE:
+        try:
+            rfm_df = get_rfm_results(company_id)
+            if rfm_df is not None and not rfm_df.empty:
+                logger.info(f"[RFM API] Loaded {len(rfm_df)} records from DATABASE")
+        except Exception as e:
+            logger.warning(f"[RFM API] Database read failed: {e}, falling back to CSV")
+            rfm_df = None
+    
+    # Fallback to CSV file
+    if rfm_df is None or rfm_df.empty:
+        rfm_path = DATA_DIR / "rfm_table.csv"
+        logger.info(f"[RFM API] Checking for RFM data at CSV: {rfm_path}")
 
-    if not rfm_path.exists():
-        logger.info(f"[RFM API] rfm_table.csv not found - returning 204 (No Content)")
-        return Response(status_code=204)
+        if not rfm_path.exists():
+            logger.info(f"[RFM API] rfm_table.csv not found - returning 204 (No Content)")
+            return Response(status_code=204)
 
-    try:
-        # ALWAYS read fresh from disk
-        rfm_df = pd.read_csv(rfm_path)
-        logger.info(f"[RFM API] Loaded rfm_table.csv: {len(rfm_df)} rows")
-    except Exception as exc:
-        logger.error(f"[RFM API] Failed to read rfm_table.csv: {exc}")
-        raise HTTPException(status_code=500, detail="Unable to read rfm_table.csv") from exc
+        try:
+            rfm_df = pd.read_csv(rfm_path)
+            logger.info(f"[RFM API] Loaded rfm_table.csv: {len(rfm_df)} rows")
+            
+            # Sync to database for future requests
+            if ANALYTICS_PERSISTENCE_AVAILABLE and not rfm_df.empty:
+                try:
+                    save_rfm_results(rfm_df, company_id)
+                    logger.info("[RFM API] Synced CSV data to database")
+                except Exception as e:
+                    logger.warning(f"[RFM API] Failed to sync to database: {e}")
+        except Exception as exc:
+            logger.error(f"[RFM API] Failed to read rfm_table.csv: {exc}")
+            raise HTTPException(status_code=500, detail="Unable to read rfm_table.csv") from exc
 
-    if rfm_df.empty:
-        logger.info("[RFM API] rfm_table.csv is empty - returning 204 (No Content)")
+    if rfm_df is None or rfm_df.empty:
+        logger.info("[RFM API] No RFM data available - returning 204 (No Content)")
         return Response(status_code=204)
     
     if "Segment" not in rfm_df.columns:
-        logger.warning("[RFM API] rfm_table.csv missing 'Segment' column - returning 204")
+        logger.warning("[RFM API] RFM data missing 'Segment' column - returning 204")
         return Response(status_code=204)
 
     segment_colors = {
@@ -1918,8 +1998,24 @@ async def get_kpis(
     )
 
 
-def load_forecast_data() -> Optional[pd.DataFrame]:
-    """Load forecast data from multiple possible sources."""
+def load_forecast_data(company_id: str = "Acme Corp") -> Optional[pd.DataFrame]:
+    """Load forecast data from DATABASE first, then CSV fallback.
+    
+    PRIORITY ORDER:
+    1. Database (SQLite) - persists across container restarts
+    2. CSV file fallback - for backward compatibility
+    """
+    # Try database first (persistent storage)
+    if ANALYTICS_PERSISTENCE_AVAILABLE:
+        try:
+            fdf = get_forecast_results(company_id)
+            if fdf is not None and not fdf.empty:
+                logger.info(f"[FORECAST] Loaded {len(fdf)} records from DATABASE")
+                return fdf
+        except Exception as e:
+            logger.warning(f"[FORECAST] Database read failed: {e}, falling back to CSV")
+    
+    # Fallback to CSV files
     forecast_files = [
         DATA_DIR / "sales_forecast.csv",  # From 03_forecasting.py (Linear Regression)
         DATA_DIR / "sales_forecast_future.csv",
@@ -1945,6 +2041,16 @@ def load_forecast_data() -> Optional[pd.DataFrame]:
                     fdf = fdf.rename(columns={forecast_col: "ForecastedSales"})
                 
                 logger.info(f"[FORECAST] Loaded forecast from {fpath.name}: {len(fdf)} rows")
+                
+                # Sync to database for future requests
+                if ANALYTICS_PERSISTENCE_AVAILABLE:
+                    try:
+                        forecast_data = fdf.to_dict(orient="records")
+                        save_forecast_results(forecast_data, company_id, model_type="LinearRegression")
+                        logger.info("[FORECAST] Synced CSV data to database")
+                    except Exception as e:
+                        logger.warning(f"[FORECAST] Failed to sync to database: {e}")
+                
                 return fdf
             except Exception as e:
                 logger.warning(f"Failed to load forecast from {fpath}: {e}")
@@ -1985,8 +2091,8 @@ def get_monthly_sales(
         except Exception as e:
             logger.warning(f"Failed to compute monthly sales: {e}")
 
-    # Step 2: Add forecast data (load fresh from disk)
-    local_forecast_df = load_forecast_data()
+    # Step 2: Add forecast data (load from database or CSV)
+    local_forecast_df = load_forecast_data(company_id or "Acme Corp")
     if local_forecast_df is not None and not local_forecast_df.empty:
         try:
             for _, row in local_forecast_df.iterrows():
@@ -2095,28 +2201,52 @@ def get_top_cities(
 
 
 @app.get("/api/sentiment-analysis", response_model=SentimentAnalysisResponse, tags=["Analytics"])
-def get_sentiment_analysis():
+def get_sentiment_analysis(request: Request):
     """
-    Compute sentiment percentages and keywords from sentiment_results.csv.
+    Compute sentiment percentages and keywords from DATABASE first, then CSV fallback.
     
-    CRITICAL: Always reads FRESH from disk, never from cached globals.
+    PRIORITY ORDER:
+    1. Database (SQLite) - persists across container restarts
+    2. CSV file fallback - for backward compatibility
+    
     Returns 204 (No Content) when data is missing or empty.
     """
-    sentiment_path = DATA_DIR / "sentiment_results.csv"
+    company_id = request.headers.get("X-Company-ID") or "Acme Corp"
+    local_sentiment_df = None
     
-    logger.info(f"[SENTIMENT API] Checking for data at: {sentiment_path}")
+    # Try database first (persistent storage)
+    if ANALYTICS_PERSISTENCE_AVAILABLE:
+        try:
+            local_sentiment_df = get_sentiment_results(company_id)
+            if local_sentiment_df is not None and not local_sentiment_df.empty:
+                logger.info(f"[SENTIMENT API] Loaded {len(local_sentiment_df)} records from DATABASE")
+        except Exception as e:
+            logger.warning(f"[SENTIMENT API] Database read failed: {e}, falling back to CSV")
+            local_sentiment_df = None
+    
+    # Fallback to CSV file
+    if local_sentiment_df is None or local_sentiment_df.empty:
+        sentiment_path = DATA_DIR / "sentiment_results.csv"
+        logger.info(f"[SENTIMENT API] Checking for data at CSV: {sentiment_path}")
 
-    if not sentiment_path.exists():
-        logger.info("[SENTIMENT API] sentiment_results.csv not found - returning 204")
-        return Response(status_code=204)
+        if not sentiment_path.exists():
+            logger.info("[SENTIMENT API] sentiment_results.csv not found - returning 204")
+            return Response(status_code=204)
 
-    try:
-        # ALWAYS read fresh from disk - use local variable, not global
-        local_sentiment_df = pd.read_csv(sentiment_path)
-        logger.info(f"[SENTIMENT API] Loaded sentiment_results.csv: {len(local_sentiment_df)} rows")
-    except Exception as exc:
-        logger.error(f"[SENTIMENT API] Failed to read sentiment_results.csv: {exc}")
-        raise HTTPException(status_code=500, detail="Unable to read sentiment_results.csv") from exc
+        try:
+            local_sentiment_df = pd.read_csv(sentiment_path)
+            logger.info(f"[SENTIMENT API] Loaded sentiment_results.csv: {len(local_sentiment_df)} rows")
+            
+            # Sync to database for future requests
+            if ANALYTICS_PERSISTENCE_AVAILABLE and not local_sentiment_df.empty:
+                try:
+                    save_sentiment_results(local_sentiment_df, company_id)
+                    logger.info("[SENTIMENT API] Synced CSV data to database")
+                except Exception as e:
+                    logger.warning(f"[SENTIMENT API] Failed to sync to database: {e}")
+        except Exception as exc:
+            logger.error(f"[SENTIMENT API] Failed to read sentiment_results.csv: {exc}")
+            raise HTTPException(status_code=500, detail="Unable to read sentiment_results.csv") from exc
 
     if local_sentiment_df.empty:
         logger.info("[SENTIMENT API] sentiment_results.csv is empty - returning 204")
@@ -2176,37 +2306,65 @@ def get_sentiment_analysis():
 
 
 @app.get("/api/sentiment", response_model=SentimentAnalysisResponse, tags=["Analytics"])
-def get_sentiment_summary():
+def get_sentiment_summary(request: Request):
     """Alias of /api/sentiment-analysis with identical 204/real-data behavior."""
-    return get_sentiment_analysis()
+    return get_sentiment_analysis(request)
 
 
 @app.get("/api/recommendations", response_model=List[RecommendationResponse], tags=["Analytics"])
-def get_recommendations(limit: int = Query(10, ge=1, le=100)):
+def get_recommendations(request: Request, limit: int = Query(10, ge=1, le=100)):
     """
-    Return association rules from product_recommendations.csv.
+    Return association rules from DATABASE first, then CSV fallback.
     
-    CRITICAL: Always reads FRESH from disk, never from cached globals.
+    PRIORITY ORDER:
+    1. Database (SQLite) - persists across container restarts
+    2. CSV file fallback - for backward compatibility
+    
     Returns 204 (No Content) when data is missing or empty.
     """
-    recommendations_path = DATA_DIR / "product_recommendations.csv"
+    company_id = request.headers.get("X-Company-ID") or "Acme Corp"
+    rules_df = None
     
-    logger.info(f"[RECOMMENDATIONS API] Checking for data at: {recommendations_path}")
+    # Try database first (persistent storage)
+    if ANALYTICS_PERSISTENCE_AVAILABLE:
+        try:
+            rules_df = get_recommendation_results(company_id)
+            if rules_df is not None and not rules_df.empty:
+                logger.info(f"[RECOMMENDATIONS API] Loaded {len(rules_df)} records from DATABASE")
+        except Exception as e:
+            logger.warning(f"[RECOMMENDATIONS API] Database read failed: {e}, falling back to CSV")
+            rules_df = None
     
-    if not recommendations_path.exists():
-        logger.info("[RECOMMENDATIONS API] product_recommendations.csv not found - returning 204")
-        return Response(status_code=204)
+    # Fallback to CSV file
+    if rules_df is None or rules_df.empty:
+        recommendations_path = DATA_DIR / "product_recommendations.csv"
+        logger.info(f"[RECOMMENDATIONS API] Checking for data at CSV: {recommendations_path}")
+    
+        if not recommendations_path.exists():
+            logger.info("[RECOMMENDATIONS API] product_recommendations.csv not found - returning 204")
+            return Response(status_code=204)
 
-    try:
-        # ALWAYS read fresh from disk
-        rules_df = pd.read_csv(recommendations_path)
-        logger.info(f"[RECOMMENDATIONS API] Loaded product_recommendations.csv: {len(rules_df)} rows")
-    except Exception as exc:
-        logger.error(f"[RECOMMENDATIONS API] Failed to read product_recommendations.csv: {exc}")
-        raise HTTPException(status_code=500, detail="Unable to read product_recommendations.csv") from exc
+        try:
+            rules_df = pd.read_csv(recommendations_path)
+            logger.info(f"[RECOMMENDATIONS API] Loaded product_recommendations.csv: {len(rules_df)} rows")
+            
+            # Sync to database for future requests
+            if ANALYTICS_PERSISTENCE_AVAILABLE and not rules_df.empty:
+                try:
+                    save_recommendation_results(rules_df, company_id)
+                    logger.info("[RECOMMENDATIONS API] Synced CSV data to database")
+                except Exception as e:
+                    logger.warning(f"[RECOMMENDATIONS API] Failed to sync to database: {e}")
+        except Exception as exc:
+            logger.error(f"[RECOMMENDATIONS API] Failed to read product_recommendations.csv: {exc}")
+            raise HTTPException(status_code=500, detail="Unable to read product_recommendations.csv") from exc
 
     if rules_df.empty:
         logger.info("[RECOMMENDATIONS API] product_recommendations.csv is empty - returning 204")
+        return Response(status_code=204)
+
+    if rules_df is None or rules_df.empty:
+        logger.info("[RECOMMENDATIONS API] No recommendation data available - returning 204")
         return Response(status_code=204)
 
     if "Confidence" in rules_df.columns:
