@@ -272,13 +272,18 @@ export const useAuth = () => {
 
 // Utility hook for making authenticated API requests
 export const useAuthFetch = () => {
-  const { token, logout } = useAuth();
+  const { token, logout, user } = useAuth();
   
   const authFetch = useCallback(async (url: string, options: RequestInit = {}) => {
     const headers = new Headers(options.headers);
     
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    // Multi-tenant routing: backend selects the active dataset by company
+    if (user?.company && !headers.has('X-Company-ID')) {
+      headers.set('X-Company-ID', user.company);
     }
     
     // If URL already starts with http, use as-is; otherwise prepend API_BASE_URL
@@ -295,7 +300,7 @@ export const useAuthFetch = () => {
     }
     
     return response;
-  }, [token, logout]);
+  }, [token, logout, user]);
   
   return authFetch;
 };

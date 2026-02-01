@@ -24,19 +24,22 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 // Helper to get auth token for fetch
-const getAuthHeaders = (): HeadersInit => {
-  const token = localStorage.getItem('auth_token');
+const getAuthHeaders = (token: string | null | undefined, companyId: string | null | undefined): HeadersInit => {
   const headers: HeadersInit = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
   };
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
+  }
+  if (companyId) {
+    headers['X-Company-ID'] = companyId;
   }
   return headers;
 };
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const authFetch = useAuthFetch();
   const [sales, setSales] = useState<SalesData[]>([]);
   const [forecast, setForecast] = useState<ForecastPoint[]>([]);
   const [segments, setSegments] = useState<RFMSegment[]>([]);
@@ -74,12 +77,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setIsLoading(true);
     setError(null);
 
-    const headers = getAuthHeaders();
+    const headers = getAuthHeaders(token, user.company);
+    const fetchOpts: RequestInit = { headers, cache: 'no-store' };
 
     try {
       // Fetch KPIs
       try {
-        const kpiRes = await fetch(`${API_BASE_URL}/api/kpis`, { headers });
+        const kpiRes = await fetch(`${API_BASE_URL}/api/kpis`, fetchOpts);
         if (kpiRes.status === 204) {
           setKpis(null);
         } else if (kpiRes.ok) {
@@ -96,7 +100,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Fetch sales data (raw data endpoint)
       try {
-        const salesRes = await fetch(`${API_BASE_URL}/api/raw-data?limit=100`, { headers });
+        const salesRes = await fetch(`${API_BASE_URL}/api/raw-data?limit=100`, fetchOpts);
         if (salesRes.status === 204) {
           setSales([]);
         } else if (salesRes.ok) {
@@ -121,7 +125,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Fetch forecast data
       try {
-        const forecastRes = await fetch(`${API_BASE_URL}/api/monthly-sales`, { headers });
+        const forecastRes = await fetch(`${API_BASE_URL}/api/monthly-sales`, fetchOpts);
         if (forecastRes.status === 204) {
           setForecast([]);
         } else if (forecastRes.ok) {
@@ -144,7 +148,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Fetch recommendations - ALWAYS fresh from server with JWT auth
       try {
-        const recsRes = await fetch(`${API_BASE_URL}/api/recommendations?limit=10`, { headers });
+        const recsRes = await fetch(`${API_BASE_URL}/api/recommendations?limit=10`, fetchOpts);
         if (recsRes.status === 204) {
           console.log('[DataContext] Recommendations API returned 204 - clearing state');
           setRecommendations([]);
@@ -173,7 +177,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Fetch RFM segmentation data - ALWAYS fresh from server with JWT auth
       try {
-        const segmentRes = await fetch(`${API_BASE_URL}/api/segmentation`, { headers });
+        const segmentRes = await fetch(`${API_BASE_URL}/api/segmentation`, fetchOpts);
         if (segmentRes.status === 204) {
           console.log('[DataContext] Segmentation API returned 204 - clearing state');
           setSegments([]);
@@ -211,7 +215,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, token]);
 
   /**
    * CRITICAL: Reset ALL analytics state immediately.
