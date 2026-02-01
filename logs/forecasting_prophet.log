@@ -95,3 +95,27 @@ cwd: None
 2026-01-31 23:29:32,155 - INFO - Prophet forecast saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_forecast_prophet.csv
 2026-01-31 23:29:32,693 - INFO - Forecast comparison saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\Acme Corp_forecast_comparison.png
 2026-01-31 23:29:33,015 - INFO - Components plot saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\Acme Corp_forecast_components.png
+2026-02-01 01:52:14,707 - INFO - Starting forecasting for Acme Corp, 6 months ahead
+2026-02-01 01:52:14,708 - INFO - Found sales data at: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\sales\20260130182014_sales_big.csv
+2026-02-01 01:52:14,711 - INFO - Loaded 307 records from c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\Acme Corp\sales\20260130182014_sales_big.csv
+2026-02-01 01:52:14,711 - INFO - Using columns: date=OrderDate, revenue=TotalPrice
+2026-02-01 01:52:14,719 - INFO - Prepared 5 monthly data points
+2026-02-01 01:52:14,721 - INFO - Running baseline Linear Regression...
+2026-02-01 01:52:14,731 - INFO - Linear Regression - R²: 0.1008, MAE: 8,553.40, RMSE: 9,329.06
+2026-02-01 01:52:14,732 - INFO - Running Prophet forecasting...
+2026-02-01 01:52:14,764 - DEBUG - cmd: where.exe tbb.dll
+cwd: None
+2026-02-01 01:52:14,814 - DEBUG - Adding TBB (C:\Users\DELL\AppData\Local\Programs\Python\Python311\Lib\site-packages\prophet\stan_model\cmdstan-2.33.1\stan\lib\stan_math\lib\tbb) to PATH
+2026-02-01 01:52:14,814 - INFO - Training Prophet model...
+2026-02-01 01:52:14,828 - INFO - n_changepoints greater than number of observations. Using 3.
+2026-02-01 01:52:14,830 - DEBUG - input tempfile: C:\Users\DELL\AppData\Local\Temp\tmpkhulwzjt\ldy3vs87.json
+2026-02-01 01:52:14,831 - DEBUG - input tempfile: C:\Users\DELL\AppData\Local\Temp\tmpkhulwzjt\44x4trj3.json
+2026-02-01 01:52:14,833 - DEBUG - idx 0
+2026-02-01 01:52:14,833 - DEBUG - running CmdStan, num_threads: None
+2026-02-01 01:52:14,833 - DEBUG - CmdStan args: ['C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\prophet\\stan_model\\prophet_model.bin', 'random', 'seed=74246', 'data', 'file=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmpkhulwzjt\\ldy3vs87.json', 'init=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmpkhulwzjt\\44x4trj3.json', 'output', 'file=C:\\Users\\DELL\\AppData\\Local\\Temp\\tmpkhulwzjt\\prophet_model2ldf42w2\\prophet_model-20260201015214.csv', 'method=optimize', 'algorithm=newton', 'iter=10000']
+2026-02-01 01:52:14,834 - INFO - Chain [1] start processing
+2026-02-01 01:52:16,328 - INFO - Chain [1] done processing
+2026-02-01 01:52:16,349 - INFO - Prophet - MAE: 0.19, RMSE: 0.25, MAPE: 0.00%
+2026-02-01 01:52:16,377 - INFO - Prophet forecast saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\Acme Corp_forecast_prophet.csv
+2026-02-01 01:52:16,879 - INFO - Forecast comparison saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\Acme Corp_forecast_comparison.png
+2026-02-01 01:52:17,249 - INFO - Components plot saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\Acme Corp_forecast_components.png
