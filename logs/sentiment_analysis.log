@@ -289,3 +289,28 @@ Sentiment results saved to c:\Users\DELL\Desktop\New folder\Sales_Intelligence_P
 Outputs:
 2026-02-01 01:56:02,099 - INFO -   - Results: c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
 2026-02-01 01:56:02,099 - INFO -   - Plots:   c:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-02-01 22:02:06,760 - INFO - Schema Resolver loaded successfully
+2026-02-01 22:02:06,761 - INFO - ======================================================================
+2026-02-01 22:02:06,761 - INFO - Phase 6: Customer Sentiment Analysis
+2026-02-01 22:02:06,761 - INFO - ======================================================================
+2026-02-01 22:02:06,763 - INFO - Loaded 120 reviews from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\customer_reviews.csv
+2026-02-01 22:02:06,763 - INFO - Using text column: ReviewText
+2026-02-01 22:02:06,763 - INFO - Analyzing sentiment for 120 reviews...
+2026-02-01 22:02:06,770 - INFO - 
+--- SENTIMENT SUMMARY ---
+2026-02-01 22:02:06,770 - INFO - Total Reviews: 120
+2026-02-01 22:02:06,770 - INFO - Positive: 48 (40.0%)
+2026-02-01 22:02:06,770 - INFO - Neutral: 49 (40.83%)
+2026-02-01 22:02:06,771 - INFO - Negative: 23 (19.17%)
+2026-02-01 22:02:06,771 - INFO - Average Polarity: 0.1919
+2026-02-01 22:02:06,771 - INFO - Average Subjectivity: 0.5917
+2026-02-01 22:02:06,771 - WARNING - Failed to generate visualizations: No module named 'matplotlib'
+2026-02-01 22:02:06,775 - INFO - 
+Sentiment results saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv (120 reviews, 8 columns)
+2026-02-01 22:02:06,775 - INFO - ======================================================================
+2026-02-01 22:02:06,775 - INFO - Phase 6: Sentiment Analysis Completed Successfully
+2026-02-01 22:02:06,775 - INFO - ======================================================================
+2026-02-01 22:02:06,775 - INFO - 
+Outputs:
+2026-02-01 22:02:06,776 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sentiment_results.csv
+2026-02-01 22:02:06,776 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
