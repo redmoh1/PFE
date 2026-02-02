@@ -37,4 +37,4 @@ jobs:
             docker compose version
             docker compose down
             docker compose up -d --build
-            docker compose ps
+            docker compose ps 
