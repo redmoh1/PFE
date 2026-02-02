@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: SSH and deploy
         uses: appleboy/ssh-action@v1.0.3
@@ -16,7 +16,26 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
           script: |
+            set -euo pipefail
+
             cd /home/deploy/PFE
-            git pull
-            docker-compose up -d --build
-            docker image prune -f
+
+            echo "== Who/Where =="
+            whoami
+            pwd
+
+            echo "== Git =="
+            git remote -v
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
+            git log -1 --oneline
+
+            echo "== Docker =="
+            docker --version
+            docker-compose --version
+            docker-compose down
+            docker-compose up -d --build --force-recreate
+            docker-compose ps
+
+            echo "✅ Deploy finished"
