@@ -72,7 +72,9 @@ const SalesAnalytics: React.FC = () => {
         {/* Regional Breakdown */}
         <div className="bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
           <h3 className="text-lg font-bold mb-6">Revenue by City</h3>
-          <div className="h-[400px]">
+
+          {/* Pie chart (fixed height) */}
+          <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -84,24 +86,29 @@ const SalesAnalytics: React.FC = () => {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {cityData.map((entry, index) => (
+                  {cityData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
-            <div className="mt-4 space-y-2">
-              {cityData.map((city, idx) => (
-                <div key={idx} className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
-                    <span className="text-text-secondary">{city.name}</span>
-                  </div>
-                  <span className="font-semibold">${(city.value as number).toLocaleString()}</span>
+          </div>
+
+          {/* Legend (normal flow; card grows to fit) */}
+          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
+            {cityData.map((city, idx) => (
+              <div key={`${city.name}-${idx}`} className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div
+                    className="w-3 h-3 rounded-full shrink-0"
+                    style={{ backgroundColor: COLORS[idx % COLORS.length] }}
+                  />
+                  <span className="text-text-secondary truncate min-w-0">{city.name}</span>
                 </div>
-              ))}
-            </div>
+                <span className="font-semibold shrink-0">${(city.value as number).toLocaleString()}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
