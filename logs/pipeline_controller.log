@@ -10545,3 +10545,18 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2026-02-02 17:14:27,046 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
 2026-02-02 17:14:27,046 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
 2026-02-02 17:14:27,046 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 17:16:16,267 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 17:16:16,267 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 17:16:16,447 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 17:16:16,479 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 17:16:16,479 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 17:16:16,532 - backend.main - INFO - ============================================================
+2026-02-02 17:16:16,532 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 17:16:16,532 - backend.main - INFO - ============================================================
+2026-02-02 17:16:16,532 - backend.main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 17:16:16,532 - backend.main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 17:16:16,532 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 17:16:16,532 - backend.main - INFO - ============================================================
+2026-02-02 17:16:16,532 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 17:16:16,532 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 17:16:16,532 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
