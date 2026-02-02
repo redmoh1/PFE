@@ -15,7 +15,6 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
-          script_stop: true
           script: |
             set -euo pipefail
 
@@ -27,14 +26,16 @@ jobs:
 
             echo "== Git =="
             git remote -v
-            git status --porcelain || true
             git fetch origin main
             git checkout main
             git reset --hard origin/main
             git log -1 --oneline
 
             echo "== Docker =="
-            docker compose version
-            docker compose down
-            docker compose up -d --build
-            docker compose ps 
+            docker --version
+            docker-compose --version
+            docker-compose down
+            docker-compose up -d --build --force-recreate
+            docker-compose ps
+
+            echo "✅ Deploy finished"
