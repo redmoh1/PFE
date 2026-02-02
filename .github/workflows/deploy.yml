@@ -15,9 +15,26 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
+          script_stop: true
           script: |
-           cd /home/deploy/PFE
-           git pull origin main
-           docker-compose down
-           docker-compose up -d --build
+            set -euo pipefail
 
+            cd /home/deploy/PFE
+
+            echo "== Who/Where =="
+            whoami
+            pwd
+
+            echo "== Git =="
+            git remote -v
+            git status --porcelain || true
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
+            git log -1 --oneline
+
+            echo "== Docker =="
+            docker compose version
+            docker compose down
+            docker compose up -d --build
+            docker compose ps
