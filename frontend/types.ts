@@ -31,6 +31,17 @@ export interface ForecastPoint {
   forecast?: number;
   forecast_upper?: number;
   forecast_lower?: number;
+  // Comparison mode (previous period)
+  previous_actual?: number;
+  previous_forecast?: number;
+}
+
+export interface AnalyticsFilters {
+  startDate: string;
+  endDate: string;
+  city: string;
+  product: string;
+  comparePrevious: boolean;
 }
 
 export interface RFMSegment {
@@ -66,6 +77,45 @@ export interface KPIData {
   revenue_change: number | null;
   orders_change: number | null;
   aov_change: number | null;
+}
+
+export type InsightSeverity = 'info' | 'warning' | 'critical';
+
+export interface DecisionInsight {
+  id: string;
+  severity: InsightSeverity;
+  title: string;
+  description: string;
+  reason: string;
+  suggested_action: string;
+  metrics?: Record<string, any>;
+}
+
+export type DataQualityIssueLevel = 'info' | 'warning' | 'critical';
+
+export interface DataQualityIssue {
+  id: string;
+  level: DataQualityIssueLevel;
+  message: string;
+  affected_columns: string[];
+  metrics: Record<string, any>;
+}
+
+export interface DataQualityReport {
+  company_id: string;
+  dataset: string;
+  generated_at: string;
+  row_count: number;
+  column_count: number;
+  date_column?: string | null;
+  date_min?: string | null;
+  date_max?: string | null;
+  missing_values: Record<string, { missing_count: number; missing_pct: number }>;
+  invalid_values: Record<string, { invalid_count: number; invalid_pct: number; type: string }>;
+  duplicates: { duplicate_rows: number; duplicate_pct: number };
+  outliers: Record<string, Record<string, any>>;
+  quality_score: number;
+  issues: DataQualityIssue[];
 }
 
 export interface DatasetMeta {

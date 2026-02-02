@@ -1,7 +1,17 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth, useAuthFetch } from './AuthContext';
-import { SalesData, ForecastPoint, RFMSegment, Recommendation, SentimentData, KPIData } from '../types';
+import {
+  SalesData,
+  ForecastPoint,
+  RFMSegment,
+  Recommendation,
+  SentimentData,
+  KPIData,
+  DecisionInsight,
+  DataQualityReport,
+  AnalyticsFilters,
+} from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '';
 
@@ -12,6 +22,13 @@ interface DataContextType {
   recommendations: Recommendation[];
   sentiment: SentimentData[];
   kpis: KPIData | null;
+  insights: DecisionInsight[];
+  dataQuality: DataQualityReport | null;
+  filters: AnalyticsFilters;
+  setFilters: (next: Partial<AnalyticsFilters>) => void;
+  clearFilters: () => void;
+  cityOptions: string[];
+  productOptions: string[];
   lastTrainingDate: string | null;
   isProcessing: boolean;
   isLoading: boolean;
@@ -46,10 +63,70 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [sentiment, setSentiment] = useState<SentimentData[]>([]);
   const [kpis, setKpis] = useState<KPIData | null>(null);
+  const [insights, setInsights] = useState<DecisionInsight[]>([]);
+  const [dataQuality, setDataQuality] = useState<DataQualityReport | null>(null);
+  const [filters, setFiltersState] = useState<AnalyticsFilters>({
+    startDate: '',
+    endDate: '',
+    city: '',
+    product: '',
+    comparePrevious: false,
+  });
+  const [cityOptions, setCityOptions] = useState<string[]>([]);
+  const [productOptions, setProductOptions] = useState<string[]>([]);
   const [lastTrainingDate, setLastTrainingDate] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const setFilters = useCallback((next: Partial<AnalyticsFilters>) => {
+    setFiltersState(prev => ({ ...prev, ...next }));
+  }, []);
+
+  const clearFilters = useCallback(() => {
+    setFiltersState({
+      startDate: '',
+      endDate: '',
+      city: '',
+      product: '',
+      comparePrevious: false,
+    });
+  }, []);
+
+  const buildAnalyticsQuery = useCallback((
+    base: Partial<AnalyticsFilters> = {},
+    opts: { includeCityProduct?: boolean } = {}
+  ) => {
+    const includeCityProduct = opts.includeCityProduct ?? true;
+    const params = new URLSearchParams();
+
+    const merged: AnalyticsFilters = {
+      ...filters,
+      ...base,
+    } as AnalyticsFilters;
+
+    if (merged.startDate) params.set('start_date', merged.startDate);
+    if (merged.endDate) params.set('end_date', merged.endDate);
+    if (includeCityProduct) {
+      if (merged.city) params.set('city', merged.city);
+      if (merged.product) params.set('product', merged.product);
+    }
+    return params;
+  }, [filters]);
+
+  const computePreviousRange = useCallback((startDate: string, endDate: string) => {
+    // Mirrors backend logic: period_length = (end - start).days
+    const start = new Date(`${startDate}T00:00:00Z`);
+    const end = new Date(`${endDate}T00:00:00Z`);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return null;
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const periodLengthDays = Math.floor((end.getTime() - start.getTime()) / msPerDay);
+    const prevEnd = new Date(start.getTime() - msPerDay);
+    const prevStart = new Date(prevEnd.getTime() - periodLengthDays * msPerDay);
+
+    const toYmd = (d: Date) => d.toISOString().slice(0, 10);
+    return { startDate: toYmd(prevStart), endDate: toYmd(prevEnd) };
+  }, []);
 
   /**
    * CRITICAL: Fetch ALL data fresh from the server with JWT authentication.
@@ -69,6 +146,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setRecommendations([]);
       setSentiment([]);
       setKpis(null);
+      setInsights([]);
+      setDataQuality(null);
+      setCityOptions([]);
+      setProductOptions([]);
       setLastTrainingDate(null);
       setIsLoading(false);
       return;
@@ -80,10 +161,18 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const headers = getAuthHeaders(token, user.company);
     const fetchOpts: RequestInit = { headers, cache: 'no-store' };
 
+    const analyticsParams = buildAnalyticsQuery();
+    const analyticsQs = analyticsParams.toString();
+    const analyticsSuffix = analyticsQs ? `?${analyticsQs}` : '';
+
+    const dateOnlyParams = buildAnalyticsQuery({}, { includeCityProduct: false });
+    const dateOnlyQs = dateOnlyParams.toString();
+    const dateOnlySuffix = dateOnlyQs ? `?${dateOnlyQs}` : '';
+
     try {
       // Fetch KPIs
       try {
-        const kpiRes = await fetch(`${API_BASE_URL}/api/kpis`, fetchOpts);
+        const kpiRes = await fetch(`${API_BASE_URL}/api/kpis${analyticsSuffix}`, fetchOpts);
         if (kpiRes.status === 204) {
           setKpis(null);
         } else if (kpiRes.ok) {
@@ -98,9 +187,42 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setKpis(null);
       }
 
+      // Fetch filter options (date-scoped, not city/product scoped)
+      try {
+        const citiesRes = await fetch(`${API_BASE_URL}/api/top-cities${dateOnlySuffix ? `${dateOnlySuffix}&limit=50` : '?limit=50'}`, fetchOpts);
+        if (citiesRes.ok) {
+          const payload = await citiesRes.json();
+          const data = payload?.data || payload;
+          const options = (Array.isArray(data) ? data : []).map((c: any) => String(c.city)).filter(Boolean);
+          setCityOptions(options);
+        } else {
+          setCityOptions([]);
+        }
+      } catch (e) {
+        console.error('Failed to fetch city options:', e);
+        setCityOptions([]);
+      }
+
+      try {
+        const productsRes = await fetch(`${API_BASE_URL}/api/top-products${dateOnlySuffix ? `${dateOnlySuffix}&limit=50` : '?limit=50'}`, fetchOpts);
+        if (productsRes.ok) {
+          const payload = await productsRes.json();
+          const data = payload?.data || payload;
+          const options = (Array.isArray(data) ? data : []).map((p: any) => String(p.product_id)).filter(Boolean);
+          setProductOptions(options);
+        } else {
+          setProductOptions([]);
+        }
+      } catch (e) {
+        console.error('Failed to fetch product options:', e);
+        setProductOptions([]);
+      }
+
       // Fetch sales data (raw data endpoint)
       try {
-        const salesRes = await fetch(`${API_BASE_URL}/api/raw-data?limit=100`, fetchOpts);
+        const salesParams = buildAnalyticsQuery();
+        salesParams.set('limit', '100');
+        const salesRes = await fetch(`${API_BASE_URL}/api/raw-data?${salesParams.toString()}`, fetchOpts);
         if (salesRes.status === 204) {
           setSales([]);
         } else if (salesRes.ok) {
@@ -125,19 +247,57 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Fetch forecast data
       try {
-        const forecastRes = await fetch(`${API_BASE_URL}/api/monthly-sales`, fetchOpts);
+        const forecastRes = await fetch(`${API_BASE_URL}/api/monthly-sales${analyticsSuffix}`, fetchOpts);
         if (forecastRes.status === 204) {
           setForecast([]);
         } else if (forecastRes.ok) {
           const forecastResponse = await forecastRes.json();
           const forecastData = forecastResponse.data || forecastResponse;
-          setForecast((Array.isArray(forecastData) ? forecastData : []).map((item: any) => ({
+          const currentPoints: ForecastPoint[] = (Array.isArray(forecastData) ? forecastData : []).map((item: any) => ({
             date: item.month || item.date,
-            actual: item.actual_sales || item.actual || undefined,
-            forecast: item.forecasted_sales || item.forecast || undefined,
+            actual: item.actual_sales ?? item.actual ?? undefined,
+            forecast: item.forecasted_sales ?? item.forecast ?? undefined,
             forecast_upper: item.forecast_upper || undefined,
-            forecast_lower: item.forecast_lower || undefined
-          })));
+            forecast_lower: item.forecast_lower || undefined,
+          }));
+
+          if (filters.comparePrevious && filters.startDate && filters.endDate) {
+            const prev = computePreviousRange(filters.startDate, filters.endDate);
+            if (prev) {
+              const prevParams = buildAnalyticsQuery(
+                { startDate: prev.startDate, endDate: prev.endDate },
+                { includeCityProduct: true }
+              );
+              const prevRes = await fetch(`${API_BASE_URL}/api/monthly-sales?${prevParams.toString()}`, fetchOpts);
+              if (prevRes.ok && prevRes.status !== 204) {
+                const prevPayload = await prevRes.json();
+                const prevData = prevPayload?.data || prevPayload;
+                const prevPoints: ForecastPoint[] = (Array.isArray(prevData) ? prevData : []).map((item: any) => ({
+                  date: item.month || item.date,
+                  actual: item.actual_sales ?? item.actual ?? undefined,
+                  forecast: item.forecasted_sales ?? item.forecast ?? undefined,
+                }));
+                const prevMap = new Map<string, ForecastPoint>();
+                prevPoints.forEach(p => prevMap.set(p.date, p));
+
+                const merged = currentPoints.map(p => {
+                  const prevPoint = prevMap.get(p.date);
+                  return {
+                    ...p,
+                    previous_actual: prevPoint?.actual,
+                    previous_forecast: prevPoint?.forecast,
+                  };
+                });
+                setForecast(merged);
+              } else {
+                setForecast(currentPoints);
+              }
+            } else {
+              setForecast(currentPoints);
+            }
+          } else {
+            setForecast(currentPoints);
+          }
         } else {
           setForecast([]);
         }
@@ -206,6 +366,41 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSegments([]);
       }
 
+      // Fetch Decision Insights (rule-based)
+      try {
+        const insightsParams = buildAnalyticsQuery();
+        insightsParams.set('limit', '8');
+        const insightsRes = await fetch(`${API_BASE_URL}/api/insights?${insightsParams.toString()}`, fetchOpts);
+        if (insightsRes.status === 204) {
+          setInsights([]);
+        } else if (insightsRes.ok) {
+          const payload = await insightsRes.json();
+          const items = payload?.insights || payload?.data || [];
+          setInsights(Array.isArray(items) ? items : []);
+        } else {
+          setInsights([]);
+        }
+      } catch (e) {
+        console.error('Failed to fetch insights:', e);
+        setInsights([]);
+      }
+
+      // Fetch Data Quality Report
+      try {
+        const dqRes = await fetch(`${API_BASE_URL}/api/data-quality`, fetchOpts);
+        if (dqRes.status === 204) {
+          setDataQuality(null);
+        } else if (dqRes.ok) {
+          const payload = await dqRes.json();
+          setDataQuality(payload?.data || payload);
+        } else {
+          setDataQuality(null);
+        }
+      } catch (e) {
+        console.error('Failed to fetch data quality report:', e);
+        setDataQuality(null);
+      }
+
       setLastTrainingDate(new Date().toISOString());
       setError(null);
     } catch (err) {
@@ -215,7 +410,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, [user, token]);
+  }, [user, token, buildAnalyticsQuery, computePreviousRange, filters]);
 
   /**
    * CRITICAL: Reset ALL analytics state immediately.
@@ -235,6 +430,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setRecommendations([]);
     setSentiment([]);
     setKpis(null);
+    setInsights([]);
+    setDataQuality(null);
+    setCityOptions([]);
+    setProductOptions([]);
     setLastTrainingDate(null);
     setError(null);
     
@@ -274,6 +473,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <DataContext.Provider value={{
       sales, forecast, segments, recommendations, sentiment, 
       kpis,
+      insights,
+      dataQuality,
+      filters,
+      setFilters,
+      clearFilters,
+      cityOptions,
+      productOptions,
       lastTrainingDate, isProcessing, isLoading, error,
       uploadData, refreshData: fetchData, resetAllAnalytics
     }}>

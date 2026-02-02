@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.log
+
+# Virtual envs
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# Project runtime artifacts
+logs/
+output/
+
+# Local databases / runtime state
+data/*.db
+data/.pipeline.lock
+
+# OS
+.DS_Store
+Thumbs.db

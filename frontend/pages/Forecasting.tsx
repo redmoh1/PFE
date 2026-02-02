@@ -3,12 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { useData } from '../store/DataContext';
 import { useAuth, useAuthFetch } from '../store/AuthContext';
 import { TrendingUp, Clock, Target, Info, Loader2, AlertCircle, RefreshCw, Brain } from 'lucide-react';
+import FiltersBar from '../components/FiltersBar';
 import { 
   ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
 const Forecasting: React.FC = () => {
-  const { forecast: contextForecast } = useData();
+  const {
+    forecast: contextForecast,
+    filters,
+    setFilters,
+    clearFilters,
+    cityOptions,
+    productOptions,
+  } = useData();
   const { user } = useAuth();
   const authFetch = useAuthFetch();
   
@@ -84,6 +92,7 @@ const Forecasting: React.FC = () => {
   const nextMonthForecast = forecast.find(f => !f.actual)?.forecast || forecast[0]?.forecast || 0;
   const lastActual = forecast.filter(f => f.actual).slice(-1)[0]?.actual || 0;
   const growthRate = lastActual ? ((nextMonthForecast - lastActual) / lastActual * 100).toFixed(1) : '0';
+  const hasComparison = forecast?.some((p) => p.previous_actual !== undefined && p.previous_actual !== null);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -121,6 +130,14 @@ const Forecasting: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <FiltersBar
+        filters={filters}
+        setFilters={setFilters}
+        clearFilters={clearFilters}
+        cityOptions={cityOptions}
+        productOptions={productOptions}
+      />
 
       {/* Error Display */}
       {error && (
@@ -173,6 +190,27 @@ const Forecasting: React.FC = () => {
             </div>
           </div>
         </div>
+
+        <div className="flex flex-wrap gap-3 text-xs text-text-secondary dark:text-text-secondaryDark mb-4">
+          {hasComparison && (
+            <div className="flex items-center gap-2">
+              <span className="w-6 h-[2px]" style={{ borderTop: '2px dashed #94A3B8' }} />
+              Previous period
+            </div>
+          )}
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-[2px] bg-primary" />
+            Actual
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-[2px]" style={{ borderTop: '2px dashed #64748B' }} />
+            Forecast
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-6 h-[2px] bg-blue-200" />
+            Confidence band
+          </div>
+        </div>
         
         {loading ? (
           <div className="h-[450px] flex items-center justify-center">
@@ -191,6 +229,18 @@ const Forecasting: React.FC = () => {
                   formatter={(value: any) => [`$${Number(value).toLocaleString()}`, '']}
                 />
                 <Legend verticalAlign="top" height={36}/>
+
+                {hasComparison && (
+                  <Line
+                    name="Previous Period"
+                    type="monotone"
+                    dataKey="previous_actual"
+                    stroke="#94A3B8"
+                    strokeWidth={2}
+                    strokeDasharray="4 4"
+                    dot={false}
+                  />
+                )}
                 
                 {/* Confidence Band (95% interval) */}
                 <Area 

@@ -81,7 +81,7 @@ logger = logging.getLogger("PipelineController")
 # ============================================================================
 
 try:
-    from schema_resolver import (
+    from .schema_resolver import (
         SchemaResolver, 
         SemanticField, 
         ANALYSIS_REQUIREMENTS,
