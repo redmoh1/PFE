@@ -10395,3 +10395,153 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2026-02-01 21:26:37,991 - main - INFO - [SENTIMENT DIAGNOSTIC] Data source: CSV (database bypassed)
 2026-02-01 21:26:37,992 - main - INFO - [SENTIMENT DIAGNOSTIC] Final breakdown: Positive=65, Neutral=0, Negative=55
 2026-02-01 21:26:37,993 - main - INFO - [SENTIMENT API] Returning analysis for 120 reviews
+2026-02-02 01:03:23,900 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 01:03:23,900 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 01:03:24,125 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 01:03:24,195 - main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 01:03:24,196 - main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 01:03:24,246 - main - INFO - ============================================================
+2026-02-02 01:03:24,246 - main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 01:03:24,247 - main - INFO - ============================================================
+2026-02-02 01:03:24,247 - main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 01:03:24,252 - main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 01:03:24,252 - main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 01:03:24,253 - main - INFO - ============================================================
+2026-02-02 01:03:24,253 - main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 01:03:24,253 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 01:03:24,253 - main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 14:53:44,229 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 14:53:44,231 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 14:53:44,673 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 14:53:44,768 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 14:53:44,768 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 14:53:44,857 - backend.main - INFO - ============================================================
+2026-02-02 14:53:44,865 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 14:53:44,865 - backend.main - INFO - ============================================================
+2026-02-02 14:53:44,865 - backend.main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 14:53:44,881 - backend.main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 14:53:44,881 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 14:53:44,881 - backend.main - INFO - ============================================================
+2026-02-02 14:53:44,881 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 14:53:44,889 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 14:53:44,889 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 14:58:55,616 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 14:58:55,625 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 14:58:55,918 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 14:58:55,966 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 14:58:55,966 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 14:58:56,030 - backend.main - INFO - ============================================================
+2026-02-02 14:58:56,033 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 14:58:56,033 - backend.main - INFO - ============================================================
+2026-02-02 14:58:56,033 - backend.main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 14:58:56,037 - backend.main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 14:58:56,037 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 14:58:56,037 - backend.main - INFO - ============================================================
+2026-02-02 14:58:56,037 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 14:58:56,037 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 14:58:56,037 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 15:32:34,514 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 15:32:34,516 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 15:32:34,858 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 15:32:34,939 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 15:32:34,939 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 15:32:35,018 - backend.main - INFO - ============================================================
+2026-02-02 15:32:35,018 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 15:32:35,018 - backend.main - INFO - ============================================================
+2026-02-02 15:32:35,018 - backend.main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 15:32:35,031 - backend.main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 15:32:35,031 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 15:32:35,031 - backend.main - INFO - ============================================================
+2026-02-02 15:32:35,031 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 15:32:35,031 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 15:32:35,031 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 15:41:15,285 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 15:41:15,285 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 15:41:15,585 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 15:41:15,632 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 15:41:15,632 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 15:41:15,688 - backend.main - INFO - ============================================================
+2026-02-02 15:41:15,688 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 15:41:15,688 - backend.main - INFO - ============================================================
+2026-02-02 15:41:15,688 - backend.main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 15:41:15,696 - backend.main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 15:41:15,696 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 15:41:15,696 - backend.main - INFO - ============================================================
+2026-02-02 15:41:15,696 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 15:41:15,696 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 15:41:15,696 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 15:44:27,462 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 15:44:27,462 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 15:44:27,864 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 15:44:27,934 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 15:44:27,934 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 15:44:28,022 - backend.main - INFO - ============================================================
+2026-02-02 15:44:28,022 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 15:44:28,022 - backend.main - INFO - ============================================================
+2026-02-02 15:44:28,022 - backend.main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 15:44:28,022 - backend.main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 15:44:28,022 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 15:44:28,022 - backend.main - INFO - ============================================================
+2026-02-02 15:44:28,022 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 15:44:28,022 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 15:44:28,022 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 15:46:59,247 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 15:46:59,247 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 15:46:59,563 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 15:46:59,611 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 15:46:59,611 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 15:46:59,674 - backend.main - INFO - ============================================================
+2026-02-02 15:46:59,674 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 15:46:59,674 - backend.main - INFO - ============================================================
+2026-02-02 15:46:59,674 - backend.main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 15:46:59,690 - backend.main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 15:46:59,690 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 15:46:59,690 - backend.main - INFO - ============================================================
+2026-02-02 15:46:59,690 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 15:46:59,690 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 15:46:59,691 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 15:50:07,058 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 15:50:07,058 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 15:50:07,353 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 15:50:07,416 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 15:50:07,416 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 15:50:07,496 - backend.main - INFO - ============================================================
+2026-02-02 15:50:07,496 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 15:50:07,496 - backend.main - INFO - ============================================================
+2026-02-02 15:50:07,496 - backend.main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 15:50:07,513 - backend.main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 15:50:07,513 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 15:50:07,515 - backend.main - INFO - ============================================================
+2026-02-02 15:50:07,515 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 15:50:07,515 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 15:50:07,515 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 17:10:30,797 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 17:10:30,797 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 17:10:30,984 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 17:10:31,018 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 17:10:31,018 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 17:10:31,068 - backend.main - INFO - ============================================================
+2026-02-02 17:10:31,068 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 17:10:31,068 - backend.main - INFO - ============================================================
+2026-02-02 17:10:31,068 - backend.main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 17:10:31,068 - backend.main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 17:10:31,068 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 17:10:31,068 - backend.main - INFO - ============================================================
+2026-02-02 17:10:31,068 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 17:10:31,068 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 17:10:31,068 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 17:14:26,783 - PipelineController - INFO - Schema Resolver imported successfully
+2026-02-02 17:14:26,783 - root - INFO - Pipeline Controller imported successfully
+2026-02-02 17:14:26,968 - root - INFO - Analytics Persistence Layer imported successfully
+2026-02-02 17:14:27,000 - backend.main - INFO - Rate limiting enabled: 100 requests/hour default
+2026-02-02 17:14:27,000 - backend.main - INFO - CORS enabled for origins: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:5173', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002']
+2026-02-02 17:14:27,039 - backend.main - INFO - ============================================================
+2026-02-02 17:14:27,039 - backend.main - INFO - [DATA RELOAD] Reloading all data from disk
+2026-02-02 17:14:27,039 - backend.main - INFO - ============================================================
+2026-02-02 17:14:27,039 - backend.main - INFO - [DATA RELOAD] No sales data file found
+2026-02-02 17:14:27,046 - backend.main - INFO - [DATA RELOAD] Loaded Acme Corp_forecast_prophet.csv: 6 rows
+2026-02-02 17:14:27,046 - backend.main - INFO - [DATA RELOAD] Status: {'cleaned_dataset': False, 'forecast': True, 'sentiment': False, 'recommendations': False, 'model': False}
+2026-02-02 17:14:27,046 - backend.main - INFO - ============================================================
+2026-02-02 17:14:27,046 - backend.main - INFO - [STARTUP] Syncing existing CSV data to database...
+2026-02-02 17:14:27,046 - analytics_persistence - INFO - CSV to Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
+2026-02-02 17:14:27,046 - backend.main - INFO - [STARTUP] Database sync complete: {'rfm': False, 'sentiment': False, 'recommendations': False, 'forecast': False}
