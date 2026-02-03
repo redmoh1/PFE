@@ -407,19 +407,6 @@ const DataUpload: React.FC = () => {
         )}
       </div>
 
-      <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 flex items-start gap-4">
-        <div className="p-2 bg-primary/10 rounded-lg text-primary mt-1">
-          <Sparkles size={20} />
-        </div>
-        <div>
-          <h4 className="font-bold text-primary">Automation Ready</h4>
-          <p className="text-sm text-text-secondary leading-relaxed">
-            This workspace is linked to your tenant ID. Any files uploaded here can automatically trigger n8n workflows or Zapier integrations via our public Webhook API. 
-            Configure your endpoints in the <span className="underline cursor-pointer">Settings</span> tab.
-          </p>
-        </div>
-      </div>
-
       {preview && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white dark:bg-slate-900 w-full max-w-5xl rounded-2xl shadow-2xl p-6 space-y-4">
