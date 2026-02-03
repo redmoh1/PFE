@@ -29,7 +29,6 @@ interface DataContextType {
   clearFilters: () => void;
   cityOptions: string[];
   productOptions: string[];
-  lastTrainingDate: string | null;
   isProcessing: boolean;
   isLoading: boolean;
   error: string | null;
@@ -74,7 +73,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [cityOptions, setCityOptions] = useState<string[]>([]);
   const [productOptions, setProductOptions] = useState<string[]>([]);
-  const [lastTrainingDate, setLastTrainingDate] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -150,7 +148,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setDataQuality(null);
       setCityOptions([]);
       setProductOptions([]);
-      setLastTrainingDate(null);
       setIsLoading(false);
       return;
     }
@@ -401,7 +398,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setDataQuality(null);
       }
 
-      setLastTrainingDate(new Date().toISOString());
       setError(null);
     } catch (err) {
       console.error('Failed to fetch data:', err);
@@ -434,7 +430,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setDataQuality(null);
     setCityOptions([]);
     setProductOptions([]);
-    setLastTrainingDate(null);
     setError(null);
     
     // Clear local storage for this tenant (no stale cached data)
@@ -461,7 +456,6 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // The actual upload is handled by DataUpload.tsx calling the API directly
     setTimeout(async () => {
       setIsProcessing(false);
-      setLastTrainingDate(new Date().toISOString());
       
       // Refresh data from server to get fresh pipeline results
       console.log('[DataContext] uploadData complete - refreshing from server');
@@ -480,7 +474,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       clearFilters,
       cityOptions,
       productOptions,
-      lastTrainingDate, isProcessing, isLoading, error,
+      isProcessing, isLoading, error,
       uploadData, refreshData: fetchData, resetAllAnalytics
     }}>
       {children}

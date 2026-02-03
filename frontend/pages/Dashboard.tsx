@@ -46,7 +46,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     clearFilters,
     cityOptions,
     productOptions,
-    lastTrainingDate,
     isLoading,
     error,
     refreshData,
@@ -168,10 +167,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Executive Overview</h2>
           <p className="text-text-secondary dark:text-text-secondaryDark">Real-time performance metrics and ML-driven insights.</p>
-        </div>
-        <div className="flex items-center gap-2 text-xs font-medium text-text-secondary bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full">
-          <span className="w-2 h-2 bg-success rounded-full animate-pulse" />
-          Last updated: {lastTrainingDate ? new Date(lastTrainingDate).toLocaleString() : 'Never'}
         </div>
       </div>
 
