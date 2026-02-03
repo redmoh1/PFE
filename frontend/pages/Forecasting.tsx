@@ -99,7 +99,7 @@ const Forecasting: React.FC = () => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex justify-between items-start">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Predictive Forecasting</h2>
           <p className="text-text-secondary">AI-powered sales projections using Prophet with seasonality detection.</p>
@@ -110,11 +110,11 @@ const Forecasting: React.FC = () => {
             </p>
           </div>
         </div>
-        <div className="flex gap-4 items-center">
+        <div className="flex flex-col sm:flex-row gap-3 sm:items-center w-full lg:w-auto">
           <button
             onClick={generateNewForecast}
             disabled={generating}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full sm:w-auto justify-center flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {generating ? (
               <>
@@ -128,7 +128,7 @@ const Forecasting: React.FC = () => {
               </>
             )}
           </button>
-          <div className="bg-primary/5 border border-primary/20 px-4 py-2 rounded-xl flex items-center gap-3">
+          <div className="w-full sm:w-auto bg-primary/5 border border-primary/20 px-4 py-2 rounded-xl flex items-center gap-3">
             <div className="p-1.5 bg-primary/10 rounded-lg text-primary">
               <TrendingUp size={18} />
             </div>
@@ -185,10 +185,10 @@ const Forecasting: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-card-light dark:bg-card-dark p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="flex justify-between items-center mb-8">
+      <div className="bg-card-light dark:bg-card-dark p-4 sm:p-6 lg:p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <h3 className="text-lg font-bold">Sales Volume Forecast with Confidence Intervals</h3>
-          <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-4 text-sm flex-wrap">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
               <span className="text-text-secondary">Forecast</span>

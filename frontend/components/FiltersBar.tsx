@@ -117,7 +117,7 @@ const FiltersBar: React.FC<FiltersBarProps> = ({
         <button
           type="button"
           onClick={clearFilters}
-          className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-sm font-semibold text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
+          className="w-full lg:w-auto justify-center px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 text-sm font-semibold text-text-secondary hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
         >
           <RotateCcw size={16} />
           Reset

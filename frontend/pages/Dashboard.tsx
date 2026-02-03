@@ -179,7 +179,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       />
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {kpiCards.map((kpi, idx) => {
           const changeType = getChangeType(kpi.change);
           const changeText = formatChange(kpi.change);
