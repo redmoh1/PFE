@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../store/AuthContext';
-import { Lightbulb, ShoppingCart, Percent, Zap, Upload } from 'lucide-react';
+import { Info, Lightbulb, Loader2, ShoppingCart, Percent, Zap, Upload } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -55,6 +55,10 @@ const Recommendations: React.FC = () => {
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
         <h2 className="text-2xl font-bold tracking-tight">Market Basket Analysis</h2>
         <p className="text-text-secondary">Next-best-product recommendations using the Apriori algorithm.</p>
+        <div className="mt-2 flex items-start gap-2 text-xs text-text-secondary dark:text-text-secondaryDark max-w-2xl">
+          <Info size={14} className="mt-0.5 text-primary/80" />
+          <p>Rules are learned from product co-occurrence in transactions; confidence and lift quantify recommendation strength beyond chance.</p>
+        </div>
         {hasData && (
           <div className="mt-2 text-xs text-text-secondary">
             Source: product_recommendations.csv | Total Rules: {recommendations.length}
@@ -62,7 +66,11 @@ const Recommendations: React.FC = () => {
         )}
       </div>
 
-      {!hasData && !loading ? (
+      {loading && !hasData ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 size={40} className="animate-spin text-primary" />
+        </div>
+      ) : !hasData ? (
         <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-12 text-center">
           <div className="flex items-center justify-center mb-4 text-green-600">
             <Upload size={32} />

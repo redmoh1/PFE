@@ -13,7 +13,8 @@ import {
   RefreshCw,
   AlertCircle,
   Lightbulb,
-  ShieldCheck
+  ShieldCheck,
+  ExternalLink
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -28,7 +29,11 @@ import {
   Cell
 } from 'recharts';
 
-const Dashboard: React.FC = () => {
+type DashboardProps = {
+  onNavigate?: (pageId: string) => void;
+};
+
+const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const {
     sales,
     forecast,
@@ -46,6 +51,43 @@ const Dashboard: React.FC = () => {
     error,
     refreshData,
   } = useData();
+
+  const getInsightTargetPage = (insight: { title: string; description: string; reason: string; suggested_action: string }) => {
+    const haystack = `${insight.title}\n${insight.description}\n${insight.reason}\n${insight.suggested_action}`.toLowerCase();
+
+    if (/(forecast|predict|prediction|project|projection|prophet|توقع|تنبؤ)/.test(haystack)) return 'forecasting';
+    if (/(segment|segmentation|rfm|cohort|تجزئة)/.test(haystack)) return 'segmentation';
+    if (/(recommend|recommendation|cross-?sell|upsell|basket|apriori|association|توصية)/.test(haystack)) return 'recommendations';
+    if (/(sentiment|review|feedback|nlp|مشاعر|آراء)/.test(haystack)) return 'sentiment';
+
+    return 'sales';
+  };
+
+  const extractExplicitFilters = (text: string) => {
+    const result: Partial<{ startDate: string; endDate: string; city: string; product: string }> = {};
+
+    const cityMatch = text.match(/(?:^|\s)city\s*=\s*([^\s,;]+)/i);
+    if (cityMatch?.[1]) result.city = decodeURIComponent(cityMatch[1]);
+
+    const productMatch = text.match(/(?:^|\s)product\s*=\s*([^\s,;]+)/i);
+    if (productMatch?.[1]) result.product = decodeURIComponent(productMatch[1]);
+
+    const startMatch = text.match(/(?:^|\s)(?:start_date|startdate)\s*=\s*(\d{4}-\d{2}-\d{2})/i);
+    if (startMatch?.[1]) result.startDate = startMatch[1];
+
+    const endMatch = text.match(/(?:^|\s)(?:end_date|enddate)\s*=\s*(\d{4}-\d{2}-\d{2})/i);
+    if (endMatch?.[1]) result.endDate = endMatch[1];
+
+    return result;
+  };
+
+  const handleInsightInvestigate = (insight: { title: string; description: string; reason: string; suggested_action: string }) => {
+    const target = getInsightTargetPage(insight);
+    const combinedText = `${insight.title} ${insight.description} ${insight.reason} ${insight.suggested_action}`;
+    const explicit = extractExplicitFilters(combinedText);
+    if (Object.keys(explicit).length > 0) setFilters(explicit);
+    onNavigate?.(target);
+  };
 
   if (isLoading) {
     return (
@@ -296,10 +338,24 @@ const Dashboard: React.FC = () => {
                   className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/20"
                 >
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <h4 className="font-bold leading-snug">{insight.title}</h4>
-                    <span className={`text-[11px] px-2 py-0.5 rounded-full border ${badge}`}>
-                      {insight.severity}
-                    </span>
+                    <div className="min-w-0">
+                      <h4 className="font-bold leading-snug truncate">{insight.title}</h4>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {onNavigate ? (
+                        <button
+                          type="button"
+                          onClick={() => handleInsightInvestigate(insight)}
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/30 hover:border-primary/40 hover:text-primary transition-colors"
+                        >
+                          Investigate
+                          <ExternalLink size={14} />
+                        </button>
+                      ) : null}
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full border ${badge}`}>
+                        {insight.severity}
+                      </span>
+                    </div>
                   </div>
 
                   <p className="text-sm text-text-secondary mb-3">{insight.description}</p>

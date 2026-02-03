@@ -506,6 +506,8 @@ class MonthlySalesResponse(BaseModel):
     month: str
     actual_sales: Optional[float]
     forecasted_sales: Optional[float]
+    forecast_lower: Optional[float] = None
+    forecast_upper: Optional[float] = None
 
 
 class TopProductResponse(BaseModel):
@@ -2494,6 +2496,23 @@ def get_monthly_sales(
     company_id = require_company_id(request)
     if not company_has_active_dataset(company_id, "sales"):
         return Response(status_code=204)
+
+    def _to_float(value: Any) -> Optional[float]:
+        try:
+            if value is None:
+                return None
+            f = float(value)
+            if pd.isna(f):
+                return None
+            return f
+        except Exception:
+            try:
+                f = pd.to_numeric(value, errors="coerce")
+                if pd.isna(f):
+                    return None
+                return float(f)
+            except Exception:
+                return None
     
     try:
         sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
@@ -2502,7 +2521,7 @@ def get_monthly_sales(
         sales_df = None
     
     # Build combined result - actual + forecast
-    monthly_dict = {}  # month -> {actual, forecast}
+    monthly_dict = {}  # month -> {actual, forecast, forecast_lower, forecast_upper}
     
     # Step 1: Add actual monthly sales from company data
     if sales_df is not None and not sales_df.empty and "__order_date" in sales_df.columns and "__total_price" in sales_df.columns:
@@ -2513,7 +2532,7 @@ def get_monthly_sales(
             for _, row in monthly.iterrows():
                 month_key = row["__order_date"].strftime("%Y-%m")
                 if month_key not in monthly_dict:
-                    monthly_dict[month_key] = {"actual": None, "forecast": None}
+                    monthly_dict[month_key] = {"actual": None, "forecast": None, "forecast_lower": None, "forecast_upper": None}
                 monthly_dict[month_key]["actual"] = float(row["__total_price"])
             
             logger.info(f"Computed {len(monthly)} monthly sales for {company_id}")
@@ -2531,13 +2550,31 @@ def get_monthly_sales(
             for _, row in local_forecast_df.iterrows():
                 if "MonthStart" not in local_forecast_df.columns:
                     continue
-                month_key = row["MonthStart"].strftime("%Y-%m")
+                month_start = row.get("MonthStart")
+                if month_start is None or (isinstance(month_start, float) and pd.isna(month_start)):
+                    continue
+
+                try:
+                    month_dt = pd.to_datetime(month_start, errors="coerce")
+                except Exception:
+                    month_dt = None
+                if month_dt is None or pd.isna(month_dt):
+                    continue
+
+                month_key = month_dt.strftime("%Y-%m")
                 if month_key not in monthly_dict:
-                    monthly_dict[month_key] = {"actual": None, "forecast": None}
+                    monthly_dict[month_key] = {"actual": None, "forecast": None, "forecast_lower": None, "forecast_upper": None}
                 # Only add forecast if it's positive (avoid anomalous negative values)
-                forecast_val = row.get("ForecastedSales", row.get("yhat", 0))
-                if forecast_val and forecast_val > 0:
-                    monthly_dict[month_key]["forecast"] = float(forecast_val)
+                forecast_val = _to_float(row.get("ForecastedSales", row.get("yhat", row.get("forecast", row.get("predicted")))) )
+                if forecast_val is not None and forecast_val > 0:
+                    monthly_dict[month_key]["forecast"] = forecast_val
+
+                lower_val = _to_float(row.get("ForecastLower", row.get("forecast_lower", row.get("yhat_lower"))))
+                upper_val = _to_float(row.get("ForecastUpper", row.get("forecast_upper", row.get("yhat_upper"))))
+                if lower_val is not None:
+                    monthly_dict[month_key]["forecast_lower"] = lower_val
+                if upper_val is not None:
+                    monthly_dict[month_key]["forecast_upper"] = upper_val
             
             logger.info(f"Added {len([m for m in monthly_dict.values() if m['forecast']])} forecast records")
         except Exception as e:
@@ -2559,6 +2596,8 @@ def get_monthly_sales(
             month=month,
             actual_sales=data["actual"],
             forecasted_sales=data["forecast"],
+            forecast_lower=data.get("forecast_lower"),
+            forecast_upper=data.get("forecast_upper"),
         )
         for month, data in sorted(monthly_dict.items())
     ]
@@ -2569,6 +2608,110 @@ def get_monthly_sales(
 
     logger.info(f"Returning {len(result)} combined monthly sales records for {company_id}")
     return result
+
+
+@app.post("/api/forecast/generate", tags=["Analytics"])
+def generate_forecast(request: Request):
+    """Generate a new sales forecast using the existing forecasting script.
+
+    This endpoint makes the Forecasting page's "Generate Forecast" button actually
+    produce `data/sales_forecast.csv`, which `/api/monthly-sales` merges into results.
+    """
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
+
+    script_path = BASE_DIR / "src" / "03_forecasting.py"
+    if not script_path.exists():
+        raise HTTPException(status_code=500, detail="Forecasting script not found")
+
+    with pipeline_lock(operation="forecast-generate"):
+        # Ensure the forecasting script has a canonical input file to read.
+        # The script searches under DATA_DIR for cleaned_dataset.csv/sales.csv.
+        try:
+            active_sales_df = load_active_sales_df(company_id)
+            canonical_sales = DATA_DIR / "sales.csv"
+            canonical_sales.parent.mkdir(parents=True, exist_ok=True)
+            active_sales_df.to_csv(canonical_sales, index=False)
+            logger.info("[FORECAST] Wrote canonical input: %s (%d rows)", canonical_sales, len(active_sales_df))
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("[FORECAST] Failed writing canonical sales.csv for %s: %s", company_id, exc)
+
+        result = subprocess.run(
+            [sys.executable, str(script_path)],
+            cwd=str(BASE_DIR),
+            capture_output=True,
+            text=True,
+            timeout=240,
+        )
+
+        if result.returncode != 0:
+            detail = (result.stderr or result.stdout or "Forecast generation failed").strip()
+            raise HTTPException(status_code=500, detail=detail)
+
+        # Validate that the script produced the expected output.
+        forecast_csv = DATA_DIR / "sales_forecast.csv"
+        if not forecast_csv.exists():
+            raise HTTPException(
+                status_code=500,
+                detail=f"Forecast script completed but did not create {forecast_csv}. Check backend logs for details.",
+            )
+
+        try:
+            fdf = pd.read_csv(forecast_csv)
+            if fdf.empty:
+                raise HTTPException(
+                    status_code=500,
+                    detail="Forecast file is empty. Ensure your sales dataset has valid dates and revenue values.",
+                )
+            # Ensure we have a numeric forecast column with at least one positive value.
+            forecast_col = None
+            for c in ["ForecastedSales", "yhat", "forecast", "predicted"]:
+                if c in fdf.columns:
+                    forecast_col = c
+                    break
+            if not forecast_col:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Forecast file is missing a forecast column. Found columns: {list(fdf.columns)}",
+                )
+            values = pd.to_numeric(fdf[forecast_col], errors="coerce")
+            if not (values.fillna(0) > 0).any():
+                raise HTTPException(
+                    status_code=500,
+                    detail="Forecast values were not positive/valid. Check your dataset and forecasting script output.",
+                )
+        except HTTPException:
+            raise
+        except Exception as exc:
+            raise HTTPException(status_code=500, detail=f"Failed to validate forecast output: {exc}")
+
+        # Reload any generated outputs and optionally persist to DB.
+        try:
+            reload_all_data_from_disk()
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("[FORECAST] Reload after generate failed: %s", exc)
+
+        if ANALYTICS_PERSISTENCE_AVAILABLE:
+            try:
+                if forecast_csv.exists():
+                    # Reuse validated dataframe
+                    if 'fdf' not in locals():
+                        fdf = pd.read_csv(forecast_csv)
+                    # Normalize columns similarly to load_forecast_data
+                    if "OrderDate" in fdf.columns and "MonthStart" not in fdf.columns:
+                        fdf = fdf.rename(columns={"OrderDate": "MonthStart"})
+                    if "MonthStart" in fdf.columns:
+                        fdf["MonthStart"] = pd.to_datetime(fdf["MonthStart"], errors="coerce")
+                    if "ForecastedSales" not in fdf.columns:
+                        forecast_col = next((c for c in ["yhat", "forecast", "predicted"] if c in fdf.columns), None)
+                        if forecast_col:
+                            fdf = fdf.rename(columns={forecast_col: "ForecastedSales"})
+                    save_forecast_results(fdf.to_dict(orient="records"), company_id, model_type="LinearRegression")
+            except Exception as exc:  # noqa: BLE001
+                logger.warning("[FORECAST] Persist after generate failed: %s", exc)
+
+    return {"success": True}
 
 
 @app.get("/api/top-products", response_model=List[TopProductResponse], tags=["Analytics"])

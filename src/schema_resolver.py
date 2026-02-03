@@ -172,7 +172,7 @@ ANALYSIS_REQUIREMENTS: Dict[str, AnalysisRequirement] = {
         description="Predict future sales based on historical trends",
         required_fields=[SemanticField.ORDER_DATE, SemanticField.TOTAL_PRICE],
         optional_fields=[SemanticField.PRODUCT, SemanticField.CUSTOMER_ID],
-        min_rows=30  # Need at least 30 data points for forecasting
+        min_rows=3  # Script can operate on small datasets; more rows improves reliability
     ),
     "rfm": AnalysisRequirement(
         name="RFM Customer Segmentation",

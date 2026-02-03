@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAuth, useAuthFetch } from '../store/AuthContext';
-import { Smile, Meh, Frown, MessageCircle, Upload, Globe, Brain, Loader2, RefreshCw } from 'lucide-react';
+import { Smile, Meh, Frown, MessageCircle, Upload, Globe, Brain, Info, Loader2, RefreshCw } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
@@ -108,6 +108,10 @@ const Sentiment: React.FC = () => {
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Customer Sentiment</h2>
             <p className="text-text-secondary">NLP-based analysis of customer reviews and feedback surveys.</p>
+            <div className="mt-2 flex items-start gap-2 text-xs text-text-secondary dark:text-text-secondaryDark max-w-2xl">
+              <Info size={14} className="mt-0.5 text-primary/80" />
+              <p>Sentiment labels are inferred from review text patterns; keyword lists highlight recurring themes across feedback.</p>
+            </div>
           </div>
           <button
             onClick={runNewAnalysis}

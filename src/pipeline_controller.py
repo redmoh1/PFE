@@ -211,13 +211,13 @@ def determine_available_analyses(data_path: Path = None) -> Dict[str, Dict[str, 
             has_date = any(c in columns for c in date_cols)
             has_value = any(c in columns for c in value_cols)
             
-            if has_date and has_value and row_count >= 30:
+            if has_date and has_value and row_count >= 3:
                 result["forecasting"] = {"available": True, "reason": "Date and value columns found"}
             else:
                 missing = []
                 if not has_date: missing.append("date column")
                 if not has_value: missing.append("value column")
-                if row_count < 30: missing.append(f"min rows (have {row_count}, need 30)")
+                if row_count < 3: missing.append(f"min rows (have {row_count}, need 3)")
                 result["forecasting"] = {"available": False, "reason": f"Missing: {', '.join(missing)}"}
             
             # RFM: needs date + customer_id + value

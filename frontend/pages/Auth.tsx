@@ -216,14 +216,7 @@ const AuthPage: React.FC = () => {
             </button>
           </div>
 
-          <div className="relative py-4">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200"></div>
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background-light px-2 text-slate-500 font-medium">JWT Secured Authentication</span>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>

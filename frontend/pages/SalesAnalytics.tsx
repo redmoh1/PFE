@@ -3,6 +3,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useData } from '../store/DataContext';
 import { useAuth, useAuthFetch } from '../store/AuthContext';
 import FiltersBar from '../components/FiltersBar';
+import { AlertCircle, Info, Loader2, RefreshCw } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie
@@ -36,13 +37,40 @@ const ComparisonTooltip: React.FC<any> = ({ active, payload, label }) => {
 };
 
 const SalesAnalytics: React.FC = () => {
-  const { sales, filters, setFilters, clearFilters, cityOptions, productOptions } = useData();
+  const { sales, filters, setFilters, clearFilters, cityOptions, productOptions, isLoading, error, refreshData } = useData();
   const { user } = useAuth();
   const authFetch = useAuthFetch();
   const [productData, setProductData] = useState<ComparisonDatum[]>([]);
   const [cityData, setCityData] = useState<ComparisonDatum[]>([]);
   const [previousProductData, setPreviousProductData] = useState<ComparisonDatum[]>([]);
   const [previousCityData, setPreviousCityData] = useState<ComparisonDatum[]>([]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 size={40} className="animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-error/10 border border-error/20 rounded-2xl p-6 flex items-start gap-4">
+        <AlertCircle className="text-error flex-shrink-0" size={24} />
+        <div>
+          <h3 className="font-bold text-error mb-1">Data Loading Error</h3>
+          <p className="text-sm text-text-secondary">{error}</p>
+          <button
+            onClick={refreshData}
+            className="mt-3 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition inline-flex items-center gap-2"
+          >
+            <RefreshCw size={16} />
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const canCompare = Boolean(filters.startDate && filters.endDate);
   const previousRange = useMemo(() => {
@@ -177,6 +205,10 @@ const SalesAnalytics: React.FC = () => {
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
         <h2 className="text-2xl font-bold tracking-tight">Sales Analytics</h2>
         <p className="text-text-secondary">Granular breakdown of revenue by product, category, and region.</p>
+        <div className="mt-2 flex items-start gap-2 text-xs text-text-secondary dark:text-text-secondaryDark max-w-2xl">
+          <Info size={14} className="mt-0.5 text-primary/80" />
+          <p>Metrics are aggregated from transaction records; comparison mode computes period-over-period deltas for quicker benchmarking.</p>
+        </div>
       </div>
 
       <FiltersBar

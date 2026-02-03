@@ -32,7 +32,7 @@ const AppContent: React.FC = () => {
 
   const renderPage = () => {
     switch (currentPage) {
-      case 'dashboard': return <Dashboard />;
+      case 'dashboard': return <Dashboard onNavigate={setCurrentPage} />;
       case 'sales': return <SalesAnalytics />;
       case 'forecasting': return <Forecasting />;
       case 'segmentation': return <Segmentation />;

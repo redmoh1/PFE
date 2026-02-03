@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useData } from '../store/DataContext';
 import { useAuth } from '../store/AuthContext';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Upload } from 'lucide-react';
+import { Info, Loader2, Upload } from 'lucide-react';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -49,6 +49,10 @@ const Segmentation: React.FC = () => {
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
         <h2 className="text-2xl font-bold tracking-tight">RFM Segmentation</h2>
         <p className="text-text-secondary">Classifying customers based on Recency, Frequency, and Monetary value.</p>
+        <div className="mt-2 flex items-start gap-2 text-xs text-text-secondary dark:text-text-secondaryDark max-w-2xl">
+          <Info size={14} className="mt-0.5 text-primary/80" />
+          <p>RFM cohorts are derived from how recently customers purchased, how often they buy, and how much they spend.</p>
+        </div>
         {metadata && (
           <div className="mt-2 text-xs text-text-secondary flex gap-4">
             <span>Source: {metadata.data_source}</span>
@@ -60,7 +64,11 @@ const Segmentation: React.FC = () => {
         )}
       </div>
 
-      {!hasData && !loading ? (
+      {loading && !hasData ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 size={40} className="animate-spin text-primary" />
+        </div>
+      ) : !hasData ? (
         <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl p-12 text-center">
           <div className="flex items-center justify-center mb-4 text-amber-600">
             <Upload size={32} />

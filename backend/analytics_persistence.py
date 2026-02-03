@@ -192,15 +192,19 @@ def get_forecast_results(
         
         # Convert JSON data to DataFrame
         df = pd.DataFrame(forecast.forecast_data)
-        
-        # Normalize column names
-        if "date" in df.columns:
-            df = df.rename(columns={"date": "MonthStart"})
-        if "ds" in df.columns:
-            df = df.rename(columns={"ds": "MonthStart"})
-        if "yhat" in df.columns:
-            df = df.rename(columns={"yhat": "ForecastedSales"})
-        
+
+        # Normalize column names to match the CSV loader and API merge logic.
+        # Historical note: some writers store OrderDate/ForecastedSales directly.
+        date_candidates = ["MonthStart", "date", "ds", "OrderDate", "Date"]
+        date_col = next((c for c in date_candidates if c in df.columns), None)
+        if date_col and date_col != "MonthStart":
+            df = df.rename(columns={date_col: "MonthStart"})
+
+        forecast_candidates = ["ForecastedSales", "yhat", "forecast", "predicted"]
+        forecast_col = next((c for c in forecast_candidates if c in df.columns), None)
+        if forecast_col and forecast_col != "ForecastedSales":
+            df = df.rename(columns={forecast_col: "ForecastedSales"})
+
         if "MonthStart" in df.columns:
             df["MonthStart"] = pd.to_datetime(df["MonthStart"], errors="coerce")
         
