@@ -1051,6 +1051,56 @@ def list_datasets(company_id: str) -> List[Dict[str, Any]]:
     return [row_to_dict(r) for r in rows]
 
 
+def company_has_any_dataset(company_id: str) -> bool:
+    """Return True when this tenant has at least one uploaded dataset.
+
+    We use this as the gate for all analytics endpoints so that a first-time
+    tenant starts with an empty dashboard (204) until they upload data.
+    """
+    try:
+        conn = get_db_connection()
+        row = conn.execute(
+            """
+            SELECT 1 FROM datasets
+            WHERE company_id = ? AND is_deleted = 0
+            LIMIT 1
+            """,
+            (company_id,),
+        ).fetchone()
+        conn.close()
+        return row is not None
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("Failed to check datasets for company %s: %s", company_id, exc)
+        return False
+
+
+def company_has_active_dataset(company_id: str, dataset_type: str) -> bool:
+    """Return True when this tenant has an ACTIVE (current) dataset of a given type."""
+    try:
+        conn = get_db_connection()
+        row = conn.execute(
+            """
+            SELECT 1 FROM datasets
+            WHERE company_id = ?
+              AND dataset_type = ?
+              AND is_deleted = 0
+              AND is_active = 1
+            LIMIT 1
+            """,
+            (company_id, dataset_type),
+        ).fetchone()
+        conn.close()
+        return row is not None
+    except Exception as exc:  # noqa: BLE001
+        logger.warning(
+            "Failed to check active dataset for company %s type %s: %s",
+            company_id,
+            dataset_type,
+            exc,
+        )
+        return False
+
+
 def archive_existing(company_id: str, dataset_type: str) -> None:
     conn = get_db_connection()
     conn.execute(
@@ -2035,7 +2085,10 @@ def _get_rfm_segmentation_data(request: Request):
     Returns:
         SegmentationMetadata if data exists, Response(204) if not
     """
-    company_id = request.headers.get("X-Company-ID") or "Acme Corp"
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
+
     rfm_df = None
     rfm_path = DATA_DIR / "rfm_table.csv"  # Define early for use in last_calculated
     
@@ -2184,7 +2237,10 @@ async def get_kpis(
     product: Optional[str] = Query(None),
 ):
     """Get high-level KPIs (revenue, orders, AOV, top product, top city) with dynamic percentage changes."""
-    company_id = request.headers.get("X-Company-ID")
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
+
     sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
     sales_df = _apply_sales_filters(sales_df, city=city, product=product)
 
@@ -2220,7 +2276,7 @@ async def get_kpis(
     ).copy()
 
     if current_df.empty:
-        raise HTTPException(status_code=404, detail="No data found for the specified date range")
+        return Response(status_code=204)
 
     # Calculate current period KPIs
     total_revenue = float(current_df["__total_price"].sum())
@@ -2285,9 +2341,12 @@ def get_decision_insights(
     """
     if not INSIGHTS_AVAILABLE:
         # Keep backward compatibility if module missing
-        return InsightsResponse(company_id=request.headers.get("X-Company-ID") or "Acme Corp", generated_at=datetime.now(timezone.utc).isoformat(), insights=[])
+        company_id = request.headers.get("X-Company-ID")
+        return InsightsResponse(company_id=(company_id or "").strip(), generated_at=datetime.now(timezone.utc).isoformat(), insights=[])
 
-    company_id = (request.headers.get("X-Company-ID") or "Acme Corp").strip()
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
 
     try:
         sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
@@ -2306,12 +2365,13 @@ def get_decision_insights(
             rfm_df = None
 
     sentiment_df_local = None
-    sentiment_path = DATA_DIR / "sentiment_results.csv"
-    if sentiment_path.exists():
-        try:
-            sentiment_df_local = pd.read_csv(sentiment_path)
-        except Exception:
-            sentiment_df_local = None
+    if company_has_active_dataset(company_id, "reviews"):
+        sentiment_path = DATA_DIR / "sentiment_results.csv"
+        if sentiment_path.exists():
+            try:
+                sentiment_df_local = pd.read_csv(sentiment_path)
+            except Exception:
+                sentiment_df_local = None
 
     recs_df = None
     recs_path = DATA_DIR / "product_recommendations.csv"
@@ -2349,7 +2409,10 @@ def get_data_quality_report(
         # Uses the same flag (modules are shipped together)
         raise HTTPException(status_code=503, detail="Data quality module not available")
 
-    company_id = (request.headers.get("X-Company-ID") or "Acme Corp").strip()
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
+
     try:
         raw_df = load_active_sales_df(company_id)
     except Exception:
@@ -2428,7 +2491,9 @@ def get_monthly_sales(
     product: Optional[str] = Query(None),
 ):
     """Get monthly sales actuals and forecasts merged together."""
-    company_id = request.headers.get("X-Company-ID")
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
     
     try:
         sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
@@ -2459,7 +2524,7 @@ def get_monthly_sales(
     # Only include global forecast when NOT segmenting by city/product.
     local_forecast_df = None
     if not city and not product:
-        local_forecast_df = load_forecast_data(company_id or "Acme Corp")
+        local_forecast_df = load_forecast_data(company_id)
 
     if local_forecast_df is not None and not local_forecast_df.empty:
         try:
@@ -2516,9 +2581,14 @@ def get_top_products(
     product: Optional[str] = Query(None),
 ):
     """Get top N products by revenue (limit: 1-100)."""
-    company_id = request.headers.get("X-Company-ID")
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
+
     sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
     sales_df = _apply_sales_filters(sales_df, start_date=start_date, end_date=end_date, city=city, product=product)
+    if sales_df is None or sales_df.empty:
+        return Response(status_code=204)
     product_series = sales_df.get("__product")
     if product_series is None or not product_series.notna().any():
         raise HTTPException(status_code=404, detail="No product column found (expected one of ProductID, Product_ID, Product, SKU)")
@@ -2552,9 +2622,14 @@ def get_top_cities(
     product: Optional[str] = Query(None),
 ):
     """Get top N cities by revenue."""
-    company_id = request.headers.get("X-Company-ID")
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
+
     sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
     sales_df = _apply_sales_filters(sales_df, start_date=start_date, end_date=end_date, city=city, product=product)
+    if sales_df is None or sales_df.empty:
+        return Response(status_code=204)
     city_series = sales_df.get("__city")
     if city_series is None or not city_series.notna().any():
         raise HTTPException(status_code=404, detail="No city/region column found (expected one of City, Region, Market)")
@@ -2588,7 +2663,11 @@ def get_sentiment_analysis(request: Request):
     
     Returns 204 (No Content) when data is missing or empty.
     """
-    company_id = (request.headers.get("X-Company-ID") or "Acme Corp").strip()
+    company_id = require_company_id(request)
+    # IMPORTANT: Sentiment must only be available if reviews were uploaded.
+    if not company_has_active_dataset(company_id, "reviews"):
+        return Response(status_code=204)
+
     local_sentiment_df = None
     data_source_used = "none"
     
@@ -2604,25 +2683,9 @@ def get_sentiment_analysis(request: Request):
     logger.info(f"[SENTIMENT DIAGNOSTIC] CSV Exists: {sentiment_path.exists()}")
 
     if not sentiment_path.exists():
-        # Fallback: if reviews were already provided under data/<company>/reviews/*.csv,
-        # auto-run the sentiment pipeline once to generate sentiment_results.csv.
-        reviews_dir = DATA_DIR / company_id / "reviews"
-        candidates: List[Path] = []
-        try:
-            if reviews_dir.exists():
-                candidates = sorted(reviews_dir.glob("*.csv"), key=lambda p: p.stat().st_mtime, reverse=True)
-        except Exception as e:
-            logger.warning(f"[SENTIMENT DIAGNOSTIC] Failed to list reviews dir {reviews_dir}: {e}")
-
-        if candidates:
-            latest_reviews = candidates[0]
-            logger.info(f"[SENTIMENT DIAGNOSTIC] sentiment_results.csv missing; auto-running pipeline from {latest_reviews.name}")
-            ok = run_sentiment_pipeline(latest_reviews)
-            logger.info(f"[SENTIMENT DIAGNOSTIC] Auto pipeline success={ok}; sentiment_exists={sentiment_path.exists()}")
-
-        if not sentiment_path.exists():
-            logger.info("[SENTIMENT DIAGNOSTIC] sentiment_results.csv NOT FOUND - returning 204")
-            return Response(status_code=204)
+        # No implicit demo-folder fallback; requires explicit upload + pipeline generation.
+        logger.info("[SENTIMENT DIAGNOSTIC] sentiment_results.csv NOT FOUND - returning 204")
+        return Response(status_code=204)
 
     try:
         local_sentiment_df = pd.read_csv(sentiment_path)
@@ -2728,7 +2791,10 @@ def get_recommendations(request: Request, limit: int = Query(10, ge=1, le=100)):
     
     Returns 204 (No Content) when data is missing or empty.
     """
-    company_id = request.headers.get("X-Company-ID") or "Acme Corp"
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
+
     rules_df = None
     recommendations_path = DATA_DIR / "product_recommendations.csv"
     
@@ -2866,7 +2932,10 @@ def get_raw_data(
     product: Optional[str] = Query(None),
 ):
     """Get raw transaction data (paginated)."""
-    company_id = request.headers.get("X-Company-ID")
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
+
     sales_df = load_active_sales_df(company_id)
     filtered_df = _filter_raw_sales_df(sales_df, start_date=start_date, end_date=end_date, city=city, product=product)
     return filtered_df.head(limit).to_dict(orient="records")
@@ -2905,7 +2974,9 @@ def get_customer_clv(
     - Acquisition cost recommendations
     - Top customer identification
     """
-    company_id = request.headers.get("X-Company-ID", "Acme Corp")
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
     
     # Check for cached CLV data
     clv_path = OUTPUT_DIR / f"{company_id}_clv_insights.json"
@@ -2944,7 +3015,9 @@ def get_customer_clv(
 @app.get("/api/clv/segments", tags=["Intelligence"])
 def get_clv_segments(request: Request):
     """Get CLV segment breakdown."""
-    company_id = request.headers.get("X-Company-ID", "Acme Corp")
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
     
     clv_csv_path = OUTPUT_DIR / f"{company_id}_clv_analysis.csv"
     
@@ -2988,7 +3061,9 @@ def get_intelligence_summary(request: Request):
     - CLV highlights
     - Actionable recommendations
     """
-    company_id = request.headers.get("X-Company-ID", "Acme Corp")
+    company_id = require_company_id(request)
+    if not company_has_active_dataset(company_id, "sales"):
+        return Response(status_code=204)
     
     summary = {
         "company": company_id,

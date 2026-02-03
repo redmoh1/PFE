@@ -81,3 +81,138 @@
 2026-02-02 21:58:16,969 - INFO - Performing EDA...
 2026-02-02 21:58:16,969 - INFO - [SKIP] City-based EDA skipped
 2026-02-02 21:58:17,302 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-02-03 02:01:46,715 - INFO - Schema Resolver loaded successfully
+2026-02-03 02:01:46,729 - INFO - ============================================================
+2026-02-03 02:01:46,729 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-02-03 02:01:46,729 - INFO - ============================================================
+2026-02-03 02:01:46,729 - INFO - ============================================================
+2026-02-03 02:01:46,729 - INFO - DATA LOADING PHASE
+2026-02-03 02:01:46,729 - INFO - ============================================================
+2026-02-03 02:01:46,729 - INFO - [OK] Loaded 307 sales records (MANDATORY)
+2026-02-03 02:01:46,729 - INFO - [OK] Loaded 120 review records from customer_reviews.csv
+2026-02-03 02:01:46,729 - INFO - ========================================
+2026-02-03 02:01:46,729 - INFO - SCHEMA RESOLUTION RESULTS
+2026-02-03 02:01:46,729 - INFO -   order_date -> 'OrderDate'
+2026-02-03 02:01:46,729 - INFO -   customer_id -> 'CustomerID'
+2026-02-03 02:01:46,729 - INFO -   order_id -> 'OrderID'
+2026-02-03 02:01:46,729 - INFO -   product -> 'Product'
+2026-02-03 02:01:46,729 - INFO -   quantity -> 'Quantity'
+2026-02-03 02:01:46,729 - INFO -   unit_price -> 'UnitPrice'
+2026-02-03 02:01:46,729 - INFO -   total_price -> 'TotalPrice'
+2026-02-03 02:01:46,729 - INFO -   city -> 'City'
+2026-02-03 02:01:46,729 - INFO -   Unmapped: ['ProductID']
+2026-02-03 02:01:46,729 - INFO - ========================================
+2026-02-03 02:01:46,729 - INFO - Mapped 'UnitPrice' -> 'Price'
+2026-02-03 02:01:46,729 - INFO - ========================================
+2026-02-03 02:01:46,729 - INFO - SCHEMA RESOLUTION RESULTS
+2026-02-03 02:01:46,729 - INFO -   customer_id -> 'CustomerID'
+2026-02-03 02:01:46,729 - INFO -   city -> 'City'
+2026-02-03 02:01:46,729 - INFO -   customer_name -> 'CustomerName'
+2026-02-03 02:01:46,729 - INFO -   Unmapped: ['JoinDate']
+2026-02-03 02:01:46,729 - INFO - ========================================
+2026-02-03 02:01:46,729 - INFO - Cleaning data...
+2026-02-03 02:01:46,729 - INFO - Data cleaning completed
+2026-02-03 02:01:46,729 - INFO - ============================================================
+2026-02-03 02:01:46,729 - INFO - DATA MERGING PHASE
+2026-02-03 02:01:46,729 - INFO - ============================================================
+2026-02-03 02:01:46,729 - INFO - [OK] Merge complete: 307 records
+2026-02-03 02:01:46,746 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-02-03 02:01:46,746 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-02-03 02:01:46,746 - INFO - Total Sales Revenue: 201,370.00
+2026-02-03 02:01:46,746 - INFO - Total Orders: 150.00
+2026-02-03 02:01:46,746 - INFO - Total Customers: 29.00
+2026-02-03 02:01:46,746 - INFO - Average Order Value: 655.93
+2026-02-03 02:01:46,746 - INFO - Median Order Value: 180.00
+2026-02-03 02:01:46,746 - INFO - Total Products Sold: 5.00
+2026-02-03 02:01:46,746 - INFO - Performing EDA...
+2026-02-03 02:01:46,746 - INFO - [SKIP] City-based EDA skipped
+2026-02-03 02:01:47,297 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-02-03 02:02:29,781 - INFO - Schema Resolver loaded successfully
+2026-02-03 02:02:29,781 - INFO - ============================================================
+2026-02-03 02:02:29,781 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-02-03 02:02:29,781 - INFO - ============================================================
+2026-02-03 02:02:29,781 - INFO - ============================================================
+2026-02-03 02:02:29,781 - INFO - DATA LOADING PHASE
+2026-02-03 02:02:29,781 - INFO - ============================================================
+2026-02-03 02:02:29,781 - INFO - [OK] Loaded 307 sales records (MANDATORY)
+2026-02-03 02:02:29,781 - INFO - [OK] Loaded 120 review records from customer_reviews.csv
+2026-02-03 02:02:29,781 - INFO - ========================================
+2026-02-03 02:02:29,781 - INFO - SCHEMA RESOLUTION RESULTS
+2026-02-03 02:02:29,781 - INFO -   order_date -> 'OrderDate'
+2026-02-03 02:02:29,781 - INFO -   customer_id -> 'CustomerID'
+2026-02-03 02:02:29,781 - INFO -   order_id -> 'OrderID'
+2026-02-03 02:02:29,781 - INFO -   product -> 'Product'
+2026-02-03 02:02:29,781 - INFO -   quantity -> 'Quantity'
+2026-02-03 02:02:29,781 - INFO -   unit_price -> 'UnitPrice'
+2026-02-03 02:02:29,781 - INFO -   total_price -> 'TotalPrice'
+2026-02-03 02:02:29,781 - INFO -   city -> 'City'
+2026-02-03 02:02:29,781 - INFO -   Unmapped: ['ProductID']
+2026-02-03 02:02:29,781 - INFO - ========================================
+2026-02-03 02:02:29,781 - INFO - Mapped 'UnitPrice' -> 'Price'
+2026-02-03 02:02:29,781 - INFO - ========================================
+2026-02-03 02:02:29,781 - INFO - SCHEMA RESOLUTION RESULTS
+2026-02-03 02:02:29,781 - INFO -   customer_id -> 'CustomerID'
+2026-02-03 02:02:29,781 - INFO -   city -> 'City'
+2026-02-03 02:02:29,781 - INFO -   customer_name -> 'CustomerName'
+2026-02-03 02:02:29,781 - INFO -   Unmapped: ['JoinDate']
+2026-02-03 02:02:29,781 - INFO - ========================================
+2026-02-03 02:02:29,781 - INFO - Cleaning data...
+2026-02-03 02:02:29,781 - INFO - Data cleaning completed
+2026-02-03 02:02:29,781 - INFO - ============================================================
+2026-02-03 02:02:29,781 - INFO - DATA MERGING PHASE
+2026-02-03 02:02:29,781 - INFO - ============================================================
+2026-02-03 02:02:29,781 - INFO - [OK] Merge complete: 307 records
+2026-02-03 02:02:29,781 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-02-03 02:02:29,798 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-02-03 02:02:29,798 - INFO - Total Sales Revenue: 201,370.00
+2026-02-03 02:02:29,798 - INFO - Total Orders: 150.00
+2026-02-03 02:02:29,798 - INFO - Total Customers: 29.00
+2026-02-03 02:02:29,798 - INFO - Average Order Value: 655.93
+2026-02-03 02:02:29,798 - INFO - Median Order Value: 180.00
+2026-02-03 02:02:29,798 - INFO - Total Products Sold: 5.00
+2026-02-03 02:02:29,798 - INFO - Performing EDA...
+2026-02-03 02:02:29,798 - INFO - [SKIP] City-based EDA skipped
+2026-02-03 02:02:30,097 - INFO - PHASE 1 COMPLETED SUCCESSFULLY
+2026-02-03 02:09:50,869 - INFO - Schema Resolver loaded successfully
+2026-02-03 02:09:50,869 - INFO - ============================================================
+2026-02-03 02:09:50,869 - INFO - PHASE 1: DATA COLLECTION & EDA STARTED
+2026-02-03 02:09:50,869 - INFO - ============================================================
+2026-02-03 02:09:50,869 - INFO - ============================================================
+2026-02-03 02:09:50,869 - INFO - DATA LOADING PHASE
+2026-02-03 02:09:50,869 - INFO - ============================================================
+2026-02-03 02:09:50,869 - INFO - [OK] Loaded 18 sales records (MANDATORY)
+2026-02-03 02:09:50,869 - INFO - [OK] Loaded 120 review records from customer_reviews.csv
+2026-02-03 02:09:50,869 - INFO - ========================================
+2026-02-03 02:09:50,869 - INFO - SCHEMA RESOLUTION RESULTS
+2026-02-03 02:09:50,869 - INFO -   order_date -> 'OrderDate'
+2026-02-03 02:09:50,869 - INFO -   customer_id -> 'CustomerID'
+2026-02-03 02:09:50,869 - INFO -   order_id -> 'OrderID'
+2026-02-03 02:09:50,869 - INFO -   product -> 'Product'
+2026-02-03 02:09:50,869 - INFO -   quantity -> 'Quantity'
+2026-02-03 02:09:50,869 - INFO -   unit_price -> 'Price'
+2026-02-03 02:09:50,869 - INFO -   Unmapped: ['Category']
+2026-02-03 02:09:50,869 - INFO - ========================================
+2026-02-03 02:09:50,882 - INFO - Computed TotalPrice from Price × Quantity
+2026-02-03 02:09:50,882 - INFO - ========================================
+2026-02-03 02:09:50,882 - INFO - SCHEMA RESOLUTION RESULTS
+2026-02-03 02:09:50,882 - INFO -   customer_id -> 'CustomerID'
+2026-02-03 02:09:50,882 - INFO -   city -> 'City'
+2026-02-03 02:09:50,882 - INFO -   customer_name -> 'CustomerName'
+2026-02-03 02:09:50,882 - INFO -   Unmapped: ['JoinDate']
+2026-02-03 02:09:50,882 - INFO - ========================================
+2026-02-03 02:09:50,882 - INFO - Cleaning data...
+2026-02-03 02:09:50,882 - INFO - Data cleaning completed
+2026-02-03 02:09:50,882 - INFO - ============================================================
+2026-02-03 02:09:50,882 - INFO - DATA MERGING PHASE
+2026-02-03 02:09:50,882 - INFO - ============================================================
+2026-02-03 02:09:50,882 - INFO - [OK] Merge complete: 18 records
+2026-02-03 02:09:50,882 - INFO - [OK] merged_data.csv generated for Phase 2
+2026-02-03 02:09:50,890 - INFO - [OK] cleaned_dataset.csv generated for ML pipelines
+2026-02-03 02:09:50,890 - INFO - Total Sales Revenue: 6,340.00
+2026-02-03 02:09:50,890 - INFO - Total Orders: 7.00
+2026-02-03 02:09:50,890 - INFO - Total Customers: 5.00
+2026-02-03 02:09:50,890 - INFO - Average Order Value: 352.22
+2026-02-03 02:09:50,890 - INFO - Median Order Value: 45.00
+2026-02-03 02:09:50,890 - INFO - Total Products Sold: 9.00
+2026-02-03 02:09:50,890 - INFO - Performing EDA...
+2026-02-03 02:09:51,349 - INFO - PHASE 1 COMPLETED SUCCESSFULLY

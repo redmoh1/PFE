@@ -36,3 +36,41 @@
 2026-02-02 21:58:18,782 - INFO - ============================================================
 2026-02-02 21:58:18,782 - INFO - PHASE 3 COMPLETED SUCCESSFULLY
 2026-02-02 21:58:18,782 - INFO - ============================================================
+2026-02-03 02:01:48,912 - INFO - Schema Resolver loaded successfully
+2026-02-03 02:01:48,912 - INFO - ============================================================
+2026-02-03 02:01:48,912 - INFO - PHASE 3: SALES FORECASTING
+2026-02-03 02:01:48,912 - INFO - ============================================================
+2026-02-03 02:01:48,912 - INFO - Found data file at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-02-03 02:01:48,921 - INFO - Loaded 307 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-02-03 02:01:48,921 - INFO - Using columns: date='OrderDate', value='TotalPrice'
+2026-02-03 02:01:48,921 - INFO - Prepared 5 monthly data points
+2026-02-03 02:01:48,929 - WARNING - Only 5 months - using in-sample metrics (not reliable for accuracy)
+2026-02-03 02:01:48,929 - INFO - Regression-based forecasting applied
+2026-02-03 02:01:48,929 - INFO - R2: 0.10
+2026-02-03 02:01:48,929 - INFO - MAE: 8,553.40
+2026-02-03 02:01:48,929 - INFO - RMSE: 9,329.06
+2026-02-03 02:01:48,929 - INFO - is_oos_metric: 0.00
+2026-02-03 02:01:49,282 - INFO - Forecast plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sales_forecast.png
+2026-02-03 02:01:49,286 - INFO - Forecast saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv
+2026-02-03 02:01:49,286 - INFO - ============================================================
+2026-02-03 02:01:49,286 - INFO - PHASE 3 COMPLETED SUCCESSFULLY
+2026-02-03 02:01:49,286 - INFO - ============================================================
+2026-02-03 02:02:31,247 - INFO - Schema Resolver loaded successfully
+2026-02-03 02:02:31,247 - INFO - ============================================================
+2026-02-03 02:02:31,247 - INFO - PHASE 3: SALES FORECASTING
+2026-02-03 02:02:31,247 - INFO - ============================================================
+2026-02-03 02:02:31,263 - INFO - Found data file at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-02-03 02:02:31,265 - INFO - Loaded 307 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-02-03 02:02:31,265 - INFO - Using columns: date='OrderDate', value='TotalPrice'
+2026-02-03 02:02:31,265 - INFO - Prepared 5 monthly data points
+2026-02-03 02:02:31,265 - WARNING - Only 5 months - using in-sample metrics (not reliable for accuracy)
+2026-02-03 02:02:31,265 - INFO - Regression-based forecasting applied
+2026-02-03 02:02:31,265 - INFO - R2: 0.10
+2026-02-03 02:02:31,265 - INFO - MAE: 8,553.40
+2026-02-03 02:02:31,265 - INFO - RMSE: 9,329.06
+2026-02-03 02:02:31,265 - INFO - is_oos_metric: 0.00
+2026-02-03 02:02:31,597 - INFO - Forecast plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\sales_forecast.png
+2026-02-03 02:02:31,597 - INFO - Forecast saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales_forecast.csv
+2026-02-03 02:02:31,597 - INFO - ============================================================
+2026-02-03 02:02:31,597 - INFO - PHASE 3 COMPLETED SUCCESSFULLY
+2026-02-03 02:02:31,597 - INFO - ============================================================
