@@ -7,29 +7,35 @@ on:
 jobs:
   deploy:
     runs-on: self-hosted
-
     steps:
-      - name: Deploy locally on server
-        run: |
-          set -euo pipefail
+      - name: SSH and deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            set -euo pipefail
 
-          echo "== Who/Where =="
-          whoami
-          pwd
+            cd /home/deploy/PFE
 
-          cd /home/deploy/PFE
+            echo "== Who/Where =="
+            whoami
+            pwd
 
-          echo "== Git =="
-          git fetch origin main
-          git checkout main
-          git reset --hard origin/main
-          git log -1 --oneline
+            echo "== Git =="
+            git remote -v
+            git fetch origin main
+            git checkout main
+            git reset --hard origin/main
+            git log -1 --oneline
 
-          echo "== Docker =="
-          docker --version
-          docker compose version || docker-compose --version
-          docker compose down || docker-compose down
-          docker compose up -d --build --force-recreate || docker-compose up -d --build --force-recreate
-          docker compose ps || docker-compose ps
+            echo "== Docker =="
+            docker --version
+            docker-compose --version
+            docker-compose down
+            docker-compose up -d --build --force-recreate
+            docker-compose ps
 
-          echo "✅ Deploy finished"
+            echo "✅ Deploy finished"
