@@ -24,3 +24,10 @@ data/.pipeline.lock
 # OS
 .DS_Store
 Thumbs.db
+__pycache__/
+*.pyc
+
+data/*.db
+data/*.csv
+
+logs/*.log
