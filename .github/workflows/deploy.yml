@@ -1,0 +1,35 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy locally on server
+        run: |
+          set -euo pipefail
+
+          echo "== Who/Where =="
+          whoami
+          pwd
+
+          cd /home/deploy/PFE
+
+          echo "== Git =="
+          git fetch origin main
+          git checkout main
+          git reset --hard origin/main
+          git log -1 --oneline
+
+          echo "== Docker =="
+          docker --version
+          docker compose version || docker-compose --version
+          docker compose down || docker-compose down
+          docker compose up -d --build --force-recreate || docker-compose up -d --build --force-recreate
+          docker compose ps || docker-compose ps
+
+          echo "✅ Deploy finished"
