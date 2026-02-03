@@ -45,9 +45,8 @@ except ImportError:
     logging.warning("passlib not installed. Using simple password verification.")
 
 # Import Pipeline Controller - SINGLE SOURCE OF TRUTH
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 try:
-    from pipeline_controller import (
+    from src.pipeline_controller import (
         orchestrate_pipeline,
         hard_reset_derived_outputs,
         detect_data_deletion,
@@ -124,6 +123,15 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger(__name__)
+
+# New: Insights + Data Quality
+try:
+    from backend.insights import InsightsResponse, generate_insights
+    from backend.data_quality import DataQualityReport, generate_data_quality_report
+    INSIGHTS_AVAILABLE = True
+except Exception as e:  # noqa: BLE001
+    INSIGHTS_AVAILABLE = False
+    logging.warning(f"Insights/DataQuality modules not available: {e}")
 
 ALLOWED_DATASET_TYPES = {"sales", "customers", "reviews"}
 MAX_PREVIEW_ROWS = 50
@@ -774,7 +782,7 @@ def require_company_id(request: Request) -> str:
     company_id = request.headers.get("X-Company-ID")
     if not company_id:
         raise HTTPException(status_code=400, detail="Missing X-Company-ID header")
-    return company_id
+    return company_id.strip()
 
 
 def trigger_recommendation_pipeline(sales_file_path: Path) -> bool:
@@ -788,70 +796,83 @@ def trigger_recommendation_pipeline(sales_file_path: Path) -> bool:
     Returns:
         True if successful, False otherwise
     """
+    global recommendation_df
+    
     try:
-        logger.info(f"Triggering recommendation pipeline for: {sales_file_path}")
-        
-        # Import and run the recommendation script
-        sys.path.insert(0, str(BASE_DIR / "src"))
-        from src import recommendation as rec_module
+        logger.info(f"[TRIGGER RECO] Starting recommendations pipeline for: {sales_file_path}")
         
         # Load sales data
         df = pd.read_csv(sales_file_path)
+        logger.info(f"[TRIGGER RECO] Loaded {len(df)} rows from sales file")
         
         # Validate required columns
-        if 'OrderID' not in df.columns:
-            logger.warning("OrderID column missing - cannot generate recommendations")
+        order_candidates = ['OrderID', 'Order_ID', 'order_id', 'InvoiceNo']
+        order_col = next((c for c in order_candidates if c in df.columns), None)
+        
+        if not order_col:
+            logger.warning("[TRIGGER RECO] OrderID column missing - cannot generate recommendations")
             return False
             
         product_col = None
-        for col in ['ProductID', 'Product_ID', 'Product', 'SKU']:
+        for col in ['ProductID', 'Product_ID', 'Product', 'SKU', 'Product_Name']:
             if col in df.columns:
                 product_col = col
                 break
                 
         if not product_col:
-            logger.warning("Product column missing - cannot generate recommendations")
+            logger.warning("[TRIGGER RECO] Product column missing - cannot generate recommendations")
             return False
         
         # Check if we have multi-product orders
-        order_counts = df.groupby('OrderID').size()
+        order_counts = df.groupby(order_col).size()
         multi_product_orders = (order_counts > 1).sum()
         
         if multi_product_orders < 2:
-            logger.warning(f"Only {multi_product_orders} multi-product orders - insufficient for recommendations")
+            logger.warning(f"[TRIGGER RECO] Only {multi_product_orders} multi-product orders - insufficient for recommendations")
             # Create empty recommendations file
             empty_df = pd.DataFrame(columns=['RuleID', 'IF', 'THEN', 'Support', 'Confidence', 'Lift'])
             empty_df.to_csv(DATA_DIR / "product_recommendations.csv", index=False)
             return False
         
-        logger.info(f"Found {multi_product_orders} multi-product orders - proceeding with Apriori")
+        logger.info(f"[TRIGGER RECO] Found {multi_product_orders} multi-product orders - proceeding with Apriori")
+        
+        # Copy sales file to canonical location (data/sales.csv) for the pipeline
+        canonical_sales = DATA_DIR / "sales.csv"
+        shutil.copy2(sales_file_path, canonical_sales)
+        logger.info(f"[TRIGGER RECO] Copied to canonical location: {canonical_sales}")
         
         # Run recommendation pipeline by calling the main script
-        import subprocess
         result = subprocess.run(
             [sys.executable, str(BASE_DIR / "src" / "05_recommendation.py")],
             cwd=str(BASE_DIR),
             capture_output=True,
             text=True,
-            timeout=120
+            timeout=180
         )
         
         if result.returncode == 0:
-            logger.info("Recommendation pipeline completed successfully")
+            logger.info("[TRIGGER RECO] Recommendations pipeline completed successfully")
             # Reload global recommendation_df
-            global recommendation_df
-            try:
-                recommendation_df = pd.read_csv(DATA_DIR / "product_recommendations.csv")
-                logger.info(f"Reloaded {len(recommendation_df)} recommendation rules")
-            except:
-                recommendation_df = None
-            return True
+            reco_path = DATA_DIR / "product_recommendations.csv"
+            if reco_path.exists():
+                try:
+                    recommendation_df = pd.read_csv(reco_path)
+                    logger.info(f"[TRIGGER RECO] Loaded {len(recommendation_df)} recommendation rules")
+                    return True
+                except Exception as e:
+                    logger.error(f"[TRIGGER RECO] Failed to reload recommendations: {e}")
+                    return False
+            else:
+                logger.warning("[TRIGGER RECO] product_recommendations.csv not created despite successful exit")
+                return False
         else:
-            logger.error(f"Recommendation pipeline failed: {result.stderr}")
+            logger.error(f"[TRIGGER RECO] Recommendations pipeline failed: {result.stderr}")
             return False
             
     except Exception as e:
-        logger.error(f"Error triggering recommendation pipeline: {e}")
+        logger.error(f"[TRIGGER RECO] Error triggering recommendations pipeline: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return False
 
 
@@ -914,6 +935,100 @@ def trigger_sentiment_pipeline(reviews_file_path: Path) -> bool:
             
     except Exception as e:
         logger.error(f"Error triggering sentiment pipeline: {e}")
+        return False
+
+
+def trigger_rfm_pipeline(sales_file_path: Path, company_id: str = "Acme Corp") -> bool:
+    """
+    Trigger RFM Segmentation analysis pipeline.
+    Generates rfm_table.csv from sales transactions.
+    
+    Args:
+        sales_file_path: Path to sales CSV with CustomerID, OrderDate, TotalPrice columns
+        company_id: Company identifier for database sync
+        
+    Returns:
+        True if successful, False otherwise
+    """
+    global rfm_df
+    
+    try:
+        logger.info(f"[TRIGGER RFM] Starting RFM pipeline for: {sales_file_path}")
+        
+        # Load sales data to validate
+        df = pd.read_csv(sales_file_path)
+        logger.info(f"[TRIGGER RFM] Loaded {len(df)} rows from sales file")
+        
+        # Validate required columns for RFM (CustomerID, date, value)
+        customer_candidates = ['CustomerID', 'Customer_ID', 'customer_id', 'CustomerId']
+        date_candidates = ['OrderDate', 'Sale_Date', 'Order_Date', 'Date', 'order_date']
+        value_candidates = ['TotalPrice', 'Price', 'Sales_Amount', 'Revenue', 'Amount', 'Total_Price']
+        
+        customer_col = next((c for c in customer_candidates if c in df.columns), None)
+        date_col = next((c for c in date_candidates if c in df.columns), None)
+        value_col = next((c for c in value_candidates if c in df.columns), None)
+        
+        if not customer_col:
+            logger.warning("[TRIGGER RFM] CustomerID column missing - cannot generate RFM")
+            return False
+            
+        if not date_col or not value_col:
+            logger.warning(f"[TRIGGER RFM] Missing required columns: date={date_col}, value={value_col}")
+            return False
+        
+        # Check we have unique customers
+        unique_customers = df[customer_col].nunique()
+        if unique_customers < 2:
+            logger.warning(f"[TRIGGER RFM] Only {unique_customers} unique customers - insufficient for RFM")
+            return False
+        
+        logger.info(f"[TRIGGER RFM] Found {unique_customers} unique customers - proceeding with RFM")
+        
+        # Copy sales file to canonical location (data/sales.csv) for the pipeline
+        canonical_sales = DATA_DIR / "sales.csv"
+        shutil.copy2(sales_file_path, canonical_sales)
+        logger.info(f"[TRIGGER RFM] Copied to canonical location: {canonical_sales}")
+        
+        # Run RFM pipeline
+        result = subprocess.run(
+            [sys.executable, str(BASE_DIR / "src" / "04_rfm.py")],
+            cwd=str(BASE_DIR),
+            capture_output=True,
+            text=True,
+            timeout=120
+        )
+        
+        if result.returncode == 0:
+            logger.info("[TRIGGER RFM] RFM pipeline completed successfully")
+            # Reload global rfm_df
+            rfm_path = DATA_DIR / "rfm_table.csv"
+            if rfm_path.exists():
+                try:
+                    rfm_df = pd.read_csv(rfm_path)
+                    logger.info(f"[TRIGGER RFM] Loaded {len(rfm_df)} RFM records")
+                    
+                    # Sync to database for persistence
+                    if ANALYTICS_PERSISTENCE_AVAILABLE:
+                        try:
+                            save_rfm_results(rfm_df, company_id)
+                            logger.info("[TRIGGER RFM] Synced RFM results to database")
+                        except Exception as e:
+                            logger.warning(f"[TRIGGER RFM] Database sync failed: {e}")
+                    return True
+                except Exception as e:
+                    logger.error(f"[TRIGGER RFM] Failed to reload RFM data: {e}")
+                    return False
+            else:
+                logger.warning("[TRIGGER RFM] rfm_table.csv not created despite successful exit")
+                return False
+        else:
+            logger.error(f"[TRIGGER RFM] RFM pipeline failed: {result.stderr}")
+            return False
+            
+    except Exception as e:
+        logger.error(f"[TRIGGER RFM] Error triggering RFM pipeline: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
         return False
 
 
@@ -1536,6 +1651,22 @@ def load_active_sales_df(company_id: Optional[str] = None) -> pd.DataFrame:
         except Exception as exc:  # noqa: BLE001
             logger.warning("Failed to load active dataset %s: %s", active["file_path"], exc)
 
+    # Fallback (multi-tenant): if a company folder exists but DB isn't initialized,
+    # load the newest CSV from data/<company>/sales/*.csv.
+    if company_id:
+        company_sales_dir = DATA_DIR / company_id / "sales"
+        try:
+            if company_sales_dir.exists() and company_sales_dir.is_dir():
+                csvs = [p for p in company_sales_dir.glob("*.csv") if p.is_file()]
+                if csvs:
+                    newest = max(csvs, key=lambda p: p.stat().st_mtime)
+                    loaded_df = pd.read_csv(newest)
+                    if loaded_df is not None and not loaded_df.empty:
+                        logger.info("[FALLBACK] Loaded sales data from %s", newest)
+                        return loaded_df
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("[FALLBACK] Failed to load company sales CSVs for %s: %s", company_id, exc)
+
     # Fallback to legacy global dataset
     if df is not None and not df.empty:
         return df
@@ -1592,6 +1723,68 @@ def normalize_sales_dataframe(source_df: pd.DataFrame) -> pd.DataFrame:
 
     working = working[working["__order_date"].notna()].copy()
     return working
+
+
+def _apply_sales_filters(
+    normalized_df: pd.DataFrame,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    city: Optional[str] = None,
+    product: Optional[str] = None,
+) -> pd.DataFrame:
+    """Apply optional date/city/product filters to a normalized sales dataframe."""
+    if normalized_df is None or normalized_df.empty:
+        return normalized_df
+
+    filtered = normalized_df
+
+    if city:
+        if filtered.get("__city") is None:
+            return filtered.iloc[0:0]
+        city_norm = city.strip().lower()
+        filtered = filtered[filtered["__city"].astype(str).str.strip().str.lower() == city_norm]
+
+    if product:
+        if filtered.get("__product") is None:
+            return filtered.iloc[0:0]
+        product_norm = product.strip().lower()
+        filtered = filtered[filtered["__product"].astype(str).str.strip().str.lower() == product_norm]
+
+    if start_date:
+        start_dt = pd.to_datetime(start_date, errors="coerce")
+        if pd.notna(start_dt):
+            filtered = filtered[filtered["__order_date"] >= start_dt]
+
+    if end_date:
+        end_dt = pd.to_datetime(end_date, errors="coerce")
+        if pd.notna(end_dt):
+            filtered = filtered[filtered["__order_date"] <= end_dt]
+
+    return filtered
+
+
+def _filter_raw_sales_df(
+    raw_df: pd.DataFrame,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    city: Optional[str] = None,
+    product: Optional[str] = None,
+) -> pd.DataFrame:
+    """Filter raw sales df using normalized columns, returning original columns/rows."""
+    if raw_df is None or raw_df.empty:
+        return raw_df
+
+    normalized = normalize_sales_dataframe(raw_df)
+    filtered_norm = _apply_sales_filters(
+        normalized,
+        start_date=start_date,
+        end_date=end_date,
+        city=city,
+        product=product,
+    )
+    if filtered_norm is None or filtered_norm.empty:
+        return raw_df.iloc[0:0]
+    return raw_df.loc[filtered_norm.index]
 
 
 # ============================================================================
@@ -1837,6 +2030,7 @@ def _get_rfm_segmentation_data(request: Request):
     PRIORITY ORDER:
     1. Database (SQLite) - persists across container restarts
     2. CSV file fallback - for backward compatibility
+    3. AUTO-RUN: If both missing but sales data exists, run RFM pipeline automatically
     
     Returns:
         SegmentationMetadata if data exists, Response(204) if not
@@ -1861,23 +2055,58 @@ def _get_rfm_segmentation_data(request: Request):
         logger.info(f"[RFM API] Checking for RFM data at CSV: {rfm_path}")
 
         if not rfm_path.exists():
-            logger.info(f"[RFM API] rfm_table.csv not found - returning 204 (No Content)")
-            return Response(status_code=204)
-
-        try:
-            rfm_df = pd.read_csv(rfm_path)
-            logger.info(f"[RFM API] Loaded rfm_table.csv: {len(rfm_df)} rows")
+            # AUTO-RUN FALLBACK: If no RFM data exists but sales data is available, run RFM pipeline
+            logger.info(f"[RFM API] rfm_table.csv not found - checking for sales data to auto-generate")
             
-            # Sync to database for future requests
-            if ANALYTICS_PERSISTENCE_AVAILABLE and not rfm_df.empty:
-                try:
-                    save_rfm_results(rfm_df, company_id)
-                    logger.info("[RFM API] Synced CSV data to database")
-                except Exception as e:
-                    logger.warning(f"[RFM API] Failed to sync to database: {e}")
-        except Exception as exc:
-            logger.error(f"[RFM API] Failed to read rfm_table.csv: {exc}")
-            raise HTTPException(status_code=500, detail="Unable to read rfm_table.csv") from exc
+            # Look for sales data in company folder or canonical location
+            sales_file = None
+            company_sales_dir = DATA_DIR / company_id / "sales"
+            if company_sales_dir.exists() and company_sales_dir.is_dir():
+                csvs = [p for p in company_sales_dir.glob("*.csv") if p.is_file()]
+                if csvs:
+                    sales_file = max(csvs, key=lambda p: p.stat().st_mtime)
+                    logger.info(f"[RFM API] Found company sales file: {sales_file}")
+            
+            # Fallback to canonical location
+            if not sales_file:
+                canonical_sales = DATA_DIR / "sales.csv"
+                if canonical_sales.exists():
+                    sales_file = canonical_sales
+                    logger.info(f"[RFM API] Found canonical sales file: {sales_file}")
+            
+            if sales_file:
+                logger.info(f"[RFM API] Auto-running RFM pipeline from: {sales_file}")
+                success = trigger_rfm_pipeline(sales_file, company_id)
+                if success:
+                    # Reload from newly generated file
+                    if rfm_path.exists():
+                        try:
+                            rfm_df = pd.read_csv(rfm_path)
+                            logger.info(f"[RFM API] Auto-generated RFM: {len(rfm_df)} rows")
+                        except Exception as e:
+                            logger.error(f"[RFM API] Failed to read auto-generated RFM: {e}")
+                            return Response(status_code=204)
+                else:
+                    logger.warning("[RFM API] Auto-run RFM pipeline failed - returning 204")
+                    return Response(status_code=204)
+            else:
+                logger.info("[RFM API] No sales data available to auto-generate RFM - returning 204")
+                return Response(status_code=204)
+        else:
+            try:
+                rfm_df = pd.read_csv(rfm_path)
+                logger.info(f"[RFM API] Loaded rfm_table.csv: {len(rfm_df)} rows")
+                
+                # Sync to database for future requests
+                if ANALYTICS_PERSISTENCE_AVAILABLE and not rfm_df.empty:
+                    try:
+                        save_rfm_results(rfm_df, company_id)
+                        logger.info("[RFM API] Synced CSV data to database")
+                    except Exception as e:
+                        logger.warning(f"[RFM API] Failed to sync to database: {e}")
+            except Exception as exc:
+                logger.error(f"[RFM API] Failed to read rfm_table.csv: {exc}")
+                raise HTTPException(status_code=500, detail="Unable to read rfm_table.csv") from exc
 
     if rfm_df is None or rfm_df.empty:
         logger.info("[RFM API] No RFM data available - returning 204 (No Content)")
@@ -1951,10 +2180,13 @@ async def get_kpis(
     request: Request,
     start_date: Optional[str] = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}$"),
     end_date: Optional[str] = Query(None, pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    city: Optional[str] = Query(None),
+    product: Optional[str] = Query(None),
 ):
     """Get high-level KPIs (revenue, orders, AOV, top product, top city) with dynamic percentage changes."""
     company_id = request.headers.get("X-Company-ID")
     sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
+    sales_df = _apply_sales_filters(sales_df, city=city, product=product)
 
     # Determine current and previous periods for comparison
     # If date range specified, use that; otherwise use last 30 days
@@ -1974,16 +2206,18 @@ async def get_kpis(
     previous_start = previous_end - pd.Timedelta(days=period_length)
     
     # Filter data for current period
-    current_df = sales_df[
-        (sales_df["__order_date"] >= current_start) & 
-        (sales_df["__order_date"] <= current_end)
-    ].copy()
+    current_df = _apply_sales_filters(
+        sales_df,
+        start_date=current_start.strftime("%Y-%m-%d"),
+        end_date=current_end.strftime("%Y-%m-%d"),
+    ).copy()
     
     # Filter data for previous period
-    previous_df = sales_df[
-        (sales_df["__order_date"] >= previous_start) & 
-        (sales_df["__order_date"] <= previous_end)
-    ].copy()
+    previous_df = _apply_sales_filters(
+        sales_df,
+        start_date=previous_start.strftime("%Y-%m-%d"),
+        end_date=previous_end.strftime("%Y-%m-%d"),
+    ).copy()
 
     if current_df.empty:
         raise HTTPException(status_code=404, detail="No data found for the specified date range")
@@ -2031,6 +2265,98 @@ async def get_kpis(
         orders_change=orders_change,
         aov_change=aov_change,
     )
+
+
+# =============================================================================
+# NEW: Decision Insights (rule-based, deterministic)
+# =============================================================================
+
+
+@app.get("/api/insights", response_model=InsightsResponse, tags=["Intelligence"])
+def get_decision_insights(
+    request: Request,
+    limit: int = Query(8, ge=1, le=20),
+):
+    """Return deterministic, rule-based decision insights based on current metrics and ML outputs.
+
+    Notes:
+    - This endpoint is intentionally non-ML (rule-based) and deterministic.
+    - It reads existing outputs (forecast/RFM/sentiment/recommendations) when available.
+    """
+    if not INSIGHTS_AVAILABLE:
+        # Keep backward compatibility if module missing
+        return InsightsResponse(company_id=request.headers.get("X-Company-ID") or "Acme Corp", generated_at=datetime.now(timezone.utc).isoformat(), insights=[])
+
+    company_id = (request.headers.get("X-Company-ID") or "Acme Corp").strip()
+
+    try:
+        sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
+    except Exception:
+        # No data available -> 204 so UI can show empty state
+        return Response(status_code=204)
+
+    forecast_df = load_forecast_data(company_id)
+
+    rfm_df = None
+    rfm_path = DATA_DIR / "rfm_table.csv"
+    if rfm_path.exists():
+        try:
+            rfm_df = pd.read_csv(rfm_path)
+        except Exception:
+            rfm_df = None
+
+    sentiment_df_local = None
+    sentiment_path = DATA_DIR / "sentiment_results.csv"
+    if sentiment_path.exists():
+        try:
+            sentiment_df_local = pd.read_csv(sentiment_path)
+        except Exception:
+            sentiment_df_local = None
+
+    recs_df = None
+    recs_path = DATA_DIR / "product_recommendations.csv"
+    if recs_path.exists():
+        try:
+            recs_df = pd.read_csv(recs_path)
+        except Exception:
+            recs_df = None
+
+    return generate_insights(
+        company_id=company_id,
+        sales_df=sales_df,
+        forecast_df=forecast_df,
+        rfm_df=rfm_df,
+        sentiment_df=sentiment_df_local,
+        recommendations_df=recs_df,
+        limit=limit,
+    )
+
+
+# =============================================================================
+# NEW: Data Quality Report
+# =============================================================================
+
+
+@app.get("/api/data-quality", response_model=DataQualityReport, tags=["Data"])
+def get_data_quality_report(
+    request: Request,
+):
+    """Return a structured data-quality report for the active sales dataset.
+
+    Checks missing values, invalid date/numeric parses, duplicates, and outliers.
+    """
+    if not INSIGHTS_AVAILABLE:
+        # Uses the same flag (modules are shipped together)
+        raise HTTPException(status_code=503, detail="Data quality module not available")
+
+    company_id = (request.headers.get("X-Company-ID") or "Acme Corp").strip()
+    try:
+        raw_df = load_active_sales_df(company_id)
+    except Exception:
+        return Response(status_code=204)
+
+    report = generate_data_quality_report(company_id=company_id, dataset="sales", df=raw_df)
+    return report
 
 
 def load_forecast_data(company_id: str = "Acme Corp") -> Optional[pd.DataFrame]:
@@ -2098,6 +2424,8 @@ def get_monthly_sales(
     request: Request,
     start_date: Optional[str] = Query(None),
     end_date: Optional[str] = Query(None),
+    city: Optional[str] = Query(None),
+    product: Optional[str] = Query(None),
 ):
     """Get monthly sales actuals and forecasts merged together."""
     company_id = request.headers.get("X-Company-ID")
@@ -2114,6 +2442,7 @@ def get_monthly_sales(
     # Step 1: Add actual monthly sales from company data
     if sales_df is not None and not sales_df.empty and "__order_date" in sales_df.columns and "__total_price" in sales_df.columns:
         try:
+            sales_df = _apply_sales_filters(sales_df, start_date=start_date, end_date=end_date, city=city, product=product)
             monthly = sales_df.groupby(pd.Grouper(key="__order_date", freq="MS"))["__total_price"].sum().reset_index()
             
             for _, row in monthly.iterrows():
@@ -2127,7 +2456,11 @@ def get_monthly_sales(
             logger.warning(f"Failed to compute monthly sales: {e}")
 
     # Step 2: Add forecast data (load from database or CSV)
-    local_forecast_df = load_forecast_data(company_id or "Acme Corp")
+    # Only include global forecast when NOT segmenting by city/product.
+    local_forecast_df = None
+    if not city and not product:
+        local_forecast_df = load_forecast_data(company_id or "Acme Corp")
+
     if local_forecast_df is not None and not local_forecast_df.empty:
         try:
             for _, row in local_forecast_df.iterrows():
@@ -2145,7 +2478,7 @@ def get_monthly_sales(
         except Exception as e:
             logger.warning(f"Failed to add forecasts: {e}")
 
-    # Step 3: Filter by date range if provided
+    # Step 3: Filter by date range if provided (month string compare)
     if start_date:
         start_dt = pd.to_datetime(start_date)
         start_key = start_dt.strftime("%Y-%m")
@@ -2177,10 +2510,15 @@ def get_monthly_sales(
 def get_top_products(
     request: Request,
     limit: int = Query(5, ge=1, le=100),
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    city: Optional[str] = Query(None),
+    product: Optional[str] = Query(None),
 ):
     """Get top N products by revenue (limit: 1-100)."""
     company_id = request.headers.get("X-Company-ID")
     sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
+    sales_df = _apply_sales_filters(sales_df, start_date=start_date, end_date=end_date, city=city, product=product)
     product_series = sales_df.get("__product")
     if product_series is None or not product_series.notna().any():
         raise HTTPException(status_code=404, detail="No product column found (expected one of ProductID, Product_ID, Product, SKU)")
@@ -2208,10 +2546,15 @@ def get_top_products(
 def get_top_cities(
     request: Request,
     limit: int = Query(5, ge=1, le=50),
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    city: Optional[str] = Query(None),
+    product: Optional[str] = Query(None),
 ):
     """Get top N cities by revenue."""
     company_id = request.headers.get("X-Company-ID")
     sales_df = normalize_sales_dataframe(load_active_sales_df(company_id))
+    sales_df = _apply_sales_filters(sales_df, start_date=start_date, end_date=end_date, city=city, product=product)
     city_series = sales_df.get("__city")
     if city_series is None or not city_series.notna().any():
         raise HTTPException(status_code=404, detail="No city/region column found (expected one of City, Region, Market)")
@@ -2245,7 +2588,7 @@ def get_sentiment_analysis(request: Request):
     
     Returns 204 (No Content) when data is missing or empty.
     """
-    company_id = request.headers.get("X-Company-ID") or "Acme Corp"
+    company_id = (request.headers.get("X-Company-ID") or "Acme Corp").strip()
     local_sentiment_df = None
     data_source_used = "none"
     
@@ -2261,8 +2604,25 @@ def get_sentiment_analysis(request: Request):
     logger.info(f"[SENTIMENT DIAGNOSTIC] CSV Exists: {sentiment_path.exists()}")
 
     if not sentiment_path.exists():
-        logger.info("[SENTIMENT DIAGNOSTIC] sentiment_results.csv NOT FOUND - returning 204")
-        return Response(status_code=204)
+        # Fallback: if reviews were already provided under data/<company>/reviews/*.csv,
+        # auto-run the sentiment pipeline once to generate sentiment_results.csv.
+        reviews_dir = DATA_DIR / company_id / "reviews"
+        candidates: List[Path] = []
+        try:
+            if reviews_dir.exists():
+                candidates = sorted(reviews_dir.glob("*.csv"), key=lambda p: p.stat().st_mtime, reverse=True)
+        except Exception as e:
+            logger.warning(f"[SENTIMENT DIAGNOSTIC] Failed to list reviews dir {reviews_dir}: {e}")
+
+        if candidates:
+            latest_reviews = candidates[0]
+            logger.info(f"[SENTIMENT DIAGNOSTIC] sentiment_results.csv missing; auto-running pipeline from {latest_reviews.name}")
+            ok = run_sentiment_pipeline(latest_reviews)
+            logger.info(f"[SENTIMENT DIAGNOSTIC] Auto pipeline success={ok}; sentiment_exists={sentiment_path.exists()}")
+
+        if not sentiment_path.exists():
+            logger.info("[SENTIMENT DIAGNOSTIC] sentiment_results.csv NOT FOUND - returning 204")
+            return Response(status_code=204)
 
     try:
         local_sentiment_df = pd.read_csv(sentiment_path)
@@ -2364,11 +2724,13 @@ def get_recommendations(request: Request, limit: int = Query(10, ge=1, le=100)):
     PRIORITY ORDER:
     1. Database (SQLite) - persists across container restarts
     2. CSV file fallback - for backward compatibility
+    3. AUTO-RUN: If both missing but sales data exists, run Recommendations pipeline automatically
     
     Returns 204 (No Content) when data is missing or empty.
     """
     company_id = request.headers.get("X-Company-ID") or "Acme Corp"
     rules_df = None
+    recommendations_path = DATA_DIR / "product_recommendations.csv"
     
     # Try database first (persistent storage)
     if ANALYTICS_PERSISTENCE_AVAILABLE:
@@ -2382,31 +2744,68 @@ def get_recommendations(request: Request, limit: int = Query(10, ge=1, le=100)):
     
     # Fallback to CSV file
     if rules_df is None or rules_df.empty:
-        recommendations_path = DATA_DIR / "product_recommendations.csv"
         logger.info(f"[RECOMMENDATIONS API] Checking for data at CSV: {recommendations_path}")
     
         if not recommendations_path.exists():
-            logger.info("[RECOMMENDATIONS API] product_recommendations.csv not found - returning 204")
-            return Response(status_code=204)
-
-        try:
-            rules_df = pd.read_csv(recommendations_path)
-            logger.info(f"[RECOMMENDATIONS API] Loaded product_recommendations.csv: {len(rules_df)} rows")
+            # AUTO-RUN FALLBACK: If no recommendations exist but sales data is available, run pipeline
+            logger.info("[RECOMMENDATIONS API] product_recommendations.csv not found - checking for sales data to auto-generate")
             
-            # Sync to database for future requests
-            if ANALYTICS_PERSISTENCE_AVAILABLE and not rules_df.empty:
-                try:
-                    save_recommendation_results(rules_df, company_id)
-                    logger.info("[RECOMMENDATIONS API] Synced CSV data to database")
-                except Exception as e:
-                    logger.warning(f"[RECOMMENDATIONS API] Failed to sync to database: {e}")
-        except Exception as exc:
-            logger.error(f"[RECOMMENDATIONS API] Failed to read product_recommendations.csv: {exc}")
-            raise HTTPException(status_code=500, detail="Unable to read product_recommendations.csv") from exc
-
-    if rules_df.empty:
-        logger.info("[RECOMMENDATIONS API] product_recommendations.csv is empty - returning 204")
-        return Response(status_code=204)
+            # Look for sales data in company folder or canonical location
+            sales_file = None
+            company_sales_dir = DATA_DIR / company_id / "sales"
+            if company_sales_dir.exists() and company_sales_dir.is_dir():
+                csvs = [p for p in company_sales_dir.glob("*.csv") if p.is_file()]
+                if csvs:
+                    sales_file = max(csvs, key=lambda p: p.stat().st_mtime)
+                    logger.info(f"[RECOMMENDATIONS API] Found company sales file: {sales_file}")
+            
+            # Fallback to canonical location
+            if not sales_file:
+                canonical_sales = DATA_DIR / "sales.csv"
+                if canonical_sales.exists():
+                    sales_file = canonical_sales
+                    logger.info(f"[RECOMMENDATIONS API] Found canonical sales file: {sales_file}")
+            
+            if sales_file:
+                logger.info(f"[RECOMMENDATIONS API] Auto-running recommendations pipeline from: {sales_file}")
+                success = trigger_recommendation_pipeline(sales_file)
+                if success and recommendations_path.exists():
+                    # Reload from newly generated file
+                    try:
+                        rules_df = pd.read_csv(recommendations_path)
+                        logger.info(f"[RECOMMENDATIONS API] Auto-generated recommendations: {len(rules_df)} rules")
+                        
+                        # Sync to database for future requests
+                        if ANALYTICS_PERSISTENCE_AVAILABLE and rules_df is not None and not rules_df.empty:
+                            try:
+                                save_recommendation_results(rules_df, company_id)
+                                logger.info("[RECOMMENDATIONS API] Synced auto-generated data to database")
+                            except Exception as e:
+                                logger.warning(f"[RECOMMENDATIONS API] Failed to sync to database: {e}")
+                    except Exception as e:
+                        logger.error(f"[RECOMMENDATIONS API] Failed to read auto-generated recommendations: {e}")
+                        return Response(status_code=204)
+                else:
+                    logger.warning("[RECOMMENDATIONS API] Auto-run recommendations pipeline failed - returning 204")
+                    return Response(status_code=204)
+            else:
+                logger.info("[RECOMMENDATIONS API] No sales data available to auto-generate recommendations - returning 204")
+                return Response(status_code=204)
+        else:
+            try:
+                rules_df = pd.read_csv(recommendations_path)
+                logger.info(f"[RECOMMENDATIONS API] Loaded product_recommendations.csv: {len(rules_df)} rows")
+                
+                # Sync to database for future requests
+                if ANALYTICS_PERSISTENCE_AVAILABLE and not rules_df.empty:
+                    try:
+                        save_recommendation_results(rules_df, company_id)
+                        logger.info("[RECOMMENDATIONS API] Synced CSV data to database")
+                    except Exception as e:
+                        logger.warning(f"[RECOMMENDATIONS API] Failed to sync to database: {e}")
+            except Exception as exc:
+                logger.error(f"[RECOMMENDATIONS API] Failed to read product_recommendations.csv: {exc}")
+                raise HTTPException(status_code=500, detail="Unable to read product_recommendations.csv") from exc
 
     if rules_df is None or rules_df.empty:
         logger.info("[RECOMMENDATIONS API] No recommendation data available - returning 204")
@@ -2461,11 +2860,16 @@ def get_recommendations(request: Request, limit: int = Query(10, ge=1, le=100)):
 def get_raw_data(
     request: Request,
     limit: int = Query(100, ge=1, le=10000),
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    city: Optional[str] = Query(None),
+    product: Optional[str] = Query(None),
 ):
     """Get raw transaction data (paginated)."""
     company_id = request.headers.get("X-Company-ID")
     sales_df = load_active_sales_df(company_id)
-    return sales_df.head(limit).to_dict(orient="records")
+    filtered_df = _filter_raw_sales_df(sales_df, start_date=start_date, end_date=end_date, city=city, product=product)
+    return filtered_df.head(limit).to_dict(orient="records")
 
 
 @app.get("/api/summary", tags=["Analytics"])
