@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuthFetch } from '../store/AuthContext';
-import { Plus, UploadCloud, Save, RefreshCw, Download } from 'lucide-react';
+import { Plus, UploadCloud, Save, RefreshCw, Download, Trash2 } from 'lucide-react';
 
 type InventoryItem = {
   product_name: string;
@@ -69,6 +69,29 @@ const Inventory: React.FC = () => {
   const [isAddOpen, setAddOpen] = useState(false);
   const [newProductName, setNewProductName] = useState('');
   const [newProductStock, setNewProductStock] = useState('0');
+
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const deleteProduct = async (productName: string) => {
+    setIsDeleting(true);
+    setError(null);
+    try {
+      const url = `/inventory/product/${encodeURIComponent(productName)}`;
+      const res = await authFetch(url, { method: 'DELETE' });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || 'Failed to delete product');
+      }
+      setDeleteTarget(null);
+      await loadStatus();
+      notifyInventoryChanged();
+    } catch (e: any) {
+      setError(e?.message || 'Failed to delete product');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const loadSummary = async () => {
     try {
@@ -360,7 +383,7 @@ const Inventory: React.FC = () => {
             <span className="text-sm font-semibold">{summary?.alert ?? '—'}</span>
             <span className="mx-1 h-4 w-px bg-slate-200 dark:bg-slate-700" />
             <span className="text-xs text-text-secondary dark:text-text-secondaryDark">Safety</span>
-            <span className="text-sm font-semibold" title="Products where safety buffer increases reorder qty">
+            <span className="text-sm font-semibold" title="Healthy products (status = OK)">
               {summary?.safety ?? '—'}
             </span>
           </div>
@@ -468,18 +491,19 @@ const Inventory: React.FC = () => {
                 <th className="text-left px-4 py-3 font-semibold w-44">Suggested Reorder</th>
                 <th className="text-left px-4 py-3 font-semibold w-28">Status</th>
                 <th className="text-left px-4 py-3 font-semibold">Seller Advice</th>
+                <th className="text-right px-4 py-3 font-semibold w-20">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
               {isLoading ? (
                 <tr>
-                  <td className="px-4 py-6" colSpan={7}>
+                  <td className="px-4 py-6" colSpan={8}>
                     Loading inventory…
                   </td>
                 </tr>
               ) : filteredItems.length === 0 ? (
                 <tr>
-                  <td className="px-4 py-6" colSpan={7}>
+                  <td className="px-4 py-6" colSpan={8}>
                     No products match your filters. Upload sales data or add a product.
                   </td>
                 </tr>
@@ -513,6 +537,17 @@ const Inventory: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-text-secondary dark:text-text-secondaryDark">{it.advice}</td>
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        onClick={() => setDeleteTarget(it.product_name)}
+                        className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-300"
+                        title="Delete product"
+                        type="button"
+                        disabled={isSaving || isLoading}
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -520,6 +555,43 @@ const Inventory: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/40" onClick={() => (!isDeleting ? setDeleteTarget(null) : null)} />
+          <div className="relative w-full max-w-lg bg-card-light dark:bg-card-dark border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
+            <h3 className="text-lg font-bold">Delete Product</h3>
+            <p className="text-sm text-text-secondary dark:text-text-secondaryDark mt-1">
+              Are you sure you want to delete this product?
+            </p>
+            <div className="mt-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-800">
+              <span className="text-sm font-semibold">{deleteTarget}</span>
+            </div>
+            <p className="text-xs text-text-secondary dark:text-text-secondaryDark mt-3">
+              This only removes the product from Inventory tracking. It does not modify your sales data.
+            </p>
+
+            <div className="mt-5 flex items-center justify-end gap-2">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm"
+                disabled={isDeleting}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deleteProduct(deleteTarget)}
+                className="px-3 py-2 rounded-xl bg-red-600 text-white text-sm hover:opacity-90 disabled:opacity-60"
+                disabled={isDeleting}
+                type="button"
+              >
+                {isDeleting ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isAddOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

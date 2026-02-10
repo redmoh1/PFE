@@ -108,6 +108,26 @@ def init_db(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
+def init_deleted_products_db(conn: sqlite3.Connection) -> None:
+    """Create deleted-products table if it does not exist.
+
+    This enables soft-delete of products from the Inventory module without
+    modifying raw sales data.
+    """
+
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS inventory_deleted_products (
+            company_id TEXT NOT NULL,
+            product_name TEXT NOT NULL,
+            deleted_at TEXT NOT NULL,
+            PRIMARY KEY(company_id, product_name)
+        )
+        """
+    )
+    conn.commit()
+
+
 # ---------------------------------------------------------------------------
 # Stock CRUD
 # ---------------------------------------------------------------------------
@@ -193,6 +213,51 @@ def list_manual_products(conn: sqlite3.Connection, company_id: Optional[str] = N
         (company,),
     ).fetchall()
     return [str(r["product_name"]) for r in rows]
+
+
+def get_deleted_products_set(conn: sqlite3.Connection, company_id: Optional[str] = None) -> set[str]:
+    init_deleted_products_db(conn)
+    company = normalize_company_id(company_id)
+    rows = conn.execute(
+        "SELECT product_name FROM inventory_deleted_products WHERE company_id = ?",
+        (company,),
+    ).fetchall()
+    return {str(r["product_name"]) for r in rows}
+
+
+def mark_product_deleted(conn: sqlite3.Connection, product_name: str, company_id: Optional[str] = None) -> None:
+    init_deleted_products_db(conn)
+    company = normalize_company_id(company_id)
+    product = normalize_product_name(product_name)
+    conn.execute(
+        """
+        INSERT OR REPLACE INTO inventory_deleted_products (company_id, product_name, deleted_at)
+        VALUES (?, ?, ?)
+        """,
+        (company, product, _utc_now_iso()),
+    )
+    conn.commit()
+
+
+def delete_stock_row(conn: sqlite3.Connection, product_name: str, company_id: Optional[str] = None) -> int:
+    """Remove product from stock tracking table.
+
+    This does not touch any sales datasets. Soft-delete is tracked separately in
+    inventory_deleted_products.
+    """
+
+    init_db(conn)
+    company = normalize_company_id(company_id)
+    product = normalize_product_name(product_name)
+    cur = conn.execute(
+        "DELETE FROM inventory_stock WHERE company_id = ? AND product_name = ?",
+        (company, product),
+    )
+    conn.commit()
+    try:
+        return int(cur.rowcount or 0)
+    except Exception:
+        return 0
 
 
 # ---------------------------------------------------------------------------

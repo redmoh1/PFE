@@ -27,6 +27,9 @@ from backend.inventory_store import (
     increment_stock,
     get_stock_map,
     list_manual_products,
+    get_deleted_products_set,
+    mark_product_deleted,
+    delete_stock_row,
     parse_invoice_lines,
     compute_avg_daily_sales,
     classify_status,
@@ -214,7 +217,44 @@ def get_inventory_products(
     series = df[product_col]
     products = {p for p in (normalize_product_name(str(v)) for v in series.dropna().tolist()) if p}
 
+    # Exclude products that were deleted from Inventory view (soft delete).
+    conn = connect()
+    try:
+        deleted = get_deleted_products_set(conn, company_id=company_id)
+    finally:
+        conn.close()
+
+    products = {p for p in products if p not in deleted}
     return sorted(products)
+
+
+@router.delete("/product/{product_name}")
+def delete_inventory_product(
+    product_name: str,
+    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+) -> Dict[str, Any]:
+    """Soft-delete a product from Inventory Management.
+
+    Behavior:
+    - Marks the product as deleted (so it is ignored by inventory/alerts/notifications/counters)
+    - Removes any stock-tracking row for the product
+
+    IMPORTANT:
+    - Does NOT modify any sales CSV files (auto-detected products remain in raw data)
+    """
+
+    name = normalize_product_name(product_name)
+    if not name:
+        raise HTTPException(status_code=400, detail="Invalid product name")
+
+    conn = connect()
+    try:
+        mark_product_deleted(conn, name, company_id=company_id)
+        removed = delete_stock_row(conn, name, company_id=company_id)
+    finally:
+        conn.close()
+
+    return {"ok": True, "product_name": name, "removed_stock_rows": int(removed)}
 
 
 @router.post("/update")
@@ -329,11 +369,16 @@ def get_inventory_status(
     try:
         stock_map = get_stock_map(conn, company_id=company_id)
         manual_products = list_manual_products(conn, company_id=company_id)
+        deleted = get_deleted_products_set(conn, company_id=company_id)
     finally:
         conn.close()
 
     # FULL OUTER JOIN semantics: sales-detected products ∪ any product already in stock table
     all_products = sorted(set(detected_products).union(manual_products).union(stock_map.keys()))
+
+    # Soft-delete: exclude products removed from Inventory view.
+    if deleted:
+        all_products = [p for p in all_products if p not in deleted]
 
     items: List[Dict[str, Any]] = []
     for product in all_products:
@@ -441,11 +486,12 @@ def get_inventory_summary(
     - Uses /inventory/status output as the only source for counts.
     - Does not apply any additional business rules.
 
-    Counters:
-    - alert: number of products with status==ALERT
-    - warning: number of products with status==WARNING
-    - lead: number of products with suggested_reorder_qty > 0
-    - safety: number of products whose reorder qty increases when safety_days is applied
+    Counters (derived from FINAL status list):
+    - alert:   count(status == 'ALERT')
+    - warning: count(status == 'WARNING')
+    - safety:  count(status == 'OK')  (healthy)
+    - lead:    count(status == 'OK' AND suggested_reorder_qty > 0)
+              (reorder needed due to lead-time coverage while still healthy)
     """
 
     payload = get_inventory_status(
@@ -461,8 +507,8 @@ def get_inventory_summary(
 
     alert_count = 0
     warning_count = 0
+    ok_count = 0
     lead_count = 0
-    safety_count = 0
 
     for it in items:
         status = str(it.get("status") or "").upper()
@@ -470,24 +516,15 @@ def get_inventory_summary(
             alert_count += 1
         elif status == "WARNING":
             warning_count += 1
+        elif status == "OK":
+            ok_count += 1
 
-        # Lead: reorder is suggested (already computed by status endpoint)
-        qty = it.get("suggested_reorder_qty")
-        try:
-            if qty is not None and int(qty) > 0:
-                lead_count += 1
-        except Exception:
-            pass
-
-        # Safety: isolate the incremental effect of safety_days without changing business rules.
-        if safety_days and int(safety_days) > 0:
+        # LEAD: a healthy product that still needs reorder to cover lead time.
+        if status == "OK":
+            qty = it.get("suggested_reorder_qty")
             try:
-                stock = it.get("current_stock")
-                avg = float(it.get("avg_daily_sales") or 0.0)
-                base_qty = compute_reorder_suggestion(stock, avg, lead_time_days=lead_time_days, safety_days=0) or 0
-                safe_qty = compute_reorder_suggestion(stock, avg, lead_time_days=lead_time_days, safety_days=safety_days) or 0
-                if int(safe_qty) > int(base_qty):
-                    safety_count += 1
+                if qty is not None and int(qty) > 0:
+                    lead_count += 1
             except Exception:
                 pass
 
@@ -497,7 +534,7 @@ def get_inventory_summary(
         "lead": int(lead_count),
         "warning": int(warning_count),
         "alert": int(alert_count),
-        "safety": int(safety_count),
+        "safety": int(ok_count),
     }
 
 
