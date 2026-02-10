@@ -17,12 +17,15 @@ type InventoryStatusResponse = {
   source_file: string;
   count: number;
   items: InventoryItem[];
-  thresholds?: {
-    warning_days?: number;
-    alert_days?: number;
-    lead_time_days?: number;
-    safety_days?: number;
-  };
+};
+
+type InventorySummaryResponse = {
+  ok: boolean;
+  source_file?: string;
+  lead: number;
+  warning: number;
+  alert: number;
+  safety: number;
 };
 
 const pillClass = (status: string) => {
@@ -60,31 +63,29 @@ const Inventory: React.FC = () => {
 
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'RISK' | 'ALERT' | 'WARNING' | 'OK' | 'DORMANT' | 'UNKNOWN'>('ALL');
-  const [leadTimeDays, setLeadTimeDays] = useState('7');
-  const [warningDays, setWarningDays] = useState('7');
-  const [alertDays, setAlertDays] = useState('3');
-  const [safetyDays, setSafetyDays] = useState('0');
+
+  const [summary, setSummary] = useState<InventorySummaryResponse | null>(null);
 
   const [isAddOpen, setAddOpen] = useState(false);
   const [newProductName, setNewProductName] = useState('');
   const [newProductStock, setNewProductStock] = useState('0');
 
+  const loadSummary = async () => {
+    try {
+      const res = await authFetch('/inventory/summary', { cache: 'no-store' });
+      if (!res.ok) return;
+      const payload = (await res.json()) as InventorySummaryResponse;
+      setSummary(payload);
+    } catch {
+      // non-blocking
+    }
+  };
+
   const loadStatus = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      const ld = Number(leadTimeDays);
-      const wd = Number(warningDays);
-      const ad = Number(alertDays);
-      const sd = Number(safetyDays);
-      if (Number.isFinite(ld)) params.set('lead_time_days', String(Math.max(0, Math.floor(ld))));
-      if (Number.isFinite(wd)) params.set('warning_days', String(Math.max(0, Math.floor(wd))));
-      if (Number.isFinite(ad)) params.set('alert_days', String(Math.max(0, Math.floor(ad))));
-      if (Number.isFinite(sd)) params.set('safety_days', String(Math.max(0, Math.floor(sd))));
-
-      const qs = params.toString();
-      const res = await authFetch(`/inventory/status${qs ? `?${qs}` : ''}`, { cache: 'no-store' });
+      const res = await authFetch('/inventory/status', { cache: 'no-store' });
       if (!res.ok) {
         const text = await res.text();
         console.error('[Inventory] /inventory/status failed', {
@@ -124,20 +125,15 @@ const Inventory: React.FC = () => {
       setItems(payload.items || []);
       setSourceFile(payload.source_file || '');
 
-      // If backend returns thresholds, reflect them.
-      if (payload.thresholds) {
-        if (payload.thresholds.lead_time_days !== undefined) setLeadTimeDays(String(payload.thresholds.lead_time_days));
-        if (payload.thresholds.warning_days !== undefined) setWarningDays(String(payload.thresholds.warning_days));
-        if (payload.thresholds.alert_days !== undefined) setAlertDays(String(payload.thresholds.alert_days));
-        if (payload.thresholds.safety_days !== undefined) setSafetyDays(String(payload.thresholds.safety_days));
-      }
-
       // Initialize edited values from persisted stock.
       const nextEdited: Record<string, string> = {};
       (payload.items || []).forEach((it) => {
         nextEdited[it.product_name] = it.current_stock === null || it.current_stock === undefined ? '' : String(it.current_stock);
       });
       setEditedStock(nextEdited);
+
+      // Read-only counters (derived data)
+      loadSummary();
     } catch (e: any) {
       setError(e?.message || 'Failed to load inventory');
       setItems([]);
@@ -290,14 +286,7 @@ const Inventory: React.FC = () => {
     setIsSaving(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      params.set('scope', 'RISK');
-      params.set('lead_time_days', String(Math.max(0, Math.floor(Number(leadTimeDays) || 0))));
-      params.set('warning_days', String(Math.max(0, Math.floor(Number(warningDays) || 0))));
-      params.set('alert_days', String(Math.max(0, Math.floor(Number(alertDays) || 0))));
-      params.set('safety_days', String(Math.max(0, Math.floor(Number(safetyDays) || 0))));
-
-      const res = await authFetch(`/inventory/reorder-export?${params.toString()}`, { cache: 'no-store' });
+      const res = await authFetch('/inventory/reorder-export?scope=RISK', { cache: 'no-store' });
       if (!res.ok) {
         const text = await res.text();
         throw new Error(text || 'Failed to export CSV');
@@ -324,14 +313,7 @@ const Inventory: React.FC = () => {
     setIsSaving(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      params.set('scope', 'RISK');
-      params.set('lead_time_days', String(Math.max(0, Math.floor(Number(leadTimeDays) || 0))));
-      params.set('warning_days', String(Math.max(0, Math.floor(Number(warningDays) || 0))));
-      params.set('alert_days', String(Math.max(0, Math.floor(Number(alertDays) || 0))));
-      params.set('safety_days', String(Math.max(0, Math.floor(Number(safetyDays) || 0))));
-
-      const res = await authFetch(`/inventory/purchase-order-template?${params.toString()}`, { cache: 'no-store' });
+      const res = await authFetch('/inventory/purchase-order-template?scope=RISK', { cache: 'no-store' });
       if (!res.ok) {
         const text = await res.text();
         throw new Error(text || 'Failed to export purchase order template');
@@ -367,41 +349,20 @@ const Inventory: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-2">
             <span className="text-xs text-text-secondary dark:text-text-secondaryDark">Lead</span>
-            <input
-              value={leadTimeDays}
-              onChange={(e) => setLeadTimeDays(e.target.value)}
-              onBlur={() => loadStatus()}
-              inputMode="numeric"
-              className="w-14 bg-transparent outline-none text-sm"
-              title="Lead time days"
-            />
+            <span className="text-sm font-semibold" title="Products that need reorder (suggested reorder qty > 0)">
+              {summary?.lead ?? '—'}
+            </span>
+            <span className="mx-1 h-4 w-px bg-slate-200 dark:bg-slate-700" />
             <span className="text-xs text-text-secondary dark:text-text-secondaryDark">Warn</span>
-            <input
-              value={warningDays}
-              onChange={(e) => setWarningDays(e.target.value)}
-              onBlur={() => loadStatus()}
-              inputMode="numeric"
-              className="w-14 bg-transparent outline-none text-sm"
-              title="Warning threshold days"
-            />
+            <span className="text-sm font-semibold">{summary?.warning ?? '—'}</span>
+            <span className="mx-1 h-4 w-px bg-slate-200 dark:bg-slate-700" />
             <span className="text-xs text-text-secondary dark:text-text-secondaryDark">Alert</span>
-            <input
-              value={alertDays}
-              onChange={(e) => setAlertDays(e.target.value)}
-              onBlur={() => loadStatus()}
-              inputMode="numeric"
-              className="w-14 bg-transparent outline-none text-sm"
-              title="Alert threshold days"
-            />
+            <span className="text-sm font-semibold">{summary?.alert ?? '—'}</span>
+            <span className="mx-1 h-4 w-px bg-slate-200 dark:bg-slate-700" />
             <span className="text-xs text-text-secondary dark:text-text-secondaryDark">Safety</span>
-            <input
-              value={safetyDays}
-              onChange={(e) => setSafetyDays(e.target.value)}
-              onBlur={() => loadStatus()}
-              inputMode="numeric"
-              className="w-14 bg-transparent outline-none text-sm"
-              title="Safety days"
-            />
+            <span className="text-sm font-semibold" title="Products where safety buffer increases reorder qty">
+              {summary?.safety ?? '—'}
+            </span>
           </div>
 
           <input

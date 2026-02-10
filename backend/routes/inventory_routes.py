@@ -426,6 +426,81 @@ def get_inventory_alerts_summary(
     }
 
 
+@router.get("/summary")
+def get_inventory_summary(
+    source: Optional[str] = Query(default=None, description="Optional: cleaned|merged|raw."),
+    warning_days: int = Query(default=7, ge=0, le=365, description="Days-left threshold for WARNING"),
+    alert_days: int = Query(default=3, ge=0, le=365, description="Days-left threshold for ALERT"),
+    lead_time_days: int = Query(default=7, ge=0, le=365, description="Lead time in days for reorder suggestion"),
+    safety_days: int = Query(default=0, ge=0, le=365, description="Extra safety days for reorder suggestion"),
+    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+) -> Dict[str, Any]:
+    """Return derived, read-only inventory counters.
+
+    SINGLE SOURCE OF TRUTH:
+    - Uses /inventory/status output as the only source for counts.
+    - Does not apply any additional business rules.
+
+    Counters:
+    - alert: number of products with status==ALERT
+    - warning: number of products with status==WARNING
+    - lead: number of products with suggested_reorder_qty > 0
+    - safety: number of products whose reorder qty increases when safety_days is applied
+    """
+
+    payload = get_inventory_status(
+        source=source,
+        warning_days=warning_days,
+        alert_days=alert_days,
+        lead_time_days=lead_time_days,
+        safety_days=safety_days,
+        company_id=company_id,
+    )
+
+    items: List[Dict[str, Any]] = payload.get("items") or []
+
+    alert_count = 0
+    warning_count = 0
+    lead_count = 0
+    safety_count = 0
+
+    for it in items:
+        status = str(it.get("status") or "").upper()
+        if status == "ALERT":
+            alert_count += 1
+        elif status == "WARNING":
+            warning_count += 1
+
+        # Lead: reorder is suggested (already computed by status endpoint)
+        qty = it.get("suggested_reorder_qty")
+        try:
+            if qty is not None and int(qty) > 0:
+                lead_count += 1
+        except Exception:
+            pass
+
+        # Safety: isolate the incremental effect of safety_days without changing business rules.
+        if safety_days and int(safety_days) > 0:
+            try:
+                stock = it.get("current_stock")
+                avg = float(it.get("avg_daily_sales") or 0.0)
+                base_qty = compute_reorder_suggestion(stock, avg, lead_time_days=lead_time_days, safety_days=0) or 0
+                safe_qty = compute_reorder_suggestion(stock, avg, lead_time_days=lead_time_days, safety_days=safety_days) or 0
+                if int(safe_qty) > int(base_qty):
+                    safety_count += 1
+            except Exception:
+                pass
+
+    return {
+        "ok": True,
+        "source_file": payload.get("source_file"),
+        "lead": int(lead_count),
+        "warning": int(warning_count),
+        "alert": int(alert_count),
+        "safety": int(safety_count),
+    }
+
+
 @router.get("/reorder-export")
 def export_reorder_csv(
     source: Optional[str] = Query(default=None, description="Optional: cleaned|merged|raw."),
