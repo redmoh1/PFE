@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useData } from '../store/DataContext';
+import { useAuthFetch } from '../store/AuthContext';
 import FiltersBar from '../components/FiltersBar';
 import { 
   TrendingUp, 
@@ -34,6 +35,7 @@ type DashboardProps = {
 };
 
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
+  const authFetch = useAuthFetch();
   const {
     sales,
     forecast,
@@ -50,6 +52,94 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     error,
     refreshData,
   } = useData();
+
+  type NotificationItem = {
+    id: string;
+    type: 'ALERT' | 'WARNING' | 'INFO';
+    product?: string | null;
+    message: string;
+    severity: number;
+    created_at: string;
+    read: boolean;
+    meta?: {
+      status?: string;
+      days_left?: number | null;
+      advice?: string;
+      suggested_reorder_qty?: number | null;
+      current_stock?: number | null;
+      avg_daily_sales?: number | null;
+      product_name?: string;
+    };
+  };
+
+  const [alertItems, setAlertItems] = useState<NotificationItem[]>([]);
+  const [alertsLoading, setAlertsLoading] = useState(false);
+
+  const loadActiveAlerts = async () => {
+    setAlertsLoading(true);
+    try {
+      // SINGLE SOURCE OF TRUTH for active alerts.
+      const res = await authFetch('/alerts/active', { cache: 'no-store' });
+      if (!res.ok) {
+        const text = await res.text();
+        console.error('[Dashboard] /alerts/active failed', { status: res.status, body: text?.slice(0, 300) });
+        setAlertItems([]);
+        return;
+      }
+      const payload = await res.json();
+      const items = (payload?.items || []) as any[];
+      // Map alert schema to the NotificationItem-like shape used by the UI.
+      const mapped: NotificationItem[] = items.map((a) => ({
+        id: String(a.id || `${a.status}:${a.product}`),
+        type: a.status,
+        product: a.product,
+        message: a.reason || a.message || '',
+        severity: a.status === 'ALERT' ? 3 : 2,
+        created_at: a.created_at,
+        read: false,
+        meta: {
+          status: a.status,
+          days_left: a.days_left,
+          advice: a.seller_advice,
+          suggested_reorder_qty: a.meta?.suggested_reorder_qty,
+          current_stock: a.meta?.current_stock,
+          avg_daily_sales: a.meta?.avg_daily_sales,
+          product_name: a.product,
+        },
+      }));
+      setAlertItems(mapped);
+    } catch {
+      setAlertItems([]);
+    } finally {
+      setAlertsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadActiveAlerts();
+    const onInventoryChanged = () => loadActiveAlerts();
+    window.addEventListener('inventory:changed', onInventoryChanged);
+    const intervalId = window.setInterval(loadActiveAlerts, 30000);
+    return () => {
+      window.removeEventListener('inventory:changed', onInventoryChanged);
+      window.clearInterval(intervalId);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const activeAlertsSorted = useMemo(() => {
+    return [...alertItems].sort((a, b) => (b.severity || 1) - (a.severity || 1));
+  }, [alertItems]);
+
+  const viewAlert = (n: NotificationItem) => {
+    // No automatic redirects; only on user click.
+    onNavigate?.('inventory');
+    const product = String(n.product || n.meta?.product_name || '').trim();
+    const status = String(n.meta?.status || n.type || '').toUpperCase();
+    window.setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('inventory:focus', { detail: { product, status } }));
+    }, 50);
+  };
 
   const getInsightTargetPage = (insight: { title: string; description: string; reason: string; suggested_action: string }) => {
     const haystack = `${insight.title}\n${insight.description}\n${insight.reason}\n${insight.suggested_action}`.toLowerCase();
@@ -439,6 +529,79 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         ) : (
           <div className="text-sm text-text-secondary">
             No report available yet. Upload data to generate a quality report.
+          </div>
+        )}
+      </div>
+
+      {/* Active Alerts (explanation panel, non-intrusive) */}
+      <div className="bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <h3 className="text-lg font-bold">Active Alerts</h3>
+            <p className="text-sm text-text-secondary dark:text-text-secondaryDark">
+              Clear explanations of current stock risks. Choose what to open.
+            </p>
+          </div>
+          <button
+            onClick={loadActiveAlerts}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm"
+            type="button"
+            disabled={alertsLoading}
+          >
+            <RefreshCw size={16} /> Refresh
+          </button>
+        </div>
+
+        {alertsLoading && (
+          <p className="text-sm text-text-secondary dark:text-text-secondaryDark">Loading alerts…</p>
+        )}
+
+        {!alertsLoading && activeAlertsSorted.length === 0 && (
+          <p className="text-sm text-text-secondary dark:text-text-secondaryDark">No active stock alerts.</p>
+        )}
+
+        {!alertsLoading && activeAlertsSorted.length > 0 && (
+          <div className="space-y-3">
+            {activeAlertsSorted.map((n) => {
+              const daysLeft = n.meta?.days_left;
+              const action = n.meta?.advice || '';
+              const qty = n.meta?.suggested_reorder_qty;
+              const pill =
+                n.type === 'ALERT'
+                  ? 'bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-300'
+                  : 'bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-300';
+
+              return (
+                <div key={n.id} className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${pill}`}>{n.type}</span>
+                        <span className="text-sm font-semibold truncate">{n.product || n.meta?.product_name || 'Product'}</span>
+                      </div>
+                      <p className="text-sm text-text-secondary dark:text-text-secondaryDark">{n.message}</p>
+                      <div className="mt-2 flex flex-wrap gap-3 text-xs text-text-secondary dark:text-text-secondaryDark">
+                        <span>Why: demand vs stock threshold</span>
+                        {daysLeft !== undefined && daysLeft !== null && <span>Days left: {daysLeft}</span>}
+                        {qty !== undefined && qty !== null && <span>Suggested reorder: {qty}</span>}
+                      </div>
+                      {action && (
+                        <p className="mt-2 text-xs text-text-secondary dark:text-text-secondaryDark">
+                          Suggested action: <span className="font-semibold">{action}</span>
+                        </p>
+                      )}
+                    </div>
+                    <button
+                      onClick={() => viewAlert(n)}
+                      className="shrink-0 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-primary text-white text-sm hover:opacity-90"
+                      type="button"
+                    >
+                      <ExternalLink size={16} /> View
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

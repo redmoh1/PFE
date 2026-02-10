@@ -12,6 +12,7 @@ import Recommendations from './pages/Recommendations';
 import Sentiment from './pages/Sentiment';
 import DataUpload from './pages/DataUpload';
 import Settings from './pages/Settings';
+import Inventory from './pages/Inventory';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -38,6 +39,7 @@ const AppContent: React.FC = () => {
       case 'segmentation': return <Segmentation />;
       case 'recommendations': return <Recommendations />;
       case 'sentiment': return <Sentiment />;
+      case 'inventory': return <Inventory />;
       case 'upload': return <DataUpload />;
       case 'settings': return <Settings />;
       default: return <Dashboard />;

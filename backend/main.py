@@ -392,6 +392,34 @@ app = FastAPI(
     description="Backend API for Intelligent Sales Analytics Dashboard",
     version="1.0.0",
 )
+
+# Inventory Management (Gestion de Stock)
+# Kept in a dedicated router to avoid inflating this already-large module.
+try:
+    from backend.routes.inventory_routes import router as inventory_router
+
+    app.include_router(inventory_router)
+    logger.info("Inventory routes mounted under /inventory")
+except Exception as exc:  # noqa: BLE001
+    logger.warning("Inventory routes not available: %s", exc)
+
+# Notifications (derived from inventory status)
+try:
+    from backend.routes.notifications_routes import router as notifications_router
+
+    app.include_router(notifications_router)
+    logger.info("Notifications routes mounted under /notifications")
+except Exception as exc:  # noqa: BLE001
+    logger.warning("Notifications routes not available: %s", exc)
+
+# Alerts (derived from inventory status)
+try:
+    from backend.routes.alerts_routes import router as alerts_router
+
+    app.include_router(alerts_router)
+    logger.info("Alerts routes mounted under /alerts")
+except Exception as exc:  # noqa: BLE001
+    logger.warning("Alerts routes not available: %s", exc)
 from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(

@@ -14,6 +14,21 @@ export default defineConfig(({ mode }) => {
             target: apiTarget,
             changeOrigin: true,
             secure: false,
+          },
+          '/inventory': {
+            target: apiTarget,
+            changeOrigin: true,
+            secure: false,
+          },
+          '/notifications': {
+            target: apiTarget,
+            changeOrigin: true,
+            secure: false,
+          },
+          '/alerts': {
+            target: apiTarget,
+            changeOrigin: true,
+            secure: false,
           }
         }
       },

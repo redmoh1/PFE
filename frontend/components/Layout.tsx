@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../store/AuthContext';
+import { NotificationBell } from './NotificationBell';
 import { 
   LayoutDashboard, 
   BarChart3, 
@@ -16,7 +17,7 @@ import {
   Menu,
   Sun,
   Moon,
-  Bell
+  Boxes
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -39,6 +40,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentPage, isDa
     setMobileSidebarOpen(false);
   };
 
+  // Notification bell state is handled in the NotificationBell component.
+
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'sales', label: 'Sales Analytics', icon: BarChart3 },
@@ -46,6 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentPage, isDa
     { id: 'segmentation', label: 'Segmentation', icon: Users },
     { id: 'recommendations', label: 'Recommendations', icon: Lightbulb },
     { id: 'sentiment', label: 'Sentiment Analysis', icon: MessageSquare },
+    { id: 'inventory', label: 'Inventory', icon: Boxes },
     { id: 'divider', type: 'divider' },
     { id: 'upload', label: 'Data Ingestion', icon: Upload },
     { id: 'settings', label: 'Settings', icon: Settings },
@@ -149,10 +153,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentPage, isDa
             >
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
-            <button className="p-2 text-text-secondary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg relative">
-              <Bell size={20} />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
-            </button>
+            <NotificationBell onNavigate={handleNavigate} currentPage={currentPage} />
             <div className="hidden sm:block h-8 w-px bg-slate-200 dark:bg-slate-800 mx-2" />
             <div className="flex items-center gap-3">
               <div className="text-right hidden sm:block">
