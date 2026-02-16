@@ -46,6 +46,92 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/inventory", tags=["Inventory"])
 
 
+def _derive_cost_per_unit_from_sales(df: pd.DataFrame) -> Dict[str, float]:
+    """Best-effort cost_per_unit derivation from existing sales data.
+
+    This is used only as a fallback when no cost_per_unit was provided/stored yet.
+    It does not modify the sales dataset.
+    """
+
+    if df is None or df.empty:
+        return {}
+
+    product_col: Optional[str] = None
+    unit_price_col: Optional[str] = None
+    total_price_col: Optional[str] = None
+    qty_col: Optional[str] = None
+
+    try:
+        from src.schema_resolver import SchemaResolver, SemanticField
+
+        resolver = SchemaResolver()
+        resolution = resolver.resolve(df, dataset_type="sales")
+        product_col = resolution.get_column(SemanticField.PRODUCT)
+        unit_price_col = resolution.get_column(SemanticField.UNIT_PRICE)
+        total_price_col = resolution.get_column(SemanticField.TOTAL_PRICE)
+        qty_col = resolution.get_column(SemanticField.QUANTITY)
+    except Exception:
+        # Resolver is optional; fall back to common names.
+        pass
+
+    if not product_col:
+        for c in [
+            "Product",
+            "product",
+            "ProductName",
+            "product_name",
+            "Description",
+            "description",
+            "StockCode",
+            "stock_code",
+        ]:
+            if c in df.columns:
+                product_col = c
+                break
+
+    if not product_col:
+        return {}
+
+    # Determine a unit-price series.
+    price_series = None
+    if unit_price_col and unit_price_col in df.columns:
+        price_series = pd.to_numeric(df[unit_price_col], errors="coerce")
+    elif total_price_col and qty_col and total_price_col in df.columns and qty_col in df.columns:
+        total = pd.to_numeric(df[total_price_col], errors="coerce")
+        qty = pd.to_numeric(df[qty_col], errors="coerce")
+        price_series = total / qty.replace({0: pd.NA})
+    else:
+        # Common fallbacks
+        for c in ["UnitPrice", "unit_price", "Price", "price", "Cost", "cost"]:
+            if c in df.columns:
+                price_series = pd.to_numeric(df[c], errors="coerce")
+                break
+
+    if price_series is None:
+        return {}
+
+    products = df[product_col].astype(str).map(normalize_product_name)
+    tmp = pd.DataFrame({"product": products, "unit_price": price_series})
+    tmp = tmp.dropna(subset=["product", "unit_price"])
+    tmp = tmp[(tmp["product"].astype(str).str.strip() != "")]
+    tmp = tmp[tmp["unit_price"].astype(float) >= 0]
+    if tmp.empty:
+        return {}
+
+    # Median is robust vs outliers.
+    med = tmp.groupby("product")["unit_price"].median()
+    out: Dict[str, float] = {}
+    for k, v in med.to_dict().items():
+        try:
+            fv = float(v)
+        except Exception:
+            continue
+        if fv != fv:  # NaN
+            continue
+        out[str(k)] = fv
+    return out
+
+
 class StockUpdateItem(BaseModel):
     product_name: str = Field(..., min_length=1, description="Product name")
     current_stock: int = Field(..., ge=0, description="Current stock (>=0)")
@@ -428,12 +514,26 @@ def get_inventory_status(
 
     avg_daily = compute_avg_daily_sales(df)
 
+    # Fallback cost_per_unit derivation from sales data when DB has no costs yet.
+    derived_cost_map = _derive_cost_per_unit_from_sales(df)
+
     conn = connect()
     try:
         stock_map = get_stock_map(conn, company_id=company_id)
         cost_map = get_cost_per_unit_map(conn, company_id=company_id)
         manual_products = list_manual_products(conn, company_id=company_id)
         deleted = get_deleted_products_set(conn, company_id=company_id)
+
+        # Seed missing costs from derived values (one-time, best-effort).
+        missing = [p for p in (stock_map.keys() | set(manual_products)) if p not in cost_map and p in derived_cost_map]
+        if missing:
+            for p in missing:
+                try:
+                    upsert_cost_per_unit(conn, p, derived_cost_map[p], company_id=company_id)
+                    cost_map[p] = float(derived_cost_map[p])
+                except Exception:
+                    # Non-blocking: keep null if we can't derive or store.
+                    pass
     finally:
         conn.close()
 

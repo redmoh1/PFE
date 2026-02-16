@@ -71,25 +71,14 @@ const formatDaysLeft = (daysLeft: number | null | undefined) => {
   return `${hours} hours`;
 };
 
-const currencyFormatter0 = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 0,
-});
-
-const currencyFormatter2 = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
 const formatCurrency = (value: number) => {
   if (!Number.isFinite(value)) return '—';
-  // If value is effectively an integer, keep output clean (e.g., $5,000)
-  const isIntLike = Math.abs(value - Math.round(value)) < 1e-9;
-  return (isIntLike ? currencyFormatter0 : currencyFormatter2).format(value);
+  return value.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
 };
 
 const Inventory: React.FC = () => {
@@ -226,6 +215,10 @@ const Inventory: React.FC = () => {
         });
         throw e;
       }
+
+      // Debug: verify API carries cost_per_unit.
+      // eslint-disable-next-line no-console
+      console.log('[Inventory] status items sample', (payload.items || []).slice(0, 3));
       setItems(payload.items || []);
       setSourceFile(payload.source_file || '');
 
