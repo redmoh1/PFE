@@ -26,10 +26,14 @@ from backend.inventory_store import (
     upsert_stock,
     increment_stock,
     get_stock_map,
+    get_cost_per_unit_map,
+    upsert_cost_per_unit,
+    list_stock_movements,
     list_manual_products,
     get_deleted_products_set,
     mark_product_deleted,
     delete_stock_row,
+    delete_cost_row,
     parse_invoice_lines,
     compute_avg_daily_sales,
     classify_status,
@@ -54,6 +58,15 @@ class StockUpdateRequest(BaseModel):
 class AddProductRequest(BaseModel):
     product_name: str = Field(..., min_length=1, description="Product name")
     initial_stock: int = Field(0, ge=0, description="Initial stock (>=0)")
+
+
+class CostUpdateItem(BaseModel):
+    product_name: str = Field(..., min_length=1, description="Product name")
+    cost_per_unit: float = Field(..., ge=0, description="Cost per unit (>=0)")
+
+
+class CostUpdateRequest(BaseModel):
+    items: List[CostUpdateItem]
 
 
 def _project_base_dir() -> Path:
@@ -251,10 +264,39 @@ def delete_inventory_product(
     try:
         mark_product_deleted(conn, name, company_id=company_id)
         removed = delete_stock_row(conn, name, company_id=company_id)
+        removed_costs = delete_cost_row(conn, name, company_id=company_id)
     finally:
         conn.close()
 
-    return {"ok": True, "product_name": name, "removed_stock_rows": int(removed)}
+    return {
+        "ok": True,
+        "product_name": name,
+        "removed_stock_rows": int(removed),
+        "removed_cost_rows": int(removed_costs),
+    }
+
+
+@router.post("/update-cost")
+def update_inventory_costs(
+    payload: CostUpdateRequest,
+    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+) -> Dict[str, Any]:
+    """Persist seller-provided cost_per_unit values.
+
+    Body:
+        {"items": [{"product_name": "LAPTOP", "cost_per_unit": 199.99}, ...]}
+    """
+
+    if not payload.items:
+        return {"ok": True, "updated": 0}
+
+    conn = connect()
+    try:
+        for item in payload.items:
+            upsert_cost_per_unit(conn, item.product_name, item.cost_per_unit, company_id=company_id)
+        return {"ok": True, "updated": len(payload.items)}
+    finally:
+        conn.close()
 
 
 @router.post("/update")
@@ -274,7 +316,7 @@ def update_inventory_stock(
     conn = connect()
     try:
         for item in payload.items:
-            upsert_stock(conn, item.product_name, item.current_stock, company_id=company_id)
+            upsert_stock(conn, item.product_name, item.current_stock, company_id=company_id, movement_reason="Manual Adjustment")
         return {"ok": True, "updated": len(payload.items)}
     finally:
         conn.close()
@@ -289,7 +331,7 @@ def add_inventory_product(
 
     conn = connect()
     try:
-        upsert_stock(conn, payload.product_name, payload.initial_stock, company_id=company_id)
+        upsert_stock(conn, payload.product_name, payload.initial_stock, company_id=company_id, movement_reason="Manual Adjustment")
         return {"ok": True, "product_name": normalize_product_name(payload.product_name)}
     finally:
         conn.close()
@@ -327,10 +369,31 @@ async def upload_purchase_invoice(
     conn = connect()
     try:
         for line in lines:
-            increment_stock(conn, line.product_name, line.quantity_purchased, company_id=company_id)
+            increment_stock(conn, line.product_name, line.quantity_purchased, company_id=company_id, movement_reason="Purchase")
         return {"ok": True, "lines_applied": len(lines)}
     finally:
         conn.close()
+
+
+@router.get("/{product_name}/history")
+def get_stock_history(
+    product_name: str,
+    limit: int = Query(default=200, ge=1, le=2000, description="Max records to return"),
+    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+) -> Dict[str, Any]:
+    """Return stock movement history for a product (latest first)."""
+
+    name = normalize_product_name(product_name)
+    if not name:
+        raise HTTPException(status_code=400, detail="Invalid product name")
+
+    conn = connect()
+    try:
+        items = list_stock_movements(conn, name, company_id=company_id, limit=limit)
+    finally:
+        conn.close()
+
+    return {"ok": True, "product_name": name, "count": len(items), "items": items}
 
 
 @router.get("/status")
@@ -368,6 +431,7 @@ def get_inventory_status(
     conn = connect()
     try:
         stock_map = get_stock_map(conn, company_id=company_id)
+        cost_map = get_cost_per_unit_map(conn, company_id=company_id)
         manual_products = list_manual_products(conn, company_id=company_id)
         deleted = get_deleted_products_set(conn, company_id=company_id)
     finally:
@@ -383,6 +447,7 @@ def get_inventory_status(
     items: List[Dict[str, Any]] = []
     for product in all_products:
         stock = stock_map.get(product)
+        cost_per_unit = cost_map.get(product)
         avg = float(avg_daily.get(product, 0.0))
         status, days_left = classify_status(stock, avg, warning_days=warning_days, alert_days=alert_days)
         advice = advice_for(status)
@@ -396,6 +461,7 @@ def get_inventory_status(
             {
                 "product_name": product,
                 "current_stock": stock,
+                "cost_per_unit": cost_per_unit,
                 "avg_daily_sales": round(avg, 4),
                 "days_left": None if days_left is None else round(float(days_left), 2),
                 "status": status,

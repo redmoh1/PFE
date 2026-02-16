@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuthFetch } from '../store/AuthContext';
-import { Plus, UploadCloud, Save, RefreshCw, Download, Trash2 } from 'lucide-react';
+import { Plus, UploadCloud, Save, RefreshCw, Download, Trash2, History, Info } from 'lucide-react';
 
 type InventoryItem = {
   product_name: string;
   current_stock: number | null;
+  cost_per_unit?: number | null;
   avg_daily_sales: number;
   days_left: number | null;
   status: 'OK' | 'WARNING' | 'ALERT' | 'DORMANT' | 'UNKNOWN' | string;
@@ -17,6 +18,22 @@ type InventoryStatusResponse = {
   source_file: string;
   count: number;
   items: InventoryItem[];
+};
+
+type StockMovement = {
+  id: number;
+  product_name: string;
+  date: string;
+  type: 'IN' | 'OUT' | string;
+  quantity: number;
+  reason: string;
+};
+
+type StockHistoryResponse = {
+  ok: boolean;
+  product_name: string;
+  count: number;
+  items: StockMovement[];
 };
 
 type InventorySummaryResponse = {
@@ -54,6 +71,27 @@ const formatDaysLeft = (daysLeft: number | null | undefined) => {
   return `${hours} hours`;
 };
 
+const currencyFormatter0 = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
+const currencyFormatter2 = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+const formatCurrency = (value: number) => {
+  if (!Number.isFinite(value)) return '—';
+  // If value is effectively an integer, keep output clean (e.g., $5,000)
+  const isIntLike = Math.abs(value - Math.round(value)) < 1e-9;
+  return (isIntLike ? currencyFormatter0 : currencyFormatter2).format(value);
+};
+
 const Inventory: React.FC = () => {
   const authFetch = useAuthFetch();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -84,6 +122,11 @@ const Inventory: React.FC = () => {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const [historyTarget, setHistoryTarget] = useState<string | null>(null);
+  const [historyItems, setHistoryItems] = useState<StockMovement[]>([]);
+  const [isHistoryLoading, setIsHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
+
   const deleteProduct = async (productName: string) => {
     setIsDeleting(true);
     setError(null);
@@ -102,6 +145,33 @@ const Inventory: React.FC = () => {
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const loadHistory = async (productName: string) => {
+    setIsHistoryLoading(true);
+    setHistoryError(null);
+    try {
+      const url = `/inventory/${encodeURIComponent(productName)}/history?limit=200`;
+      const res = await authFetch(url, { cache: 'no-store' });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || 'Failed to load stock history');
+      }
+
+      const payload = (await res.json()) as StockHistoryResponse;
+      setHistoryItems(payload.items || []);
+    } catch (e: any) {
+      setHistoryError(e?.message || 'Failed to load stock history');
+      setHistoryItems([]);
+    } finally {
+      setIsHistoryLoading(false);
+    }
+  };
+
+  const openHistory = (productName: string) => {
+    setHistoryTarget(productName);
+    setHistoryItems([]);
+    loadHistory(productName);
   };
 
   const loadSummary = async () => {
@@ -497,31 +567,39 @@ const Inventory: React.FC = () => {
               <tr>
                 <th className="text-left px-4 py-3 font-semibold">Product</th>
                 <th className="text-left px-4 py-3 font-semibold w-44">Current Stock</th>
-                <th className="text-left px-4 py-3 font-semibold w-40">Avg Daily Sales</th>
-                <th className="text-left px-4 py-3 font-semibold w-32">Time Left</th>
-                <th className="text-left px-4 py-3 font-semibold w-44">Suggested Reorder</th>
+                <th className="text-left px-4 py-3 font-semibold w-36">Time Left</th>
                 <th className="text-left px-4 py-3 font-semibold w-28">Status</th>
-                <th className="text-left px-4 py-3 font-semibold">Seller Advice</th>
+                <th className="hidden md:table-cell text-left px-4 py-3 font-semibold w-44">Suggested Reorder</th>
+                <th className="hidden lg:table-cell text-left px-4 py-3 font-semibold w-40">Stock Value</th>
+                <th className="hidden lg:table-cell text-left px-4 py-3 font-semibold w-40">Avg Daily Sales</th>
+                <th className="hidden sm:table-cell text-left px-4 py-3 font-semibold">Seller Advice</th>
                 <th className="text-right px-4 py-3 font-semibold w-20">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
               {isLoading ? (
                 <tr>
-                  <td className="px-4 py-6" colSpan={8}>
+                  <td className="px-4 py-6" colSpan={9}>
                     Loading inventory…
                   </td>
                 </tr>
               ) : filteredItems.length === 0 ? (
                 <tr>
-                  <td className="px-4 py-6" colSpan={8}>
+                  <td className="px-4 py-6" colSpan={9}>
                     No products match your filters. Upload sales data or add a product.
                   </td>
                 </tr>
               ) : (
-                filteredItems.map((it) => (
-                  <tr key={it.product_name} className="hover:bg-slate-50 dark:hover:bg-slate-900/20">
-                    <td className="px-4 py-3 font-medium">{it.product_name}</td>
+                filteredItems.map((it, idx) => (
+                  <tr
+                    key={it.product_name}
+                    className={`${idx % 2 === 0 ? 'bg-slate-50/40 dark:bg-slate-900/10' : ''} hover:bg-slate-100/60 dark:hover:bg-slate-900/30 transition-colors`}
+                  >
+                    <td className="px-4 py-3 font-medium">
+                      <div className="max-w-[220px] sm:max-w-[340px] truncate" title={it.product_name}>
+                        {it.product_name}
+                      </div>
+                    </td>
                     <td className="px-4 py-3">
                       <input
                         value={editedStock[it.product_name] ?? ''}
@@ -533,31 +611,73 @@ const Inventory: React.FC = () => {
                         placeholder="e.g. 25"
                       />
                     </td>
-                    <td className="px-4 py-3">{Number(it.avg_daily_sales || 0).toFixed(2)}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 font-medium">
                       {formatDaysLeft(it.days_left)}
-                    </td>
-                    <td className="px-4 py-3">
-                      {it.suggested_reorder_qty === null || it.suggested_reorder_qty === undefined
-                        ? '—'
-                        : it.suggested_reorder_qty}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${pillClass(it.status)}`}>
                         {it.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-text-secondary dark:text-text-secondaryDark">{it.advice}</td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => setDeleteTarget(it.product_name)}
-                        className="inline-flex items-center justify-center p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-300"
-                        title="Delete product"
-                        type="button"
-                        disabled={isSaving || isLoading}
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                    <td className="hidden md:table-cell px-4 py-3">
+                      <span className="font-medium">
+                        {it.suggested_reorder_qty === null || it.suggested_reorder_qty === undefined
+                          ? '—'
+                          : it.suggested_reorder_qty}
+                      </span>
+                    </td>
+                    <td className="hidden lg:table-cell px-4 py-3">
+                      <span className="font-medium">
+                        {it.cost_per_unit === null || it.cost_per_unit === undefined
+                          ? '-'
+                          : it.current_stock === null || it.current_stock === undefined
+                            ? '—'
+                            : formatCurrency(Number(it.current_stock) * Number(it.cost_per_unit))}
+                      </span>
+                    </td>
+                    <td className="hidden lg:table-cell px-4 py-3 text-xs text-text-secondary dark:text-text-secondaryDark">
+                      {Number(it.avg_daily_sales || 0).toFixed(2)}
+                    </td>
+                    <td className="hidden sm:table-cell px-4 py-3">
+                      {it.advice ? (
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            className="inline-flex items-center justify-center p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+                            title={it.advice}
+                            aria-label="Seller advice"
+                          >
+                            <Info size={16} />
+                          </button>
+                          <div className="max-w-[280px] truncate text-text-secondary dark:text-text-secondaryDark" title={it.advice}>
+                            {it.advice}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-text-secondary dark:text-text-secondaryDark">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      <div className="inline-flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => openHistory(it.product_name)}
+                          className="inline-flex items-center justify-center p-1.5 rounded-md hover:bg-slate-100/70 dark:hover:bg-slate-900/30 text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-200"
+                          title="History"
+                          type="button"
+                          disabled={isSaving || isLoading}
+                        >
+                          <History size={14} />
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(it.product_name)}
+                          className="inline-flex items-center justify-center p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950/20 text-red-600 dark:text-red-300"
+                          title="Delete product"
+                          type="button"
+                          disabled={isSaving || isLoading}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -566,6 +686,89 @@ const Inventory: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {historyTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/40" onClick={() => (!isHistoryLoading ? setHistoryTarget(null) : null)} />
+          <div className="relative w-full max-w-3xl bg-card-light dark:bg-card-dark border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-bold">Stock Movement History</h3>
+                <p className="text-sm text-text-secondary dark:text-text-secondaryDark mt-1">
+                  {historyTarget}
+                </p>
+              </div>
+              <button
+                onClick={() => setHistoryTarget(null)}
+                className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm"
+                disabled={isHistoryLoading}
+                type="button"
+              >
+                Close
+              </button>
+            </div>
+
+            {historyError && (
+              <div className="mt-4 p-3 rounded-xl border border-red-200 bg-red-50 text-red-700 dark:border-red-900/40 dark:bg-red-950/20 dark:text-red-300">
+                {historyError}
+              </div>
+            )}
+
+            <div className="mt-4 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800">
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-slate-50 dark:bg-slate-900/30 text-text-secondary dark:text-text-secondaryDark">
+                    <tr>
+                      <th className="text-left px-4 py-3 font-semibold w-56">Date</th>
+                      <th className="text-left px-4 py-3 font-semibold w-20">Type</th>
+                      <th className="text-left px-4 py-3 font-semibold w-28">Quantity</th>
+                      <th className="text-left px-4 py-3 font-semibold">Reason</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                    {isHistoryLoading ? (
+                      <tr>
+                        <td className="px-4 py-6" colSpan={4}>
+                          Loading history…
+                        </td>
+                      </tr>
+                    ) : historyItems.length === 0 ? (
+                      <tr>
+                        <td className="px-4 py-6" colSpan={4}>
+                          No movements yet.
+                        </td>
+                      </tr>
+                    ) : (
+                      historyItems.map((m) => {
+                        const dt = new Date(m.date);
+                        const dateText = Number.isNaN(dt.getTime()) ? m.date : dt.toLocaleString();
+                        const t = String(m.type || '').toUpperCase();
+                        const typeClass =
+                          t === 'IN'
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-300'
+                            : t === 'OUT'
+                              ? 'bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-300'
+                              : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200';
+
+                        return (
+                          <tr key={m.id} className="hover:bg-slate-50 dark:hover:bg-slate-900/20">
+                            <td className="px-4 py-3">{dateText}</td>
+                            <td className="px-4 py-3">
+                              <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${typeClass}`}>{t}</span>
+                            </td>
+                            <td className="px-4 py-3">{m.quantity}</td>
+                            <td className="px-4 py-3 text-text-secondary dark:text-text-secondaryDark">{m.reason}</td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

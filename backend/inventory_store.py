@@ -21,7 +21,7 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple, Literal
 import math
 
 import pandas as pd
@@ -128,6 +128,51 @@ def init_deleted_products_db(conn: sqlite3.Connection) -> None:
     conn.commit()
 
 
+def init_product_costs_db(conn: sqlite3.Connection) -> None:
+    """Create product-cost table if it does not exist.
+
+    Stores a seller-maintained Cost Per Unit for each product.
+    This is intentionally kept separate from stock so we don't alter any
+    existing stock/business logic.
+    """
+
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS inventory_product_costs (
+            company_id TEXT NOT NULL,
+            product_name TEXT NOT NULL,
+            cost_per_unit REAL NOT NULL,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY(company_id, product_name)
+        )
+        """
+    )
+    conn.commit()
+
+
+def init_stock_movements_db(conn: sqlite3.Connection) -> None:
+    """Create stock_movements table if it does not exist."""
+
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS stock_movements (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_id TEXT NOT NULL,
+            product_name TEXT NOT NULL,
+            date TEXT NOT NULL,
+            type TEXT NOT NULL,
+            quantity INTEGER NOT NULL,
+            reason TEXT NOT NULL
+        )
+        """
+    )
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_stock_movements_lookup ON stock_movements(company_id, product_name, date)"
+    )
+    conn.commit()
+
+
 # ---------------------------------------------------------------------------
 # Stock CRUD
 # ---------------------------------------------------------------------------
@@ -157,11 +202,25 @@ def normalize_company_id(company_id: Optional[str]) -> str:
     return text or "Acme Corp"
 
 
-def upsert_stock(conn: sqlite3.Connection, product_name: str, current_stock: int, company_id: Optional[str] = None) -> None:
+def upsert_stock(
+    conn: sqlite3.Connection,
+    product_name: str,
+    current_stock: int,
+    company_id: Optional[str] = None,
+    movement_reason: str = "Manual Adjustment",
+) -> None:
     init_db(conn)
     now = _utc_now_iso()
     product = normalize_product_name(product_name)
     company = normalize_company_id(company_id)
+
+    # Track previous stock so we can record a movement without changing the core stock behavior.
+    prev_row = conn.execute(
+        "SELECT current_stock FROM inventory_stock WHERE company_id = ? AND product_name = ?",
+        (company, product),
+    ).fetchone()
+    prev_stock = int(prev_row["current_stock"]) if prev_row else 0
+    next_stock = int(current_stock)
 
     conn.execute(
         """
@@ -171,12 +230,31 @@ def upsert_stock(conn: sqlite3.Connection, product_name: str, current_stock: int
             current_stock = excluded.current_stock,
             updated_at = excluded.updated_at
         """,
-        (company, product, int(current_stock), now, now),
+        (company, product, next_stock, now, now),
     )
     conn.commit()
 
+    # Record movement if stock actually changed.
+    delta = next_stock - prev_stock
+    if delta != 0:
+        record_stock_movement(
+            conn,
+            product_name=product,
+            movement_type="IN" if delta > 0 else "OUT",
+            quantity=abs(int(delta)),
+            reason=movement_reason,
+            company_id=company,
+            date=now,
+        )
 
-def increment_stock(conn: sqlite3.Connection, product_name: str, delta: int, company_id: Optional[str] = None) -> None:
+
+def increment_stock(
+    conn: sqlite3.Connection,
+    product_name: str,
+    delta: int,
+    company_id: Optional[str] = None,
+    movement_reason: str = "Manual Adjustment",
+) -> None:
     """Increase stock by delta; creates the row if missing."""
 
     init_db(conn)
@@ -192,7 +270,8 @@ def increment_stock(conn: sqlite3.Connection, product_name: str, delta: int, com
     new_value = current + int(delta)
     if new_value < 0:
         new_value = 0
-    upsert_stock(conn, product, new_value, company_id=company)
+    # upsert_stock will record the movement (IN/OUT) based on the resulting delta.
+    upsert_stock(conn, product, new_value, company_id=company, movement_reason=movement_reason)
 
 
 def get_stock_map(conn: sqlite3.Connection, company_id: Optional[str] = None) -> Dict[str, int]:
@@ -251,6 +330,142 @@ def delete_stock_row(conn: sqlite3.Connection, product_name: str, company_id: Op
     product = normalize_product_name(product_name)
     cur = conn.execute(
         "DELETE FROM inventory_stock WHERE company_id = ? AND product_name = ?",
+        (company, product),
+    )
+    conn.commit()
+    try:
+        return int(cur.rowcount or 0)
+    except Exception:
+        return 0
+
+
+def record_stock_movement(
+    conn: sqlite3.Connection,
+    product_name: str,
+    movement_type: Literal["IN", "OUT"],
+    quantity: int,
+    reason: str,
+    company_id: Optional[str] = None,
+    date: Optional[str] = None,
+) -> None:
+    """Insert a movement record.
+
+    This is additive-only telemetry for stock changes.
+    """
+
+    init_stock_movements_db(conn)
+    company = normalize_company_id(company_id)
+    product = normalize_product_name(product_name)
+    when = date or _utc_now_iso()
+
+    qty = int(quantity)
+    if qty <= 0:
+        return
+
+    t = (movement_type or "").upper().strip()
+    if t not in {"IN", "OUT"}:
+        raise ValueError("movement_type must be IN or OUT")
+
+    r = (reason or "").strip() or "Manual Adjustment"
+
+    conn.execute(
+        """
+        INSERT INTO stock_movements (company_id, product_name, date, type, quantity, reason)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+        (company, product, when, t, qty, r),
+    )
+    conn.commit()
+
+
+def list_stock_movements(
+    conn: sqlite3.Connection,
+    product_name: str,
+    company_id: Optional[str] = None,
+    limit: int = 500,
+) -> List[Dict[str, object]]:
+    init_stock_movements_db(conn)
+    company = normalize_company_id(company_id)
+    product = normalize_product_name(product_name)
+    take = max(1, min(int(limit), 2000))
+
+    rows = conn.execute(
+        """
+        SELECT id, product_name, date, type, quantity, reason
+        FROM stock_movements
+        WHERE company_id = ? AND product_name = ?
+        ORDER BY date DESC, id DESC
+        LIMIT ?
+        """,
+        (company, product, take),
+    ).fetchall()
+
+    return [
+        {
+            "id": int(r["id"]),
+            "product_name": str(r["product_name"]),
+            "date": str(r["date"]),
+            "type": str(r["type"]),
+            "quantity": int(r["quantity"]),
+            "reason": str(r["reason"]),
+        }
+        for r in rows
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Product costs (Cost Per Unit)
+# ---------------------------------------------------------------------------
+
+
+def upsert_cost_per_unit(
+    conn: sqlite3.Connection,
+    product_name: str,
+    cost_per_unit: float,
+    company_id: Optional[str] = None,
+) -> None:
+    init_product_costs_db(conn)
+    company = normalize_company_id(company_id)
+    product = normalize_product_name(product_name)
+
+    try:
+        value = float(cost_per_unit)
+    except Exception as exc:  # noqa: BLE001
+        raise ValueError("cost_per_unit must be a number") from exc
+
+    if not math.isfinite(value) or value < 0:
+        raise ValueError("cost_per_unit must be a non-negative finite number")
+
+    now = _utc_now_iso()
+    conn.execute(
+        """
+        INSERT INTO inventory_product_costs (company_id, product_name, cost_per_unit, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(company_id, product_name) DO UPDATE SET
+            cost_per_unit = excluded.cost_per_unit,
+            updated_at = excluded.updated_at
+        """,
+        (company, product, value, now, now),
+    )
+    conn.commit()
+
+
+def get_cost_per_unit_map(conn: sqlite3.Connection, company_id: Optional[str] = None) -> Dict[str, float]:
+    init_product_costs_db(conn)
+    company = normalize_company_id(company_id)
+    rows = conn.execute(
+        "SELECT product_name, cost_per_unit FROM inventory_product_costs WHERE company_id = ?",
+        (company,),
+    ).fetchall()
+    return {str(r["product_name"]): float(r["cost_per_unit"]) for r in rows}
+
+
+def delete_cost_row(conn: sqlite3.Connection, product_name: str, company_id: Optional[str] = None) -> int:
+    init_product_costs_db(conn)
+    company = normalize_company_id(company_id)
+    product = normalize_product_name(product_name)
+    cur = conn.execute(
+        "DELETE FROM inventory_product_costs WHERE company_id = ? AND product_name = ?",
         (company, product),
     )
     conn.commit()
