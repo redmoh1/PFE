@@ -163,10 +163,21 @@ def init_stock_movements_db(conn: sqlite3.Connection) -> None:
             date TEXT NOT NULL,
             type TEXT NOT NULL,
             quantity INTEGER NOT NULL,
-            reason TEXT NOT NULL
+            reason TEXT NOT NULL,
+            balance_after INTEGER
         )
         """
     )
+
+    # Lightweight migration for existing DBs (SQLite supports ADD COLUMN).
+    try:
+        cols = [r["name"] for r in conn.execute("PRAGMA table_info(stock_movements)").fetchall()]
+        if "balance_after" not in cols:
+            conn.execute("ALTER TABLE stock_movements ADD COLUMN balance_after INTEGER")
+    except Exception:
+        # Non-blocking; table still works without the column for reads.
+        pass
+
     conn.execute(
         "CREATE INDEX IF NOT EXISTS idx_stock_movements_lookup ON stock_movements(company_id, product_name, date)"
     )
@@ -243,6 +254,7 @@ def upsert_stock(
             movement_type="IN" if delta > 0 else "OUT",
             quantity=abs(int(delta)),
             reason=movement_reason,
+            balance_after=next_stock,
             company_id=company,
             date=now,
         )
@@ -345,6 +357,7 @@ def record_stock_movement(
     movement_type: Literal["IN", "OUT"],
     quantity: int,
     reason: str,
+    balance_after: Optional[int] = None,
     company_id: Optional[str] = None,
     date: Optional[str] = None,
 ) -> None:
@@ -368,14 +381,33 @@ def record_stock_movement(
 
     r = (reason or "").strip() or "Manual Adjustment"
 
-    conn.execute(
-        """
-        INSERT INTO stock_movements (company_id, product_name, date, type, quantity, reason)
-        VALUES (?, ?, ?, ?, ?, ?)
-        """,
-        (company, product, when, t, qty, r),
-    )
-    conn.commit()
+    bal = None
+    if balance_after is not None:
+        try:
+            bal = int(balance_after)
+        except Exception:
+            bal = None
+
+    try:
+        conn.execute(
+            """
+            INSERT INTO stock_movements (company_id, product_name, date, type, quantity, reason, balance_after)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (company, product, when, t, qty, r, bal),
+        )
+        conn.commit()
+        return
+    except sqlite3.OperationalError:
+        # Backward compatibility: DB might not have balance_after yet.
+        conn.execute(
+            """
+            INSERT INTO stock_movements (company_id, product_name, date, type, quantity, reason)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (company, product, when, t, qty, r),
+        )
+        conn.commit()
 
 
 def list_stock_movements(
@@ -389,16 +421,30 @@ def list_stock_movements(
     product = normalize_product_name(product_name)
     take = max(1, min(int(limit), 2000))
 
-    rows = conn.execute(
-        """
-        SELECT id, product_name, date, type, quantity, reason
-        FROM stock_movements
-        WHERE company_id = ? AND product_name = ?
-        ORDER BY date DESC, id DESC
-        LIMIT ?
-        """,
-        (company, product, take),
-    ).fetchall()
+    try:
+        rows = conn.execute(
+            """
+            SELECT id, product_name, date, type, quantity, reason, balance_after
+            FROM stock_movements
+            WHERE company_id = ? AND product_name = ?
+            ORDER BY date DESC, id DESC
+            LIMIT ?
+            """,
+            (company, product, take),
+        ).fetchall()
+        has_balance = True
+    except sqlite3.OperationalError:
+        rows = conn.execute(
+            """
+            SELECT id, product_name, date, type, quantity, reason
+            FROM stock_movements
+            WHERE company_id = ? AND product_name = ?
+            ORDER BY date DESC, id DESC
+            LIMIT ?
+            """,
+            (company, product, take),
+        ).fetchall()
+        has_balance = False
 
     return [
         {
@@ -408,6 +454,9 @@ def list_stock_movements(
             "type": str(r["type"]),
             "quantity": int(r["quantity"]),
             "reason": str(r["reason"]),
+            "balance_after": None
+            if not has_balance
+            else (None if r["balance_after"] is None else int(r["balance_after"])),
         }
         for r in rows
     ]

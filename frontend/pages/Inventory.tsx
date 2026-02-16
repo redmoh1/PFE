@@ -27,6 +27,7 @@ type StockMovement = {
   type: 'IN' | 'OUT' | string;
   quantity: number;
   reason: string;
+  balance_after?: number | null;
 };
 
 type StockHistoryResponse = {
@@ -712,22 +713,23 @@ const Inventory: React.FC = () => {
                 <table className="min-w-full text-sm">
                   <thead className="bg-slate-50 dark:bg-slate-900/30 text-text-secondary dark:text-text-secondaryDark">
                     <tr>
-                      <th className="text-left px-4 py-3 font-semibold w-56">Date</th>
+                      <th className="text-left px-4 py-3 font-semibold w-52">Date</th>
                       <th className="text-left px-4 py-3 font-semibold w-20">Type</th>
-                      <th className="text-left px-4 py-3 font-semibold w-28">Quantity</th>
+                      <th className="text-left px-4 py-3 font-semibold w-24">Quantity</th>
+                      <th className="text-left px-4 py-3 font-semibold w-24">Balance</th>
                       <th className="text-left px-4 py-3 font-semibold">Reason</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
                     {isHistoryLoading ? (
                       <tr>
-                        <td className="px-4 py-6" colSpan={4}>
+                        <td className="px-4 py-6" colSpan={5}>
                           Loading history…
                         </td>
                       </tr>
                     ) : historyItems.length === 0 ? (
                       <tr>
-                        <td className="px-4 py-6" colSpan={4}>
+                        <td className="px-4 py-6" colSpan={5}>
                           No movements yet.
                         </td>
                       </tr>
@@ -750,6 +752,7 @@ const Inventory: React.FC = () => {
                               <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${typeClass}`}>{t}</span>
                             </td>
                             <td className="px-4 py-3">{m.quantity}</td>
+                            <td className="px-4 py-3 font-medium">{m.balance_after === null || m.balance_after === undefined ? '—' : m.balance_after}</td>
                             <td className="px-4 py-3 text-text-secondary dark:text-text-secondaryDark">{m.reason}</td>
                           </tr>
                         );
