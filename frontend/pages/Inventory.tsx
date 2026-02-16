@@ -43,6 +43,17 @@ const pillClass = (status: string) => {
   }
 };
 
+const formatDaysLeft = (daysLeft: number | null | undefined) => {
+  if (daysLeft === null || daysLeft === undefined) return '—';
+  const n = Number(daysLeft);
+  if (!Number.isFinite(n)) return '—';
+
+  if (n >= 1) return `${n.toFixed(1)} days`;
+
+  const hours = Math.round(n * 24);
+  return `${hours} hours`;
+};
+
 const Inventory: React.FC = () => {
   const authFetch = useAuthFetch();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -364,7 +375,7 @@ const Inventory: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h2 className="text-xl font-bold">Inventory Management</h2>
-          <p className="text-sm text-text-secondary dark:text-text-secondaryDark">
+          <p className="text-sm text-text-secondary dark:text-text-secondaryDark invisible">
             Detected products from sales + manual additions. Source: {sourceFile || '—'}
           </p>
         </div>
@@ -487,7 +498,7 @@ const Inventory: React.FC = () => {
                 <th className="text-left px-4 py-3 font-semibold">Product</th>
                 <th className="text-left px-4 py-3 font-semibold w-44">Current Stock</th>
                 <th className="text-left px-4 py-3 font-semibold w-40">Avg Daily Sales</th>
-                <th className="text-left px-4 py-3 font-semibold w-32">Days Left</th>
+                <th className="text-left px-4 py-3 font-semibold w-32">Time Left</th>
                 <th className="text-left px-4 py-3 font-semibold w-44">Suggested Reorder</th>
                 <th className="text-left px-4 py-3 font-semibold w-28">Status</th>
                 <th className="text-left px-4 py-3 font-semibold">Seller Advice</th>
@@ -524,7 +535,7 @@ const Inventory: React.FC = () => {
                     </td>
                     <td className="px-4 py-3">{Number(it.avg_daily_sales || 0).toFixed(2)}</td>
                     <td className="px-4 py-3">
-                      {it.days_left === null || it.days_left === undefined ? '—' : it.days_left.toFixed(1)}
+                      {formatDaysLeft(it.days_left)}
                     </td>
                     <td className="px-4 py-3">
                       {it.suggested_reorder_qty === null || it.suggested_reorder_qty === undefined
