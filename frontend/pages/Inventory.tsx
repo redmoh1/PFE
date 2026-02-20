@@ -40,7 +40,6 @@ type StockHistoryResponse = {
 type InventorySummaryResponse = {
   ok: boolean;
   source_file?: string;
-  lead: number;
   warning: number;
   alert: number;
   safety: number;
@@ -61,14 +60,19 @@ const pillClass = (status: string) => {
   }
 };
 
-const formatDaysLeft = (daysLeft: number | null | undefined) => {
+const formatTimeLeft = (daysLeft: number | null | undefined) => {
   if (daysLeft === null || daysLeft === undefined) return '—';
   const n = Number(daysLeft);
   if (!Number.isFinite(n)) return '—';
 
-  if (n >= 1) return `${n.toFixed(1)} days`;
+  if (n >= 1) {
+    const days = Math.floor(n);
+    const remainingFraction = n - days;
+    const hours = Math.floor(remainingFraction * 24);
+    return `${days} days ${hours} hours`;
+  }
 
-  const hours = Math.round(n * 24);
+  const hours = Math.floor(n * 24);
   return `${hours} hours`;
 };
 
@@ -446,11 +450,6 @@ const Inventory: React.FC = () => {
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 rounded-xl px-3 py-2">
-            <span className="text-xs text-text-secondary dark:text-text-secondaryDark">Lead</span>
-            <span className="text-sm font-semibold" title="Products that need reorder (suggested reorder qty > 0)">
-              {summary?.lead ?? '—'}
-            </span>
-            <span className="mx-1 h-4 w-px bg-slate-200 dark:bg-slate-700" />
             <span className="text-xs text-text-secondary dark:text-text-secondaryDark">Warn</span>
             <span className="text-sm font-semibold">{summary?.warning ?? '—'}</span>
             <span className="mx-1 h-4 w-px bg-slate-200 dark:bg-slate-700" />
@@ -606,7 +605,7 @@ const Inventory: React.FC = () => {
                       />
                     </td>
                     <td className="px-4 py-3 font-medium">
-                      {formatDaysLeft(it.days_left)}
+                      {formatTimeLeft(it.days_left)}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${pillClass(it.status)}`}>

@@ -40,6 +40,7 @@ from backend.inventory_store import (
     compute_reorder_suggestion,
     advice_for,
 )
+from backend.notification_store import create_notification
 
 logger = logging.getLogger(__name__)
 
@@ -153,6 +154,93 @@ class CostUpdateItem(BaseModel):
 
 class CostUpdateRequest(BaseModel):
     items: List[CostUpdateItem]
+
+
+DEFAULT_WARNING_DAYS = 7
+DEFAULT_ALERT_DAYS = 3
+LARGE_STOCK_MOVEMENT_THRESHOLD = 50
+
+
+def _load_avg_daily_sales_for_notifications(
+    source: Optional[str],
+    company_id: Optional[str],
+) -> Dict[str, float]:
+    """Best-effort average daily sales map for notification triggers."""
+    try:
+        sales_file = _pick_sales_data_file(source=source, company_id=company_id)
+        df = pd.read_csv(sales_file)
+        return compute_avg_daily_sales(df)
+    except Exception:
+        return {}
+
+
+def _emit_inventory_notifications(
+    *,
+    conn,
+    product_name: str,
+    previous_stock: Optional[int],
+    current_stock: Optional[int],
+    avg_daily_sales: float,
+    delta: int,
+    company_id: Optional[str],
+) -> None:
+    """Create notifications for status transitions and major movements."""
+    product = normalize_product_name(product_name)
+    prev_status, _ = classify_status(
+        previous_stock,
+        float(avg_daily_sales),
+        warning_days=DEFAULT_WARNING_DAYS,
+        alert_days=DEFAULT_ALERT_DAYS,
+    )
+    new_status, days_left = classify_status(
+        current_stock,
+        float(avg_daily_sales),
+        warning_days=DEFAULT_WARNING_DAYS,
+        alert_days=DEFAULT_ALERT_DAYS,
+    )
+
+    if prev_status != "ALERT" and new_status == "ALERT":
+        message = f"{product} status changed to ALERT."
+        if days_left is not None:
+            message = f"{product} status changed to ALERT (~{round(float(days_left), 2)} days left)."
+        create_notification(
+            conn,
+            product_name=product,
+            message=message,
+            type="ALERT",
+            company_id=company_id,
+        )
+
+    if prev_status != "WARNING" and new_status == "WARNING":
+        message = f"{product} status changed to WARNING."
+        if days_left is not None:
+            message = f"{product} status changed to WARNING (~{round(float(days_left), 2)} days left)."
+        create_notification(
+            conn,
+            product_name=product,
+            message=message,
+            type="WARNING",
+            company_id=company_id,
+        )
+
+    if (previous_stock is None or int(previous_stock) > 0) and (current_stock is not None and int(current_stock) == 0):
+        create_notification(
+            conn,
+            product_name=product,
+            message=f"{product} stock reached zero.",
+            type="ALERT",
+            company_id=company_id,
+        )
+
+    if abs(int(delta)) >= LARGE_STOCK_MOVEMENT_THRESHOLD:
+        movement = "increased" if int(delta) > 0 else "decreased"
+        create_notification(
+            conn,
+            product_name=product,
+            message=f"Large stock movement: {product} {movement} by {abs(int(delta))} units.",
+            type="INFO",
+            company_id=company_id,
+        )
 
 
 def _project_base_dir() -> Path:
@@ -399,10 +487,26 @@ def update_inventory_stock(
     if not payload.items:
         return {"ok": True, "updated": 0}
 
+    avg_daily_map = _load_avg_daily_sales_for_notifications(source=None, company_id=company_id)
     conn = connect()
     try:
+        stock_map = get_stock_map(conn, company_id=company_id)
         for item in payload.items:
-            upsert_stock(conn, item.product_name, item.current_stock, company_id=company_id, movement_reason="Manual Adjustment")
+            product = normalize_product_name(item.product_name)
+            previous_stock = stock_map.get(product)
+            current_stock = int(item.current_stock)
+            upsert_stock(conn, product, current_stock, company_id=company_id, movement_reason="Manual Adjustment")
+            delta = current_stock - (int(previous_stock) if previous_stock is not None else 0)
+            _emit_inventory_notifications(
+                conn=conn,
+                product_name=product,
+                previous_stock=previous_stock,
+                current_stock=current_stock,
+                avg_daily_sales=float(avg_daily_map.get(product, 0.0)),
+                delta=delta,
+                company_id=company_id,
+            )
+            stock_map[product] = current_stock
         return {"ok": True, "updated": len(payload.items)}
     finally:
         conn.close()
@@ -415,10 +519,25 @@ def add_inventory_product(
 ) -> Dict[str, Any]:
     """Manually add a new product with initial stock."""
 
+    product = normalize_product_name(payload.product_name)
+    avg_daily_map = _load_avg_daily_sales_for_notifications(source=None, company_id=company_id)
     conn = connect()
     try:
-        upsert_stock(conn, payload.product_name, payload.initial_stock, company_id=company_id, movement_reason="Manual Adjustment")
-        return {"ok": True, "product_name": normalize_product_name(payload.product_name)}
+        stock_map = get_stock_map(conn, company_id=company_id)
+        previous_stock = stock_map.get(product)
+        current_stock = int(payload.initial_stock)
+        upsert_stock(conn, product, current_stock, company_id=company_id, movement_reason="Manual Adjustment")
+        delta = current_stock - (int(previous_stock) if previous_stock is not None else 0)
+        _emit_inventory_notifications(
+            conn=conn,
+            product_name=product,
+            previous_stock=previous_stock,
+            current_stock=current_stock,
+            avg_daily_sales=float(avg_daily_map.get(product, 0.0)),
+            delta=delta,
+            company_id=company_id,
+        )
+        return {"ok": True, "product_name": product}
     finally:
         conn.close()
 
@@ -452,10 +571,27 @@ async def upload_purchase_invoice(
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=422, detail=str(exc))
 
+    avg_daily_map = _load_avg_daily_sales_for_notifications(source=None, company_id=company_id)
     conn = connect()
     try:
+        stock_map = get_stock_map(conn, company_id=company_id)
         for line in lines:
-            increment_stock(conn, line.product_name, line.quantity_purchased, company_id=company_id, movement_reason="Purchase")
+            product = normalize_product_name(line.product_name)
+            previous_stock = stock_map.get(product)
+            increment_stock(conn, product, line.quantity_purchased, company_id=company_id, movement_reason="Purchase")
+            current_stock = (int(previous_stock) if previous_stock is not None else 0) + int(line.quantity_purchased)
+            if current_stock < 0:
+                current_stock = 0
+            _emit_inventory_notifications(
+                conn=conn,
+                product_name=product,
+                previous_stock=previous_stock,
+                current_stock=current_stock,
+                avg_daily_sales=float(avg_daily_map.get(product, 0.0)),
+                delta=int(current_stock) - (int(previous_stock) if previous_stock is not None else 0),
+                company_id=company_id,
+            )
+            stock_map[product] = current_stock
         return {"ok": True, "lines_applied": len(lines)}
     finally:
         conn.close()
@@ -549,7 +685,12 @@ def get_inventory_status(
         stock = stock_map.get(product)
         cost_per_unit = cost_map.get(product)
         avg = float(avg_daily.get(product, 0.0))
-        status, days_left = classify_status(stock, avg, warning_days=warning_days, alert_days=alert_days)
+        status, days_left = classify_status(
+            stock,
+            avg,
+            warning_days=warning_days,
+            alert_days=alert_days,
+        )
         advice = advice_for(status)
         suggested_reorder_qty = compute_reorder_suggestion(
             stock,
@@ -656,8 +797,6 @@ def get_inventory_summary(
     - alert:   count(status == 'ALERT')
     - warning: count(status == 'WARNING')
     - safety:  count(status == 'OK')  (healthy)
-    - lead:    count(status == 'OK' AND suggested_reorder_qty > 0)
-              (reorder needed due to lead-time coverage while still healthy)
     """
 
     payload = get_inventory_status(
@@ -674,7 +813,6 @@ def get_inventory_summary(
     alert_count = 0
     warning_count = 0
     ok_count = 0
-    lead_count = 0
 
     for it in items:
         status = str(it.get("status") or "").upper()
@@ -685,19 +823,9 @@ def get_inventory_summary(
         elif status == "OK":
             ok_count += 1
 
-        # LEAD: a healthy product that still needs reorder to cover lead time.
-        if status == "OK":
-            qty = it.get("suggested_reorder_qty")
-            try:
-                if qty is not None and int(qty) > 0:
-                    lead_count += 1
-            except Exception:
-                pass
-
     return {
         "ok": True,
         "source_file": payload.get("source_file"),
-        "lead": int(lead_count),
         "warning": int(warning_count),
         "alert": int(alert_count),
         "safety": int(ok_count),

@@ -43,6 +43,13 @@ class UserRole(str, Enum):
     VIEWER = "viewer"  # Read-only: view dashboards only
 
 
+class NotificationType(str, Enum):
+    """Notification categories."""
+    ALERT = "ALERT"
+    WARNING = "WARNING"
+    INFO = "INFO"
+
+
 class User(Base):
     """User model for authentication and authorization.
     
@@ -266,3 +273,18 @@ class ModelPerformanceLog(Base):
     
     def __repr__(self):
         return f"<ModelPerformanceLog(model='{self.model_type}', version={self.model_version}, mape={self.mape:.2f}%)>"
+
+
+class Notification(Base):
+    """Persisted notification records."""
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_name = Column(String(255), nullable=True, index=True)
+    message = Column(Text, nullable=False)
+    type = Column(SQLEnum(NotificationType), default=NotificationType.INFO, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False, index=True)
+    is_read = Column(Boolean, default=False, nullable=False)
+
+    def __repr__(self):
+        return f"<Notification(id={self.id}, type='{self.type}', is_read={self.is_read})>"

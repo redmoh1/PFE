@@ -1,32 +1,28 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Bell, Check, ExternalLink } from 'lucide-react';
+import { Bell, Check } from 'lucide-react';
 import { useAuthFetch } from '../store/AuthContext';
 
 type NotificationType = 'ALERT' | 'WARNING' | 'INFO';
 
 type NotificationItem = {
-  id: string;
-  type: NotificationType;
-  product?: string | null;
+  id: number;
+  product_name?: string | null;
   message: string;
-  severity: number;
+  type: NotificationType;
   created_at: string;
-  read: boolean;
-  meta?: any;
+  is_read: boolean;
 };
 
 type NotificationsResponse = {
   ok: boolean;
-  badge_count?: number;
-  unread_risk_count?: number;
   unread_count: number;
   count: number;
   items: NotificationItem[];
 };
 
 type Props = {
-  onNavigate: (page: string) => void;
-  currentPage: string;
+  onNavigate?: (page: string) => void;
+  currentPage?: string;
 };
 
 const typePill = (t: NotificationType) => {
@@ -40,10 +36,17 @@ const typePill = (t: NotificationType) => {
   }
 };
 
-export const NotificationBell: React.FC<Props> = ({ onNavigate, currentPage }) => {
+const formatDate = (value: string) => {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString();
+};
+
+export const NotificationBell: React.FC<Props> = () => {
   const authFetch = useAuthFetch();
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<NotificationItem[]>([]);
+  const [badgeCount, setBadgeCount] = useState(0);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -52,21 +55,23 @@ export const NotificationBell: React.FC<Props> = ({ onNavigate, currentPage }) =
   const load = async () => {
     setIsLoading(true);
     try {
-      const res = await authFetch('/notifications?include_info=true&info_scope=UNKNOWN&limit=50', { cache: 'no-store' });
+      const res = await authFetch('/notifications?limit=50', { cache: 'no-store' });
       if (!res.ok) {
         const text = await res.text();
         console.error('[NotificationBell] /notifications failed', { status: res.status, body: text?.slice(0, 300) });
         setItems([]);
+        setBadgeCount(0);
         setUnreadCount(0);
         return;
       }
       const payload = (await res.json()) as NotificationsResponse;
       setItems(payload.items || []);
-      // UX: badge is ALERT+WARNING unread (single source of truth from backend)
-      const badge = Number(payload.badge_count ?? payload.unread_risk_count ?? payload.unread_count ?? 0);
-      setUnreadCount(Number.isFinite(badge) ? badge : 0);
+      const unread = Number(payload.unread_count ?? 0);
+      setBadgeCount(Number.isFinite(unread) ? unread : 0);
+      setUnreadCount(Number.isFinite(unread) ? unread : 0);
     } catch {
       setItems([]);
+      setBadgeCount(0);
       setUnreadCount(0);
     } finally {
       setIsLoading(false);
@@ -103,52 +108,33 @@ export const NotificationBell: React.FC<Props> = ({ onNavigate, currentPage }) =
 
   const sorted = useMemo(() => {
     return [...items].sort((a, b) => {
-      if (Number(a.read) !== Number(b.read)) return a.read ? 1 : -1;
-      return (b.severity || 1) - (a.severity || 1);
+      if (Number(a.is_read) !== Number(b.is_read)) return a.is_read ? 1 : -1;
+      const da = new Date(a.created_at).getTime();
+      const db = new Date(b.created_at).getTime();
+      return db - da;
     });
   }, [items]);
 
-  const markRead = async (ids: string[]) => {
-    if (!ids.length) return;
+  const markRead = async (id: number) => {
+    if (!id) return;
     try {
-      await authFetch('/notifications/mark-read', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids }),
+      await authFetch(`/notifications/${id}/read`, {
+        method: 'PUT',
       });
     } catch {
       // best-effort
     }
   };
 
-  const viewNotification = async (n: NotificationItem) => {
-    await markRead([n.id]);
+  const markSingleRead = async (n: NotificationItem) => {
+    if (n.is_read) return;
+    await markRead(n.id);
     await load();
-
-    // User chooses what to open: clicking View navigates.
-    if (currentPage !== 'inventory') {
-      onNavigate('inventory');
-    }
-
-    // Focus the inventory UI without forcing redirects elsewhere.
-    const product = String(n.product || n.meta?.product_name || '').trim();
-    const status = String(n.meta?.status || n.type || '').toUpperCase();
-
-    window.setTimeout(() => {
-      window.dispatchEvent(
-        new CustomEvent('inventory:focus', {
-          detail: {
-            product,
-            status,
-          },
-        })
-      );
-    }, 50);
   };
 
   const markAllRead = async () => {
-    const unread = items.filter((x) => !x.read).map((x) => x.id);
-    await markRead(unread);
+    const unread = items.filter((x) => !x.is_read).map((x) => x.id);
+    await Promise.all(unread.map((id) => markRead(id)));
     await load();
   };
 
@@ -161,9 +147,9 @@ export const NotificationBell: React.FC<Props> = ({ onNavigate, currentPage }) =
         type="button"
       >
         <Bell size={20} />
-        {unreadCount > 0 && (
+        {badgeCount > 0 && (
           <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1.5 bg-error text-white text-[11px] leading-5 rounded-full text-center font-semibold">
-            {unreadCount > 99 ? '99+' : unreadCount}
+            {badgeCount > 99 ? '99+' : badgeCount}
           </span>
         )}
       </button>
@@ -181,7 +167,7 @@ export const NotificationBell: React.FC<Props> = ({ onNavigate, currentPage }) =
               onClick={markAllRead}
               className="text-xs px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
               type="button"
-              disabled={items.every((x) => x.read)}
+              disabled={items.every((x) => x.is_read)}
               title="Mark all as read"
             >
               <span className="inline-flex items-center gap-1">
@@ -204,29 +190,36 @@ export const NotificationBell: React.FC<Props> = ({ onNavigate, currentPage }) =
             {!isLoading && sorted.map((n) => (
               <div
                 key={n.id}
-                className={`px-4 py-3 border-t border-slate-200 dark:border-slate-800 ${n.read ? 'opacity-70' : ''}`}
+                className={`px-4 py-3 border-t border-slate-200 dark:border-slate-800 ${
+                  n.is_read ? 'opacity-75' : 'bg-slate-50/80 dark:bg-slate-900/40'
+                }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${typePill(n.type)}`}>{n.type}</span>
-                      {n.product && (
-                        <span className="text-xs font-semibold truncate">{n.product}</span>
+                      {n.product_name && (
+                        <span className="text-xs font-semibold truncate">{n.product_name}</span>
                       )}
-                      {!n.read && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">NEW</span>}
+                      {!n.is_read && <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">NEW</span>}
                     </div>
                     <p className="text-sm text-text-secondary dark:text-text-secondaryDark leading-snug">
                       {n.message}
                     </p>
+                    <p className="mt-1 text-[11px] text-text-secondary dark:text-text-secondaryDark">
+                      {formatDate(n.created_at)}
+                    </p>
                   </div>
 
-                  <button
-                    onClick={() => viewNotification(n)}
-                    className="shrink-0 inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-primary text-white hover:opacity-90"
-                    type="button"
-                  >
-                    <ExternalLink size={14} /> View
-                  </button>
+                  {!n.is_read ? (
+                    <button
+                      onClick={() => markSingleRead(n)}
+                      className="shrink-0 inline-flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg bg-primary text-white hover:opacity-90"
+                      type="button"
+                    >
+                      <Check size={14} /> Read
+                    </button>
+                  ) : null}
                 </div>
               </div>
             ))}

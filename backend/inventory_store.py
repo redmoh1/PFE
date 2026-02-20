@@ -718,6 +718,7 @@ def classify_status(
     avg_daily_sales: float,
     warning_days: int = 7,
     alert_days: int = 3,
+    lead_days: Optional[int] = None,
 ) -> Tuple[str, Optional[float]]:
     """Return (status, days_left).
 

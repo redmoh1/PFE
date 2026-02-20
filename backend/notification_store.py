@@ -1,18 +1,13 @@
-"""Notification persistence (read/unread) for the dashboard.
+"""Notification persistence for the dashboard.
 
-We intentionally keep this *minimal*:
-- Notifications themselves are derived from existing inventory status calculations.
-- This module only persists read-state in SQLite.
-
-Tables:
-- notifications_read: one row per (company_id, notification_id) that was marked read.
+Stores notifications as records in SQLite with read/unread state.
 """
 
 from __future__ import annotations
 
 import sqlite3
 from datetime import datetime, timezone
-from typing import Iterable, Set, Optional
+from typing import Iterable, List, Dict, Any, Set, Optional
 
 from backend.inventory_store import connect, normalize_company_id
 
@@ -24,52 +19,203 @@ def _utc_now_iso() -> str:
 def init_notifications_db(conn: sqlite3.Connection) -> None:
     conn.execute(
         """
-        CREATE TABLE IF NOT EXISTS notifications_read (
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             company_id TEXT NOT NULL,
-            notification_id TEXT NOT NULL,
-            read_at TEXT NOT NULL,
-            PRIMARY KEY(company_id, notification_id)
+            product_name TEXT,
+            message TEXT NOT NULL,
+            type TEXT NOT NULL,
+            created_at TEXT NOT NULL,
+            is_read INTEGER NOT NULL DEFAULT 0
         )
+        """
+    )
+    conn.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_notifications_company_created
+        ON notifications(company_id, created_at DESC, id DESC)
+        """
+    )
+    conn.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_notifications_company_is_read
+        ON notifications(company_id, is_read)
         """
     )
     conn.commit()
 
 
 def get_read_ids(conn: sqlite3.Connection, ids: Iterable[str], company_id: Optional[str] = None) -> Set[str]:
+    """Backward-compatible helper for legacy callers."""
     init_notifications_db(conn)
     company = normalize_company_id(company_id)
-    id_list = [str(i) for i in ids if i]
-    if not id_list:
+    wanted: List[int] = []
+    for i in ids:
+        try:
+            wanted.append(int(i))
+        except Exception:
+            continue
+    if not wanted:
         return set()
 
-    placeholders = ",".join(["?"] * len(id_list))
+    placeholders = ",".join(["?"] * len(wanted))
     rows = conn.execute(
-        f"SELECT notification_id FROM notifications_read WHERE company_id = ? AND notification_id IN ({placeholders})",
-        [company, *id_list],
+        f"SELECT id FROM notifications WHERE company_id = ? AND is_read = 1 AND id IN ({placeholders})",
+        [company, *wanted],
     ).fetchall()
     return {str(r[0]) for r in rows}
 
 
 def mark_read(conn: sqlite3.Connection, ids: Iterable[str], company_id: Optional[str] = None) -> int:
+    """Backward-compatible helper for legacy callers."""
+    return mark_notifications_read(conn, ids=ids, company_id=company_id)
+
+
+def create_notification(
+    conn: sqlite3.Connection,
+    *,
+    product_name: Optional[str],
+    message: str,
+    type: str,
+    company_id: Optional[str] = None,
+) -> Dict[str, Any]:
     init_notifications_db(conn)
     company = normalize_company_id(company_id)
-    now = _utc_now_iso()
-    id_list = [str(i) for i in ids if i]
-    if not id_list:
+    created_at = _utc_now_iso()
+    ntype = str(type or "INFO").upper().strip()
+    if ntype not in {"ALERT", "WARNING", "INFO"}:
+        ntype = "INFO"
+
+    cur = conn.execute(
+        """
+        INSERT INTO notifications (company_id, product_name, message, type, created_at, is_read)
+        VALUES (?, ?, ?, ?, ?, 0)
+        """,
+        (
+            company,
+            str(product_name) if product_name else None,
+            str(message),
+            ntype,
+            created_at,
+        ),
+    )
+    conn.commit()
+    new_id = int(cur.lastrowid)
+    return {
+        "id": new_id,
+        "product_name": str(product_name) if product_name else None,
+        "message": str(message),
+        "type": ntype,
+        "created_at": created_at,
+        "is_read": False,
+    }
+
+
+def list_notifications(
+    conn: sqlite3.Connection,
+    *,
+    company_id: Optional[str] = None,
+    limit: int = 100,
+    unread_only: bool = False,
+) -> List[Dict[str, Any]]:
+    init_notifications_db(conn)
+    company = normalize_company_id(company_id)
+    take = max(1, min(int(limit), 500))
+    if unread_only:
+        rows = conn.execute(
+            """
+            SELECT id, product_name, message, type, created_at, is_read
+            FROM notifications
+            WHERE company_id = ? AND is_read = 0
+            ORDER BY created_at DESC, id DESC
+            LIMIT ?
+            """,
+            (company, take),
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            """
+            SELECT id, product_name, message, type, created_at, is_read
+            FROM notifications
+            WHERE company_id = ?
+            ORDER BY created_at DESC, id DESC
+            LIMIT ?
+            """,
+            (company, take),
+        ).fetchall()
+
+    out: List[Dict[str, Any]] = []
+    for r in rows:
+        out.append(
+            {
+                "id": int(r["id"]),
+                "product_name": str(r["product_name"]) if r["product_name"] else None,
+                "message": str(r["message"]),
+                "type": str(r["type"]),
+                "created_at": str(r["created_at"]),
+                "is_read": bool(int(r["is_read"])),
+            }
+        )
+    return out
+
+
+def mark_notification_read(
+    conn: sqlite3.Connection,
+    *,
+    notification_id: int,
+    company_id: Optional[str] = None,
+) -> bool:
+    init_notifications_db(conn)
+    company = normalize_company_id(company_id)
+    cur = conn.execute(
+        """
+        UPDATE notifications
+        SET is_read = 1
+        WHERE company_id = ? AND id = ?
+        """,
+        (company, int(notification_id)),
+    )
+    conn.commit()
+    return int(cur.rowcount or 0) > 0
+
+
+def mark_notifications_read(conn: sqlite3.Connection, ids: Iterable[str], company_id: Optional[str] = None) -> int:
+    init_notifications_db(conn)
+    company = normalize_company_id(company_id)
+    wanted: List[int] = []
+    for i in ids:
+        try:
+            wanted.append(int(i))
+        except Exception:
+            continue
+    if not wanted:
         return 0
 
-    updated = 0
-    for nid in id_list:
-        conn.execute(
-            """
-            INSERT OR REPLACE INTO notifications_read (company_id, notification_id, read_at)
-            VALUES (?, ?, ?)
-            """,
-            (company, nid, now),
-        )
-        updated += 1
+    placeholders = ",".join(["?"] * len(wanted))
+    cur = conn.execute(
+        f"""
+        UPDATE notifications
+        SET is_read = 1
+        WHERE company_id = ? AND id IN ({placeholders})
+        """,
+        [company, *wanted],
+    )
     conn.commit()
-    return updated
+    return int(cur.rowcount or 0)
+
+
+def unread_count(conn: sqlite3.Connection, company_id: Optional[str] = None) -> int:
+    init_notifications_db(conn)
+    company = normalize_company_id(company_id)
+    row = conn.execute(
+        """
+        SELECT COUNT(1) AS c
+        FROM notifications
+        WHERE company_id = ? AND is_read = 0
+        """,
+        (company,),
+    ).fetchone()
+    return int(row["c"] if row else 0)
 
 
 def with_conn():
