@@ -39,7 +39,7 @@ Supported Business Questions:
 3. Product Recommendations: "What products are frequently bought together?"
    - REQUIRES: customer_id or order_id + product field
    
-4. Sentiment Analysis: "What is customer sentiment from reviews?"
+4. Customer Feedback: "What is customer sentiment from reviews?"
    - REQUIRES: text/review field (from separate reviews dataset)
 
 NOT Supported:
@@ -193,7 +193,7 @@ ANALYSIS_REQUIREMENTS: Dict[str, AnalysisRequirement] = {
         min_rows=50  # Need sufficient transactions for pattern mining
     ),
     "sentiment": AnalysisRequirement(
-        name="Sentiment Analysis",
+        name="Customer Feedback",
         description="Analyze customer sentiment from reviews",
         required_fields=[SemanticField.REVIEW_TEXT],
         optional_fields=[SemanticField.RATING, SemanticField.REVIEW_DATE],

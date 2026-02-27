@@ -379,7 +379,7 @@ def delete_rfm_results(company_id: str = "Acme Corp") -> int:
 
 
 # =============================================================================
-# SENTIMENT ANALYSIS PERSISTENCE
+# Customer Feedback PERSISTENCE
 # =============================================================================
 
 def save_sentiment_results(
@@ -388,7 +388,7 @@ def save_sentiment_results(
     analysis_method: str = "textblob",
 ) -> bool:
     """
-    Save sentiment analysis results to database.
+    Save Customer Feedback results to database.
     
     Args:
         sentiment_data: DataFrame with columns: ReviewText, Sentiment/SentimentLabel, 
@@ -478,7 +478,7 @@ def save_sentiment_results(
 
 def get_sentiment_results(company_id: str = "Acme Corp") -> Optional[pd.DataFrame]:
     """
-    Get sentiment analysis results from database.
+    Get Customer Feedback results from database.
     
     Returns:
         DataFrame with sentiment data or None if not found

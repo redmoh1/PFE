@@ -3,7 +3,7 @@ Background task management for heavy ML operations.
 
 FEATURES:
 - Async forecasting
-- Async sentiment analysis
+- Async Customer Feedback
 - Task status tracking
 - Result caching
 
@@ -149,7 +149,7 @@ async def run_forecast_async(
 
 
 # -------------------------------------------------
-# Background Task: Sentiment Analysis
+# Background Task: Customer Feedback
 # -------------------------------------------------
 async def run_sentiment_async(
     task_id: str,
@@ -157,7 +157,7 @@ async def run_sentiment_async(
     company_name: str,
     use_arabic: bool = True
 ):
-    """Run sentiment analysis in background.
+    """Run Customer Feedback in background.
     
     Args:
         task_id: Unique task identifier

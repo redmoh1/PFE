@@ -1,6 +1,6 @@
 # 🚀 PROJECT IMPROVEMENTS DOCUMENTATION
 
-## Intelligent Sales Analytics and Forecasting System - Enhanced Version
+## Intelligent Sales Overview and Forecasting System - Enhanced Version
 
 **Date:** January 28, 2026  
 **Version:** 2.0 (Production-Ready)
@@ -69,7 +69,7 @@ python src/03_forecasting_prophet.py "Acme Corp" 6
 
 ---
 
-### 2️⃣ **ARABIC SENTIMENT ANALYSIS** ⭐⭐⭐
+### 2️⃣ **ARABIC Customer Feedback** ⭐⭐⭐
 
 **Problem:** TextBlob performs poorly on Arabic text (designed for English).
 
@@ -331,7 +331,7 @@ python src/ml_lifecycle/monitor_model.py "Acme Corp"
 
 1. **Background Tasks:**
    - Forecasting runs asynchronously
-   - Sentiment analysis runs in background
+   - Customer Feedback runs in background
    - Task status tracking
    - Result caching in database
 
@@ -439,7 +439,7 @@ python backend/init_db.py
 # Train Prophet forecast model
 python src/ml_lifecycle/train_forecast_prophet.py "Acme Corp"
 
-# Run sentiment analysis (Arabic)
+# Run Customer Feedback (Arabic)
 python src/06_sentiment_arabic.py "Acme Corp"
 ```
 
@@ -491,7 +491,7 @@ curl -X POST http://localhost:8000/api/auth/login \
 - [ ] Verify trend decomposition plots
 - [ ] Check confidence intervals
 
-### Sentiment Analysis:
+### Customer Feedback:
 - [ ] Analyze Arabic reviews
 - [ ] Verify confidence scores
 - [ ] Check language detection

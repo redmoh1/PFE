@@ -1,5 +1,5 @@
 # 📊 نظام ذكي لتحليل وتنبؤ المبيعات
-**Intelligent Sales Analytics and Forecasting System**
+**Intelligent Sales Overview and Forecasting System**
 
 ---
 
@@ -42,7 +42,7 @@
 │  - التنبؤ بالمبيعات (Forecasting)                     │
 │  - تحليل RFM (Customer Segmentation)                  │
 │  - التوصيات (Market Basket Analysis)                  │
-│  - تحليل المشاعر (Sentiment Analysis)                 │
+│  - تحليل المشاعر (Customer Feedback)                 │
 └─────────────────────────────────────────────────────────┘
         ↑
         │ (قراءة/كتابة)
@@ -377,11 +377,11 @@ C003       | 20      | 8         | 2000     | 4     | 4     | 4     | Loyal
 
 ---
 
-### 6️⃣ تحليل المشاعر (Sentiment Analysis)
+### 6️⃣ تحليل المشاعر (Customer Feedback)
 
 **الغرض:** فهم رأي العملاء من خلال تقييماتهم
 
-**الخوارزمية: TextBlob Sentiment Analysis**
+**الخوارزمية: TextBlob Customer Feedback**
 
 ```
 TextBlob تحلل النصوص عبر:
@@ -828,7 +828,7 @@ pytest tests/
 2) **التنبؤ بالمستقبل (Forecasting)**: ماذا سيحدث في الشهر القادم؟ هل سننخفض؟ هل نحتاج حملة تسويق؟
 3) **تقسيم العملاء (Segmentation)**: من هم العملاء الأهم؟ من على وشك المغادرة؟
 4) **توصيات منتجات (Recommendations)**: ما المنتجات التي تُشترى معًا؟ كيف نعمل Cross-sell؟
-5) **تحليل مشاعر (Sentiment Analysis)**: هل العملاء راضون أم غاضبون؟ على ماذا يشتكون؟
+5) **تحليل مشاعر (Customer Feedback)**: هل العملاء راضون أم غاضبون؟ على ماذا يشتكون؟
 6) **تنبيهات استباقية (Proactive Alerts)**: بدل أن تراقب أنت لوحة التحكم كل يوم، النظام يخبرك: “انتبه! هناك هبوط في الإيرادات” أو “التوقعات أقل من الهدف”.
 
 إذن، المشروع يحل مشكلة “تحويل البيانات الخام إلى قرارات”.
@@ -1447,7 +1447,7 @@ Async يسمح بانتظار نتيجة بدون إيقاف الـ UI.
 نص الأسطر التي سنشرحها (كما هي):
 
 ```python
-"""FastAPI backend for Intelligent Sales Analytics Dashboard.
+"""FastAPI backend for Intelligent Sales Overview Dashboard.
 
 Exposes data endpoints for the React frontend to consume.
 Run with: uvicorn backend.main:app --reload
@@ -1610,7 +1610,7 @@ DEMO_PASSWORDS = {
 
 السطر:
 
-`"""FastAPI backend for Intelligent Sales Analytics Dashboard.`
+`"""FastAPI backend for Intelligent Sales Overview Dashboard.`
 
 **ماذا يعني؟**
 
@@ -2309,8 +2309,8 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
 
 ```python
 app = FastAPI(
-      title="Sales Analytics API",
-      description="Backend API for Intelligent Sales Analytics Dashboard",
+      title="Sales Overview API",
+      description="Backend API for Intelligent Sales Overview Dashboard",
       version="1.0.0",
 )
 ```
@@ -7117,7 +7117,7 @@ Invoke-WebRequest -Uri "http://localhost:8000/api/recommendations?limit=5" -Head
 
 ---
 
-## ملحق 13: Sentiment Analysis (تحليل مشاعر العملاء) — (`src/06_sentiment.py` + `src/06_sentiment_arabic.py`) وربطه بـ `/api/sentiment`
+## ملحق 13: Customer Feedback (تحليل مشاعر العملاء) — (`src/06_sentiment.py` + `src/06_sentiment_arabic.py`) وربطه بـ `/api/sentiment`
 
 هذا الملحق يشرح كيف النظام يحول “نصوص تقييمات العملاء” إلى:
 
@@ -8324,7 +8324,7 @@ $$y = a \cdot MonthIndex + b$$
 `backend/background_tasks.py` مصمم لتشغيل عمليتين ثقيلتين:
 
 1) Forecasting
-2) Sentiment Analysis
+2) Customer Feedback
 
 #### 1) Task Registry
 
@@ -8529,7 +8529,7 @@ $$y = a \cdot MonthIndex + b$$
 - إذا لم يكن المستخدم authenticated → يعرض صفحة `Auth.tsx`.
 - إذا authenticated → يعرض `Layout.tsx` ويغيّر `currentPage` بين:
   - Dashboard
-  - Sales Analytics
+  - Sales Overview
   - Forecasting
   - Segmentation
   - Recommendations
@@ -9162,7 +9162,7 @@ npm run dev
 - Forecasting: يعتمد غالبًا على `/api/monthly-sales`
 - Segmentation: يعتمد على `/api/segmentation`
 - Recommendations: يعتمد على `/api/recommendations`
-- Sales Analytics: يعتمد على `/api/top-products` و`/api/top-cities`
+- Sales Overview: يعتمد على `/api/top-products` و`/api/top-cities`
 
 ---
 

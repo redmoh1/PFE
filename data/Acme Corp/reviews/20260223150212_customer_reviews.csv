@@ -1,0 +1,9 @@
+CustomerID,ProductID,ReviewText,ReviewDate
+C001,P01,The laptop is excellent and very fast. I am very satisfied.,2024-01-08
+C002,P04,Good sound quality but the headphones are a bit expensive.,2024-01-12
+C003,P05,The monitor has great resolution and colors.,2024-02-05
+C001,P04,The headphones stopped working after a week. Very disappointed.,2024-03-18
+C004,P03,Keyboard is comfortable and works perfectly.,2024-03-22
+C005,P01,This laptop is powerful and worth the price.,2024-04-03
+C006,P04,Average quality. Not bad but not great.,2024-04-20
+C007,P01,Absolutely amazing performance. Best laptop I ever bought.,2024-05-05

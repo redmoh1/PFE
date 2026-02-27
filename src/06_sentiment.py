@@ -1,5 +1,5 @@
 """
-Sales Intelligence Project - Phase 6: Customer Sentiment Analysis
+Sales Intelligence Project - Phase 6: Customer Customer Feedback
 NLP-based analysis of customer reviews.
 
 =============================================================================
@@ -11,7 +11,7 @@ column names, making it work with different data schemas.
 =============================================================================
 PROBLEM #4 FIX: Pipeline Rigidity  
 =============================================================================
-Sentiment Analysis REQUIRES review text. If the dataset doesn't have text
+Customer Feedback REQUIRES review text. If the dataset doesn't have text
 reviews, this analysis will gracefully skip.
 The pipeline controller checks for REVIEW_TEXT availability before calling
 this module.
@@ -73,9 +73,9 @@ except ImportError:
 
 def resolve_sentiment_columns(df: pd.DataFrame) -> Dict[str, Optional[str]]:
     """
-    Resolve required columns for sentiment analysis.
+    Resolve required columns for Customer Feedback.
     
-    Sentiment Analysis requires:
+    Customer Feedback requires:
     - review_text column (REVIEW_TEXT) - for text analysis
     - rating column (RATING) - optional, for validation
     
@@ -193,7 +193,7 @@ def detect_language(text: str) -> str:
 
 
 # -------------------------------------------------
-# Sentiment Analysis
+# Customer Feedback
 # -------------------------------------------------
 
 # Arabic sentiment words (common positive/negative terms)
@@ -408,7 +408,7 @@ def generate_summary(df: pd.DataFrame) -> Dict:
 
 def generate_visualizations(df: pd.DataFrame, summary: Dict):
     """
-    Generate sentiment analysis visualizations.
+    Generate Customer Feedback visualizations.
     """
     try:
         import matplotlib.pyplot as plt
@@ -458,10 +458,10 @@ def generate_visualizations(df: pd.DataFrame, summary: Dict):
 
 
 def main():
-    """Main sentiment analysis pipeline."""
+    """Main Customer Feedback pipeline."""
     try:
         logger.info("=" * 70)
-        logger.info("Phase 6: Customer Sentiment Analysis")
+        logger.info("Phase 6: Customer Customer Feedback")
         logger.info("=" * 70)
         
         # Find reviews file
@@ -507,14 +507,14 @@ def main():
         logger.info(f"\nSentiment results saved to {output_path} ({len(df)} reviews, {len(df.columns)} columns)")
         
         logger.info("=" * 70)
-        logger.info("Phase 6: Sentiment Analysis Completed Successfully")
+        logger.info("Phase 6: Customer Feedback Completed Successfully")
         logger.info("=" * 70)
         logger.info(f"\nOutputs:")
         logger.info(f"  - Results: {output_path}")
         logger.info(f"  - Plots:   {PLOTS_DIR}/")
         
     except Exception as e:
-        logger.error(f"Sentiment analysis failed: {e}")
+        logger.error(f"Customer Feedback failed: {e}")
         import traceback
         logger.error(traceback.format_exc())
         sys.exit(1)

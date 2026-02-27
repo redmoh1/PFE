@@ -203,7 +203,7 @@ const SalesAnalytics: React.FC = () => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
-        <h2 className="text-2xl font-bold tracking-tight">Sales Analytics</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Sales Overview</h2>
         <p className="text-text-secondary">Granular breakdown of revenue by product, category, and region.</p>
         <div className="mt-2 flex items-start gap-2 text-xs text-text-secondary dark:text-text-secondaryDark max-w-2xl">
           <Info size={14} className="mt-0.5 text-primary/80" />

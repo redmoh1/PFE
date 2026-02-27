@@ -92,7 +92,7 @@ SECURITY_CONFIG = {
 # This addresses Problem #1: Conceptual & Logical Issues
 
 ANALYTICAL_SCOPE = {
-    "system_name": "Intelligent Sales Analytics and Forecasting System",
+    "system_name": "Intelligent Sales Overview and Forecasting System",
     "version": "1.0.0",
     
     # What type of data this system is designed for

@@ -1,15 +1,15 @@
-# Intelligent Sales Analytics and Forecasting System
+# Intelligent Sales Overview and Forecasting System
 
 ## Overview
 
 This is a complete sales intelligence platform that brings together data analytics, machine learning, and modern web technologies. The system is designed to help businesses understand their sales patterns, predict future trends, and make data-driven decisions.
 
 **🎯 Target Market:** MENA SME Retail Analytics  
-**💎 Killer Feature:** End-to-end sales analytics + forecasting
+**💎 Killer Feature:** End-to-end Sales Overview + forecasting
 
 The project consists of three main components:
 
-- **Python Backend**: Handles data processing, sales forecasting, sentiment analysis, and product recommendations using FastAPI
+- **Python Backend**: Handles data processing, sales forecasting, Customer Feedback, and product recommendations using FastAPI
 - **React Frontend**: A modern interactive dashboard built with TypeScript and Vite for data visualization
 - **Machine Learning Pipeline**: Prophet-based forecasting with full lifecycle including training, evaluation, prediction, and retraining capabilities
 
@@ -78,7 +78,7 @@ Sales_Intelligence_Project/
 │   ├── 03_forecasting.py       # Sales forecasting
 │   ├── 04_rfm.py               # RFM customer segmentation
 │   ├── 05_recommendation.py    # Product recommendations
-│   ├── 06_sentiment.py         # Sentiment analysis
+│   ├── 06_sentiment.py         # Customer Feedback
 │   ├── pipeline_controller.py  # Pipeline orchestration
 │   └── ml_lifecycle/           # ML model management
 ├── data/                       # Uploaded datasets
@@ -198,7 +198,7 @@ Here are the available API endpoints:
 | `/api/monthly-sales` | Monthly sales with forecasts | GET |
 | `/api/top-products` | Best selling products | GET |
 | `/api/top-cities` | Top performing cities | GET |
-| `/api/sentiment` | Sentiment analysis summary | GET |
+| `/api/sentiment` | Customer Feedback summary | GET |
 | `/api/recommendations` | Product recommendation rules | GET |
 | `/api/raw-data` | Raw data access | GET |
 | `/api/summary` | Comprehensive summary | GET |
@@ -267,7 +267,7 @@ python src/04_rfm.py
 python src/05_recommendation.py
 ```
 
-### Phase 6: Sentiment Analysis
+### Phase 6: Customer Feedback
 
 ```bash
 python src/06_sentiment.py
@@ -283,7 +283,7 @@ The system generates several output files during processing:
 |------|-------------|
 | `data/cleaned_dataset.csv` | Cleaned and processed data |
 | `data/sales_forecast_future.csv` | Future sales predictions |
-| `data/sentiment_results.csv` | Sentiment analysis results |
+| `data/sentiment_results.csv` | Customer Feedback results |
 | `data/product_recommendations.csv` | Product recommendation rules |
 | `logs/forecast_lifecycle.log` | ML lifecycle logs |
 
@@ -338,9 +338,9 @@ For more detailed information, check these resources:
 
 Here is what this system offers:
 
-- **Sales Analytics**: Key performance indicators, monthly trends, and top product analysis
+- **Sales Overview**: Key performance indicators, monthly trends, and top product analysis
 - **Intelligent Forecasting**: Linear Regression model with complete lifecycle management
-- **Sentiment Analysis**: Customer review classification (positive, neutral, negative)
+- **Customer Feedback**: Customer review classification (positive, neutral, negative)
 - **Product Recommendations**: Association rules (customers who buy X often buy Y)
 - **Customer Segmentation**: RFM analysis for customer categorization
 - **Interactive Dashboard**: Modern interface built with React and TypeScript

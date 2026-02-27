@@ -454,3 +454,198 @@ Outputs:
 2026-02-03 14:31:33,118 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
 2026-02-03 14:31:33,118 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\recommendation.log
 2026-02-03 14:31:33,119 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-02-23 15:59:56,924 - INFO - Schema Resolver loaded successfully
+2026-02-23 15:59:56,924 - INFO - ======================================================================
+2026-02-23 15:59:56,924 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-02-23 15:59:56,924 - INFO - ======================================================================
+2026-02-23 15:59:56,924 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-02-23 15:59:56,924 - INFO - Found data file at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-02-23 15:59:56,924 - INFO - Loaded 307 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-02-23 15:59:56,924 - INFO - Column resolution: order='OrderID', product='Product'
+2026-02-23 15:59:56,924 - INFO - Using columns: OrderID='OrderID', Product='Product'
+2026-02-23 15:59:56,924 - INFO - Validated 307 records for market basket analysis
+2026-02-23 15:59:56,924 - INFO -   Status: Loaded 307 transaction records
+2026-02-23 15:59:56,924 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-02-23 15:59:56,924 - INFO - Analyzing basket composition...
+2026-02-23 15:59:56,924 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-02-23 15:59:56,924 - INFO - Total Orders: 150
+2026-02-23 15:59:56,924 - INFO - Unique Products: 5
+2026-02-23 15:59:56,924 - INFO - Average Basket Size: 2.05 items
+2026-02-23 15:59:56,924 - INFO - Basket Size Range: 1-3 items
+2026-02-23 15:59:56,924 - INFO - Multi-product Orders: 99 (66.0%)
+2026-02-23 15:59:56,924 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-02-23 15:59:56,924 - INFO - Encoding baskets for analysis...
+2026-02-23 15:59:56,924 - INFO - Created basket matrix: 150 orders x 5 products
+2026-02-23 15:59:56,924 - INFO - Matrix sparsity: 59.1%
+2026-02-23 15:59:56,924 - INFO -   Status: Encoded 150 orders with 5 products
+2026-02-23 15:59:56,924 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-02-23 15:59:56,924 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-02-23 15:59:56,940 - INFO - Frequent itemsets found: 25
+2026-02-23 15:59:56,940 - INFO - Support range: 0.0200-0.4467
+2026-02-23 15:59:56,940 - INFO - Generating association rules (min_confidence=0.1)...
+2026-02-23 15:59:56,940 - INFO - Filtered out 57 rules with lift <= 1.0 (no positive correlation)
+2026-02-23 15:59:56,940 - INFO - Generated 3 association rules
+2026-02-23 15:59:56,940 - INFO - Confidence range: 0.3710-0.4340
+2026-02-23 15:59:56,940 - INFO - Lift range: 1.0369-1.0499
+2026-02-23 15:59:56,940 - INFO - Average confidence: 0.4112
+2026-02-23 15:59:56,940 - INFO - Average lift: 1.0456
+2026-02-23 15:59:56,940 - INFO -   Status: Generated 3 rules
+2026-02-23 15:59:56,940 - INFO - 
+[STEP 5/6] Formatting recommendations...
+2026-02-23 15:59:56,940 - INFO -   Status: Formatted 3 rules for output
+2026-02-23 15:59:56,940 - INFO - 
+--- TOP 5 RECOMMENDATIONS ---
+2026-02-23 15:59:56,940 - INFO -   Rule 1: Monitor -> Keyboard (Conf: 43.4%, Lift: 1.05)
+2026-02-23 15:59:56,940 - INFO -   Rule 2: Headphones, Monitor -> Keyboard (Conf: 42.9%, Lift: 1.04)
+2026-02-23 15:59:56,940 - INFO -   Rule 3: Keyboard -> Monitor (Conf: 37.1%, Lift: 1.05)
+2026-02-23 15:59:56,940 - INFO - 
+[STEP 6/6] Generating visualizations and saving results...
+2026-02-23 15:59:56,940 - INFO - Generating rule visualizations...
+2026-02-23 15:59:57,290 - INFO - Confidence-Lift plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rules_confidence_lift.png
+2026-02-23 15:59:57,440 - INFO - Top rules plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\top_rules_by_lift.png
+2026-02-23 15:59:57,791 - INFO - Metrics distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rules_metrics_distribution.png
+2026-02-23 15:59:57,791 - INFO -   Status: Generated 3 visualizations
+2026-02-23 15:59:57,796 - INFO - Recommendation rules saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv (3 rules, 8 columns)
+2026-02-23 15:59:57,796 - INFO - 
+======================================================================
+2026-02-23 15:59:57,796 - INFO - SUCCESS: Phase 5: Market Basket Analysis Completed
+2026-02-23 15:59:57,796 - INFO - ======================================================================
+2026-02-23 15:59:57,796 - INFO - 
+Outputs:
+2026-02-23 15:59:57,796 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-02-23 15:59:57,796 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\recommendation.log
+2026-02-23 15:59:57,796 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-02-23 16:00:24,556 - INFO - Schema Resolver loaded successfully
+2026-02-23 16:00:24,556 - INFO - ======================================================================
+2026-02-23 16:00:24,556 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-02-23 16:00:24,556 - INFO - ======================================================================
+2026-02-23 16:00:24,557 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-02-23 16:00:24,557 - INFO - Found data file at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-02-23 16:00:24,559 - INFO - Loaded 307 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\cleaned_dataset.csv
+2026-02-23 16:00:24,559 - INFO - Column resolution: order='OrderID', product='Product'
+2026-02-23 16:00:24,559 - INFO - Using columns: OrderID='OrderID', Product='Product'
+2026-02-23 16:00:24,560 - INFO - Validated 307 records for market basket analysis
+2026-02-23 16:00:24,560 - INFO -   Status: Loaded 307 transaction records
+2026-02-23 16:00:24,560 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-02-23 16:00:24,560 - INFO - Analyzing basket composition...
+2026-02-23 16:00:24,561 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-02-23 16:00:24,561 - INFO - Total Orders: 150
+2026-02-23 16:00:24,561 - INFO - Unique Products: 5
+2026-02-23 16:00:24,561 - INFO - Average Basket Size: 2.05 items
+2026-02-23 16:00:24,561 - INFO - Basket Size Range: 1-3 items
+2026-02-23 16:00:24,561 - INFO - Multi-product Orders: 99 (66.0%)
+2026-02-23 16:00:24,561 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-02-23 16:00:24,561 - INFO - Encoding baskets for analysis...
+2026-02-23 16:00:24,564 - INFO - Created basket matrix: 150 orders x 5 products
+2026-02-23 16:00:24,565 - INFO - Matrix sparsity: 59.1%
+2026-02-23 16:00:24,565 - INFO -   Status: Encoded 150 orders with 5 products
+2026-02-23 16:00:24,565 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-02-23 16:00:24,565 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-02-23 16:00:24,567 - INFO - Frequent itemsets found: 25
+2026-02-23 16:00:24,567 - INFO - Support range: 0.0200-0.4467
+2026-02-23 16:00:24,567 - INFO - Generating association rules (min_confidence=0.1)...
+2026-02-23 16:00:24,569 - INFO - Filtered out 57 rules with lift <= 1.0 (no positive correlation)
+2026-02-23 16:00:24,570 - INFO - Generated 3 association rules
+2026-02-23 16:00:24,570 - INFO - Confidence range: 0.3710-0.4340
+2026-02-23 16:00:24,570 - INFO - Lift range: 1.0369-1.0499
+2026-02-23 16:00:24,570 - INFO - Average confidence: 0.4112
+2026-02-23 16:00:24,570 - INFO - Average lift: 1.0456
+2026-02-23 16:00:24,570 - INFO -   Status: Generated 3 rules
+2026-02-23 16:00:24,570 - INFO - 
+[STEP 5/6] Formatting recommendations...
+2026-02-23 16:00:24,570 - INFO -   Status: Formatted 3 rules for output
+2026-02-23 16:00:24,570 - INFO - 
+--- TOP 5 RECOMMENDATIONS ---
+2026-02-23 16:00:24,572 - INFO -   Rule 1: Monitor -> Keyboard (Conf: 43.4%, Lift: 1.05)
+2026-02-23 16:00:24,572 - INFO -   Rule 2: Headphones, Monitor -> Keyboard (Conf: 42.9%, Lift: 1.04)
+2026-02-23 16:00:24,572 - INFO -   Rule 3: Keyboard -> Monitor (Conf: 37.1%, Lift: 1.05)
+2026-02-23 16:00:24,572 - INFO - 
+[STEP 6/6] Generating visualizations and saving results...
+2026-02-23 16:00:24,572 - INFO - Generating rule visualizations...
+2026-02-23 16:00:24,897 - INFO - Confidence-Lift plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rules_confidence_lift.png
+2026-02-23 16:00:25,064 - INFO - Top rules plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\top_rules_by_lift.png
+2026-02-23 16:00:25,414 - INFO - Metrics distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rules_metrics_distribution.png
+2026-02-23 16:00:25,414 - INFO -   Status: Generated 3 visualizations
+2026-02-23 16:00:25,414 - INFO - Recommendation rules saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv (3 rules, 8 columns)
+2026-02-23 16:00:25,414 - INFO - 
+======================================================================
+2026-02-23 16:00:25,414 - INFO - SUCCESS: Phase 5: Market Basket Analysis Completed
+2026-02-23 16:00:25,414 - INFO - ======================================================================
+2026-02-23 16:00:25,414 - INFO - 
+Outputs:
+2026-02-23 16:00:25,414 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-02-23 16:00:25,414 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\recommendation.log
+2026-02-23 16:00:25,414 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/
+2026-02-23 16:01:56,188 - INFO - Schema Resolver loaded successfully
+2026-02-23 16:01:56,188 - INFO - ======================================================================
+2026-02-23 16:01:56,188 - INFO - Phase 5: Market Basket Analysis & Product Recommendations
+2026-02-23 16:01:56,188 - INFO - ======================================================================
+2026-02-23 16:01:56,188 - INFO - 
+[STEP 1/6] Loading and validating transaction data...
+2026-02-23 16:01:56,188 - INFO - Found data file at: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv
+2026-02-23 16:01:56,191 - INFO - Loaded 307 records from C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\sales.csv
+2026-02-23 16:01:56,191 - INFO - Column resolution: order='OrderID', product='Product'
+2026-02-23 16:01:56,191 - INFO - Using columns: OrderID='OrderID', Product='Product'
+2026-02-23 16:01:56,192 - INFO - Validated 307 records for market basket analysis
+2026-02-23 16:01:56,192 - INFO -   Status: Loaded 307 transaction records
+2026-02-23 16:01:56,192 - INFO - 
+[STEP 2/6] Analyzing basket composition...
+2026-02-23 16:01:56,192 - INFO - Analyzing basket composition...
+2026-02-23 16:01:56,193 - INFO - --- BASKET COMPOSITION STATISTICS ---
+2026-02-23 16:01:56,193 - INFO - Total Orders: 150
+2026-02-23 16:01:56,193 - INFO - Unique Products: 5
+2026-02-23 16:01:56,193 - INFO - Average Basket Size: 2.05 items
+2026-02-23 16:01:56,193 - INFO - Basket Size Range: 1-3 items
+2026-02-23 16:01:56,193 - INFO - Multi-product Orders: 99 (66.0%)
+2026-02-23 16:01:56,193 - INFO - 
+[STEP 3/6] Encoding baskets for Apriori...
+2026-02-23 16:01:56,193 - INFO - Encoding baskets for analysis...
+2026-02-23 16:01:56,195 - INFO - Created basket matrix: 150 orders x 5 products
+2026-02-23 16:01:56,196 - INFO - Matrix sparsity: 59.1%
+2026-02-23 16:01:56,196 - INFO -   Status: Encoded 150 orders with 5 products
+2026-02-23 16:01:56,196 - INFO - 
+[STEP 4/6] Mining association rules...
+2026-02-23 16:01:56,196 - INFO - Mining frequent itemsets (min_support=0.01)...
+2026-02-23 16:01:56,198 - INFO - Frequent itemsets found: 25
+2026-02-23 16:01:56,198 - INFO - Support range: 0.0200-0.4467
+2026-02-23 16:01:56,198 - INFO - Generating association rules (min_confidence=0.1)...
+2026-02-23 16:01:56,199 - INFO - Filtered out 57 rules with lift <= 1.0 (no positive correlation)
+2026-02-23 16:01:56,201 - INFO - Generated 3 association rules
+2026-02-23 16:01:56,201 - INFO - Confidence range: 0.3710-0.4340
+2026-02-23 16:01:56,202 - INFO - Lift range: 1.0369-1.0499
+2026-02-23 16:01:56,202 - INFO - Average confidence: 0.4112
+2026-02-23 16:01:56,202 - INFO - Average lift: 1.0456
+2026-02-23 16:01:56,202 - INFO -   Status: Generated 3 rules
+2026-02-23 16:01:56,202 - INFO - 
+[STEP 5/6] Formatting recommendations...
+2026-02-23 16:01:56,204 - INFO -   Status: Formatted 3 rules for output
+2026-02-23 16:01:56,204 - INFO - 
+--- TOP 5 RECOMMENDATIONS ---
+2026-02-23 16:01:56,204 - INFO -   Rule 1: Monitor -> Keyboard (Conf: 43.4%, Lift: 1.05)
+2026-02-23 16:01:56,204 - INFO -   Rule 2: Headphones, Monitor -> Keyboard (Conf: 42.9%, Lift: 1.04)
+2026-02-23 16:01:56,204 - INFO -   Rule 3: Keyboard -> Monitor (Conf: 37.1%, Lift: 1.05)
+2026-02-23 16:01:56,204 - INFO - 
+[STEP 6/6] Generating visualizations and saving results...
+2026-02-23 16:01:56,204 - INFO - Generating rule visualizations...
+2026-02-23 16:01:56,574 - INFO - Confidence-Lift plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rules_confidence_lift.png
+2026-02-23 16:01:56,742 - INFO - Top rules plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\top_rules_by_lift.png
+2026-02-23 16:01:57,085 - INFO - Metrics distribution plot saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots\rules_metrics_distribution.png
+2026-02-23 16:01:57,085 - INFO -   Status: Generated 3 visualizations
+2026-02-23 16:01:57,085 - INFO - Recommendation rules saved to C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv (3 rules, 8 columns)
+2026-02-23 16:01:57,101 - INFO - 
+======================================================================
+2026-02-23 16:01:57,101 - INFO - SUCCESS: Phase 5: Market Basket Analysis Completed
+2026-02-23 16:01:57,101 - INFO - ======================================================================
+2026-02-23 16:01:57,101 - INFO - 
+Outputs:
+2026-02-23 16:01:57,101 - INFO -   - Results: C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\data\product_recommendations.csv
+2026-02-23 16:01:57,101 - INFO -   - Logs:    C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\logs\recommendation.log
+2026-02-23 16:01:57,101 - INFO -   - Plots:   C:\Users\DELL\Desktop\New folder\Sales_Intelligence_Project\output\plots/

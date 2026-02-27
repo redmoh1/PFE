@@ -58,13 +58,13 @@ logger = logging.getLogger(__name__)
 # FastAPI App Configuration
 # -------------------------------------------------
 app = FastAPI(
-    title="Sales Analytics API v2.0",
+    title="Sales Overview API v2.0",
     description="""
-    Enhanced Sales Analytics API with:
+    Enhanced Sales Overview API with:
     - JWT Authentication
     - Role-based Access Control
     - Prophet Forecasting
-    - Arabic Sentiment Analysis
+    - Arabic Customer Feedback
     - Model Explainability
     - Background Tasks
     """,
@@ -98,7 +98,7 @@ app.include_router(auth_router)
 @app.on_event("startup")
 async def startup_event():
     """Initialize database and setup on startup."""
-    logger.info("Starting Sales Analytics API v2.0...")
+    logger.info("Starting Sales Overview API v2.0...")
     init_sqlalchemy_db()
     logger.info("Database initialized successfully")
 
@@ -122,12 +122,12 @@ class ForecastResponse(BaseModel):
 
 
 class SentimentRequest(BaseModel):
-    """Sentiment analysis request."""
+    """Customer Feedback request."""
     use_arabic_model: bool = True
 
 
 class SentimentSummary(BaseModel):
-    """Sentiment analysis summary."""
+    """Customer Feedback summary."""
     total_reviews: int
     positive: int
     neutral: int
@@ -165,11 +165,11 @@ def root():
     return {
         "status": "healthy",
         "version": "2.0.0",
-        "message": "Sales Analytics API - Use /docs for documentation",
+        "message": "Sales Overview API - Use /docs for documentation",
         "features": [
             "JWT Authentication",
             "Prophet Forecasting",
-            "Arabic Sentiment Analysis",
+            "Arabic Customer Feedback",
             "Model Explainability",
             "Background Tasks",
         ]
@@ -310,7 +310,7 @@ async def run_sentiment_analysis(
     current_user: User = Depends(require_analyst),
     db: Session = Depends(get_db)
 ):
-    """Run sentiment analysis on company reviews.
+    """Run Customer Feedback on company reviews.
     
     Uses Arabic BERT model for Arabic text, TextBlob for English.
     """
@@ -334,7 +334,7 @@ async def run_sentiment_analysis(
     return {
         "success": True,
         "task_id": task_id,
-        "message": "Sentiment analysis started. Check /api/tasks/{task_id} for status."
+        "message": "Customer Feedback started. Check /api/tasks/{task_id} for status."
     }
 
 
@@ -344,7 +344,7 @@ async def get_sentiment_summary(
     current_user: User = Depends(require_analyst),
     db: Session = Depends(get_db)
 ):
-    """Get sentiment analysis summary for a company."""
+    """Get Customer Feedback summary for a company."""
     check_company_access(current_user, company_id)
     
     # Get sentiment results from database

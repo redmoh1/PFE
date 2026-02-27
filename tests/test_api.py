@@ -113,10 +113,10 @@ class TestProductEndpoints:
 
 
 class TestSentimentEndpoints:
-    """Test sentiment analysis endpoints."""
+    """Test Customer Feedback endpoints."""
     
     def test_sentiment_endpoint(self):
-        """Test sentiment analysis endpoint."""
+        """Test Customer Feedback endpoint."""
         response = client.get("/api/sentiment")
         assert response.status_code in [200, 503]
         

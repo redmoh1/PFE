@@ -807,10 +807,10 @@ def run_full_sales_pipeline(source_file: Optional[Path] = None) -> Dict[str, Any
 
 def run_sentiment_pipeline(source_file: Optional[Path] = None) -> Dict[str, Any]:
     """
-    Run the sentiment analysis pipeline:
+    Run the Customer Feedback pipeline:
     1. Delete old sentiment_results.csv first
     2. Copy source file to canonical location (if provided)
-    3. Run Sentiment Analysis (06_sentiment.py)
+    3. Run Customer Feedback (06_sentiment.py)
     
     Args:
         source_file: Optional path to uploaded reviews file
@@ -849,13 +849,13 @@ def run_sentiment_pipeline(source_file: Optional[Path] = None) -> Dict[str, Any]
                 return results
             results["steps"]["copy_file"] = {"success": True, "source": "existing customer_reviews.csv"}
         
-        # Step 3: Run Sentiment Analysis
+        # Step 3: Run Customer Feedback
         logger.info("[SENTIMENT PIPELINE] Step 3: Running Sentiment (06_sentiment.py)")
         sentiment_result = run_script("06_sentiment.py", timeout=300)
         results["steps"]["sentiment"] = sentiment_result
         
         if not sentiment_result["success"]:
-            logger.warning("[SENTIMENT PIPELINE] Sentiment analysis failed")
+            logger.warning("[SENTIMENT PIPELINE] Customer Feedback failed")
             results["success"] = False
         
         logger.info("=" * 70)

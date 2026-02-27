@@ -1,5 +1,5 @@
 """
-Sales Intelligence Project - Phase 6: Arabic-Aware Sentiment Analysis
+Sales Intelligence Project - Phase 6: Arabic-Aware Customer Feedback
 Upgraded with HuggingFace Transformers for Arabic NLP
 
 WHY THIS UPGRADE:
@@ -92,7 +92,7 @@ def is_arabic(text: str) -> bool:
 
 
 # -------------------------------------------------
-# Arabic Sentiment Analysis (Production)
+# Arabic Customer Feedback (Production)
 # -------------------------------------------------
 class ArabicSentimentAnalyzer:
     """Production-grade Arabic sentiment analyzer using HuggingFace models."""
@@ -183,7 +183,7 @@ class ArabicSentimentAnalyzer:
                 }
         
         except Exception as e:
-            logger.warning(f"Arabic sentiment analysis failed: {e}")
+            logger.warning(f"Arabic Customer Feedback failed: {e}")
             return {
                 "sentiment": "Neutral",
                 "confidence": 0.0,
@@ -196,7 +196,7 @@ class ArabicSentimentAnalyzer:
 # Fallback: TextBlob (English/General)
 # -------------------------------------------------
 def analyze_sentiment_textblob(text: str) -> Dict:
-    """Fallback sentiment analysis using TextBlob (for English text)."""
+    """Fallback Customer Feedback using TextBlob (for English text)."""
     if pd.isna(text) or not str(text).strip():
         return {
             "sentiment": "Neutral",
@@ -241,7 +241,7 @@ def analyze_sentiment_textblob(text: str) -> Dict:
 
 
 # -------------------------------------------------
-# Unified Sentiment Analysis
+# Unified Customer Feedback
 # -------------------------------------------------
 class UnifiedSentimentAnalyzer:
     """Intelligent sentiment analyzer that chooses the right method based on language."""
@@ -291,7 +291,7 @@ def analyze_reviews(company_name: str, use_arabic_model: bool = True) -> pd.Data
         use_arabic_model: Whether to use Arabic model (True) or TextBlob only (False)
         
     Returns:
-        DataFrame with sentiment analysis results
+        DataFrame with Customer Feedback results
     """
     reviews_dir = DATA_DIR / company_name / "reviews"
     
@@ -338,7 +338,7 @@ def analyze_reviews(company_name: str, use_arabic_model: bool = True) -> pd.Data
     df["polarity"] = [r["polarity"] for r in results]
     df["analysis_method"] = [r["method"] for r in results]
     
-    logger.info(f"Sentiment analysis complete. Method distribution:")
+    logger.info(f"Customer Feedback complete. Method distribution:")
     logger.info(df["analysis_method"].value_counts().to_dict())
     
     # Save results
@@ -369,14 +369,14 @@ if __name__ == "__main__":
     company = sys.argv[1] if len(sys.argv) > 1 else "Acme Corp"
     use_arabic = sys.argv[2].lower() != "false" if len(sys.argv) > 2 else True
     
-    logger.info(f"Starting sentiment analysis for {company}")
+    logger.info(f"Starting Customer Feedback for {company}")
     logger.info(f"Arabic model enabled: {use_arabic}")
     
     try:
         results_df = analyze_reviews(company, use_arabic)
         
         print("\n" + "="*70)
-        print("SENTIMENT ANALYSIS COMPLETE")
+        print("Customer Feedback COMPLETE")
         print("="*70)
         print(f"Total Reviews: {len(results_df)}")
         print("\nSentiment Distribution:")
@@ -391,5 +391,5 @@ if __name__ == "__main__":
         print("="*70 + "\n")
         
     except Exception as e:
-        logger.error(f"Sentiment analysis failed: {e}", exc_info=True)
+        logger.error(f"Customer Feedback failed: {e}", exc_info=True)
         sys.exit(1)

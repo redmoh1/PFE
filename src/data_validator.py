@@ -376,7 +376,7 @@ class DataValidator:
             if short_reviews > len(df) * 0.3:
                 warnings.append(
                     f"Many short reviews ({short_reviews}). "
-                    "Sentiment analysis may be less accurate."
+                    "Customer Feedback may be less accurate."
                 )
         
         rating_col = schema_result.get_column(SemanticField.RATING)

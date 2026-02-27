@@ -201,7 +201,7 @@ class RFMResult(Base):
 
 
 class SentimentResult(Base):
-    """Store sentiment analysis results for reviews.
+    """Store Customer Feedback results for reviews.
     
     WHY:
     - Avoid re-analyzing same reviews
@@ -219,7 +219,7 @@ class SentimentResult(Base):
     review_text = Column(Text, nullable=False)
     review_date = Column(DateTime, nullable=True)
     
-    # Sentiment analysis
+    # Customer Feedback
     sentiment = Column(String(20), nullable=False)  # "Positive", "Negative", "Neutral"
     confidence = Column(Float, nullable=False)
     polarity = Column(Float, nullable=False)

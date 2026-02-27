@@ -69,7 +69,7 @@ const AuthPage: React.FC = () => {
 
         <div className="relative z-10">
           <h1 className="text-5xl font-bold text-white leading-tight mb-6">
-            Intelligent Sales Analytics <br /> 
+            Intelligent Sales Overview <br /> 
             <span className="text-slate-500">Built for Enterprise.</span>
           </h1>
           <p className="text-xl text-slate-400 max-w-md leading-relaxed">

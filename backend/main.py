@@ -1,4 +1,4 @@
-"""FastAPI backend for Intelligent Sales Analytics Dashboard.
+"""FastAPI backend for Intelligent Sales Overview Dashboard.
 
 Exposes data endpoints for the React frontend to consume.
 Run with: uvicorn backend.main:app --reload
@@ -388,8 +388,8 @@ def load_preview(file_path: Path) -> Dict[str, Any]:
 
 
 app = FastAPI(
-    title="Sales Analytics API",
-    description="Backend API for Intelligent Sales Analytics Dashboard",
+    title="Sales Overview API",
+    description="Backend API for Intelligent Sales Overview Dashboard",
     version="1.0.0",
 )
 
@@ -908,7 +908,7 @@ def trigger_recommendation_pipeline(sales_file_path: Path) -> bool:
 
 def trigger_sentiment_pipeline(reviews_file_path: Path) -> bool:
     """
-    Trigger NLP sentiment analysis pipeline.
+    Trigger NLP Customer Feedback pipeline.
     Generates sentiment_results.csv from customer reviews.
     
     Args:
@@ -937,7 +937,7 @@ def trigger_sentiment_pipeline(reviews_file_path: Path) -> bool:
             logger.warning("All review texts are empty - cannot analyze sentiment")
             return False
         
-        logger.info(f"Found {len(df)} reviews with text - proceeding with sentiment analysis")
+        logger.info(f"Found {len(df)} reviews with text - proceeding with Customer Feedback")
         
         # Run sentiment pipeline
         import subprocess
@@ -1518,7 +1518,7 @@ def run_full_sales_pipeline(uploaded_file: Path) -> bool:
 
 def run_sentiment_pipeline(uploaded_file: Path) -> bool:
     """
-    Run sentiment analysis pipeline for reviews data:
+    Run Customer Feedback pipeline for reviews data:
     1. Clear sentiment cache first (no stale data)
     2. Copy uploaded file to canonical location (data/customer_reviews.csv)
     3. Run 06_sentiment.py (creates sentiment_results.csv)
@@ -1549,8 +1549,8 @@ def run_sentiment_pipeline(uploaded_file: Path) -> bool:
         shutil.copy2(uploaded_file, canonical_reviews)
         logger.info("[SENTIMENT PIPELINE] ✓ Reviews file copied to canonical location")
         
-        # Step 2: Run Sentiment Analysis (Phase 6)
-        logger.info("[SENTIMENT PIPELINE] Step 2: Running Phase 6 - Sentiment Analysis...")
+        # Step 2: Run Customer Feedback (Phase 6)
+        logger.info("[SENTIMENT PIPELINE] Step 2: Running Phase 6 - Customer Feedback...")
         result = subprocess.run(
             [sys.executable, str(BASE_DIR / "src" / "06_sentiment.py")],
             cwd=str(BASE_DIR),
@@ -1559,9 +1559,9 @@ def run_sentiment_pipeline(uploaded_file: Path) -> bool:
             timeout=300  # NLP can take longer
         )
         if result.returncode != 0:
-            logger.error(f"[SENTIMENT PIPELINE] ✗ Sentiment analysis failed: {result.stderr}")
+            logger.error(f"[SENTIMENT PIPELINE] ✗ Customer Feedback failed: {result.stderr}")
             return False
-        logger.info("[SENTIMENT PIPELINE] ✓ Sentiment analysis completed")
+        logger.info("[SENTIMENT PIPELINE] ✓ Customer Feedback completed")
         
         # Step 3: Reload sentiment data from disk
         logger.info("[SENTIMENT PIPELINE] Step 3: Reloading sentiment data from disk...")
@@ -1606,7 +1606,7 @@ def trigger_pipeline(company_id: str, dataset_type: str, action: str, file_path:
     
     Pipeline Flow:
     - Sales data upload → EDA → Cleaning → RFM → Recommendations
-    - Reviews data upload → Sentiment Analysis
+    - Reviews data upload → Customer Feedback
     - Customers data upload → Copy + Re-run full pipeline if sales exists
     
     CRITICAL: Each upload clears previous results first to ensure no stale data.
@@ -1679,13 +1679,13 @@ def trigger_pipeline(company_id: str, dataset_type: str, action: str, file_path:
     
     # Trigger sentiment pipeline for reviews data
     if dataset_type == "reviews" and file_path and action in ["upload", "replace"]:
-        logger.info(f"[TRIGGER] Triggering Sentiment Analysis Pipeline for {file_path}")
+        logger.info(f"[TRIGGER] Triggering Customer Feedback Pipeline for {file_path}")
         try:
             success = run_sentiment_pipeline(file_path)
             if success:
-                logger.info("[TRIGGER] ✓ Sentiment Analysis Pipeline completed - sentiment results regenerated")
+                logger.info("[TRIGGER] ✓ Customer Feedback Pipeline completed - sentiment results regenerated")
             else:
-                logger.warning("[TRIGGER] ⚠ Sentiment Analysis Pipeline failed - check logs for details")
+                logger.warning("[TRIGGER] ⚠ Customer Feedback Pipeline failed - check logs for details")
         except Exception as e:
             logger.error(f"[TRIGGER] ✗ Error running sentiment pipeline: {e}")
             import traceback
@@ -1876,7 +1876,7 @@ def _filter_raw_sales_df(
 def root():
     """Root endpoint - redirects to API documentation."""
     return {
-        "message": "Sales Analytics API is running",
+        "message": "Sales Overview API is running",
         "version": "1.0.0",
         "status": "operational",
         "data_loaded": df is not None,
@@ -1913,50 +1913,64 @@ async def upload_dataset(
     dataset_type: str = Form(...),
     file: UploadFile = File(...),
 ):
-    company_id = require_company_id(request)
-    dataset_type = dataset_type.lower()
-    if dataset_type not in ALLOWED_DATASET_TYPES:
-        raise HTTPException(status_code=400, detail="Unsupported dataset_type")
+    try:
+        # Ensure metadata table exists (handles restored/migrated DB files).
+        init_db()
 
-    # Use lock to prevent concurrent upload/pipeline race conditions
-    with pipeline_lock(f"upload-{dataset_type}-{company_id}"):
-        target_dir = ensure_company_dir(company_id, dataset_type)
-        safe_name = file.filename.replace(" ", "_")
-        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
-        target_path = target_dir / f"{timestamp}_{safe_name}"
+        company_id = require_company_id(request)
+        dataset_type = dataset_type.lower()
+        if dataset_type not in ALLOWED_DATASET_TYPES:
+            raise HTTPException(status_code=400, detail="Unsupported dataset_type")
 
-        with target_path.open("wb") as fh:
-            fh.write(await file.read())
+        # Use lock to prevent concurrent upload/pipeline race conditions
+        with pipeline_lock(f"upload-{dataset_type}-{company_id}"):
+            target_dir = ensure_company_dir(company_id, dataset_type)
+            safe_name = (file.filename or "upload.csv").replace(" ", "_")
+            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+            target_path = target_dir / f"{timestamp}_{safe_name}"
 
-        # Normalize sales schema to canonical columns for downstream jobs
-        if dataset_type == "sales":
-            try:
-                raw_df = pd.read_csv(target_path)
-                normalized = normalize_sales_dataframe(raw_df)
-                canonical = pd.DataFrame({
-                    "OrderID": raw_df.get("OrderID")
-                    or raw_df.get("id")
-                    or raw_df.get("ID")
-                    or raw_df.get("Order_Id")
-                    or range(1, len(normalized) + 1),
-                    "OrderDate": normalized["__order_date"],
-                    "TotalPrice": normalized["__total_price"],
-                    "ProductID": normalized["__product"],
-                    "City": normalized["__city"],
-                })
-                canonical.to_csv(target_path, index=False)
-                row_count = len(canonical)
-            except Exception as exc:  # noqa: BLE001
-                logger.warning("Failed to normalize uploaded sales file %s: %s", target_path, exc)
+            with target_path.open("wb") as fh:
+                fh.write(await file.read())
+
+            # Normalize sales schema to canonical columns for downstream jobs
+            if dataset_type == "sales":
+                try:
+                    raw_df = pd.read_csv(target_path)
+                    normalized = normalize_sales_dataframe(raw_df)
+                    canonical = pd.DataFrame({
+                        "OrderID": raw_df.get("OrderID")
+                        or raw_df.get("id")
+                        or raw_df.get("ID")
+                        or raw_df.get("Order_Id")
+                        or range(1, len(normalized) + 1),
+                        "OrderDate": normalized["__order_date"],
+                        "TotalPrice": normalized["__total_price"],
+                        "ProductID": normalized["__product"],
+                        "City": normalized["__city"],
+                    })
+                    canonical.to_csv(target_path, index=False)
+                    row_count = len(canonical)
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("Failed to normalize uploaded sales file %s: %s", target_path, exc)
+                    row_count = compute_row_count(target_path)
+            else:
                 row_count = compute_row_count(target_path)
-        else:
-            row_count = compute_row_count(target_path)
 
-        archive_existing(company_id, dataset_type)
-        record = insert_dataset(company_id, dataset_type, safe_name, target_path, row_count)
+            archive_existing(company_id, dataset_type)
+            record = insert_dataset(company_id, dataset_type, safe_name, target_path, row_count)
 
-        trigger_pipeline(company_id, dataset_type, action="upload", file_path=target_path)
-        return record
+            trigger_pipeline(company_id, dataset_type, action="upload", file_path=target_path)
+            return record
+    except HTTPException:
+        raise
+    except Exception as exc:  # noqa: BLE001
+        import traceback
+        logger.error("[UPLOAD] Unhandled error in /api/datasets/upload: %s", exc)
+        logger.error(traceback.format_exc())
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": "Upload failed", "detail": str(exc)},
+        )
 
 
 @app.post("/api/datasets/{dataset_id}/replace", response_model=DatasetMeta, tags=["Datasets"])

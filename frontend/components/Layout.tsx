@@ -44,11 +44,11 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentPage, isDa
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'sales', label: 'Sales Analytics', icon: BarChart3 },
+    { id: 'sales', label: 'Sales Overview', icon: BarChart3 },
     { id: 'forecasting', label: 'Forecasting', icon: TrendingUp },
     { id: 'segmentation', label: 'Segmentation', icon: Users },
     { id: 'recommendations', label: 'Recommendations', icon: Lightbulb },
-    { id: 'sentiment', label: 'Sentiment Analysis', icon: MessageSquare },
+    { id: 'sentiment', label: 'Customer Feedback', icon: MessageSquare },
     { id: 'inventory', label: 'Inventory', icon: Boxes },
     { id: 'divider', type: 'divider' },
     { id: 'upload', label: 'Data Ingestion', icon: Upload },

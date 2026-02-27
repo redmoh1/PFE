@@ -1,6 +1,6 @@
 {
   "name": "InsightPro SaaS Dashboard",
-  "description": "Enterprise-grade intelligent sales analytics, forecasting, and customer behavior platform with ML-driven insights.",
+  "description": "Enterprise-grade intelligent Sales Overview, forecasting, and customer behavior platform with ML-driven insights.",
   "requestFramePermissions": [
     "camera"
   ]

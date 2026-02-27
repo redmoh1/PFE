@@ -195,7 +195,7 @@ const DataUpload: React.FC = () => {
         {[
           { title: 'Sales Activity', file: 'sales.csv', req: 'Required', desc: 'Transaction history, dates, and amounts.' },
           { title: 'Customer List', file: 'customers.csv', req: 'Optional', desc: 'Demographics and profile information.' },
-          { title: 'Product Reviews', file: 'reviews.csv', req: 'Optional', desc: 'Raw text for sentiment analysis.' },
+          { title: 'Product Reviews', file: 'reviews.csv', req: 'Optional', desc: 'Raw text for Customer Feedback.' },
         ].map((item, i) => (
           <div key={i} className="bg-card-light dark:bg-card-dark p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm relative group">
             <div className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm">

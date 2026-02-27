@@ -52,7 +52,7 @@ const Sentiment: React.FC = () => {
         setSentiment(null);
       }
     } catch (e) {
-      console.error('Failed to fetch sentiment analysis:', e);
+      console.error('Failed to fetch Customer Feedback:', e);
       setSentiment(null);
     } finally {
       setLoading(false);
@@ -71,7 +71,7 @@ const Sentiment: React.FC = () => {
         await fetchSentimentAnalysis();
       }
     } catch (e) {
-      console.error('Failed to run sentiment analysis:', e);
+      console.error('Failed to run Customer Feedback:', e);
     } finally {
       setAnalyzing(false);
     }
@@ -167,7 +167,7 @@ const Sentiment: React.FC = () => {
           </div>
           <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-2">No Sentiment Data Available</h3>
           <p className="text-blue-800 dark:text-blue-200 mb-4">
-            Customer sentiment analysis will be displayed here once you upload review data.
+            Customer Customer Feedback will be displayed here once you upload review data.
           </p>
           <p className="text-sm text-blue-700 dark:text-blue-300">
             Upload a CSV with ReviewText or similar column to analyze customer feedback sentiment.

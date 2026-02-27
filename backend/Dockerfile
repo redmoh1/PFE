@@ -24,7 +24,7 @@ RUN python -m pip install --upgrade pip \
     && pip install --no-cache-dir -r /app/backend/requirements.txt \
     && if [ "$INSTALL_FULL" = "true" ]; then pip install --no-cache-dir -r /app/requirements.txt; fi
 
-# --- Download NLTK/TextBlob data for sentiment analysis ---
+# --- Download NLTK/TextBlob data for Customer Feedback ---
 RUN python -m textblob.download_corpora
 
 # --- App code ---

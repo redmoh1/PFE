@@ -109,7 +109,7 @@ class TestRFMCalculations:
 
 
 class TestSentimentAnalysis:
-    """Test sentiment analysis logic."""
+    """Test Customer Feedback logic."""
     
     def test_positive_sentiment(self):
         """Test positive sentiment detection."""
