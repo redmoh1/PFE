@@ -27,6 +27,14 @@ class EmailDeliveryError(RuntimeError):
     """Raised when transactional email delivery fails."""
 
 
+@dataclass(frozen=True)
+class EmailDeliveryResult:
+    """Outcome of an email send attempt."""
+
+    delivery_mode: str
+    delivered_externally: bool
+
+
 def _normalize_smtp_password(host: str, password: str) -> str:
     if host.strip().lower() == "smtp.gmail.com":
         return password.replace(" ", "")
@@ -112,14 +120,14 @@ def build_frontend_url(query_params: Mapping[str, str]) -> str:
     return urlunparse(parsed._replace(query=urlencode(existing_params)))
 
 
-def send_transactional_email(*, recipient_email: str, subject: str, html_body: str, text_body: str) -> None:
+def send_transactional_email(*, recipient_email: str, subject: str, html_body: str, text_body: str) -> EmailDeliveryResult:
     settings = EmailSettings.from_env()
 
     if settings.delivery_mode == "console":
         logger.info("[Email:console] To=%s Subject=%s", recipient_email, subject)
         logger.info("[Email:console] Body:\n%s", text_body)
         _mirror_self_delivery(settings, recipient_email, subject, text_body)
-        return
+        return EmailDeliveryResult(delivery_mode=settings.delivery_mode, delivered_externally=False)
 
     if settings.delivery_mode != "smtp":
         raise EmailDeliveryError(f"Unsupported email delivery mode: {settings.delivery_mode}")
@@ -146,7 +154,7 @@ def send_transactional_email(*, recipient_email: str, subject: str, html_body: s
                 server.send_message(message)
             logger.info("[Email:smtp] To=%s Subject=%s", recipient_email, subject)
             _mirror_self_delivery(settings, recipient_email, subject, text_body)
-            return
+            return EmailDeliveryResult(delivery_mode=settings.delivery_mode, delivered_externally=True)
 
         with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=30) as server:
             server.ehlo()
@@ -159,5 +167,6 @@ def send_transactional_email(*, recipient_email: str, subject: str, html_body: s
             server.send_message(message)
         logger.info("[Email:smtp] To=%s Subject=%s", recipient_email, subject)
         _mirror_self_delivery(settings, recipient_email, subject, text_body)
+        return EmailDeliveryResult(delivery_mode=settings.delivery_mode, delivered_externally=True)
     except OSError as exc:
         raise EmailDeliveryError(f"Failed to send email: {exc}") from exc

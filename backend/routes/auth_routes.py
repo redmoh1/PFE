@@ -33,7 +33,7 @@ from backend.auth import (
     normalize_role,
     verify_password,
 )
-from backend.services.email_service import EmailDeliveryError, build_frontend_url, send_transactional_email
+from backend.services.email_service import EmailDeliveryError, EmailDeliveryResult, build_frontend_url, send_transactional_email
 from backend.services.email_templates import render_email_verification_email, render_password_reset_email
 from src.tenant_paths import ensure_tenant_directories, tenant_scope_dir
 
@@ -310,13 +310,14 @@ def _build_verification_challenge(
     otp_record: Optional[EmailVerificationOTP],
     email_sent: bool,
 ) -> "VerificationChallengeResponse":
+    has_active_otp = otp_record is not None and not bool(getattr(otp_record, "used", False))
     return VerificationChallengeResponse(
         email=email,
         message=message,
         verification_required=True,
         email_sent=email_sent,
-        expires_in=_seconds_until(otp_record.expires_at if email_sent and otp_record is not None else None),
-        resend_available_in=EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS if email_sent and otp_record is not None else 0,
+        expires_in=_seconds_until(otp_record.expires_at if has_active_otp else None),
+        resend_available_in=EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS if has_active_otp else 0,
     )
 
 
@@ -385,14 +386,14 @@ def _issue_verification_otp(db: Session, user: User) -> tuple[EmailVerificationO
     return otp_record, otp_code
 
 
-def _send_verification_email(user: User, company_name: str, otp_code: str) -> None:
+def _send_verification_email(user: User, company_name: str, otp_code: str) -> EmailDeliveryResult:
     html_body, text_body = render_email_verification_email(
         full_name=user.full_name,
         company_name=company_name,
         otp_code=otp_code,
         expires_minutes=EMAIL_VERIFICATION_OTP_MINUTES,
     )
-    send_transactional_email(
+    return send_transactional_email(
         recipient_email=user.email,
         subject="Verify your InsightPro account",
         html_body=html_body,
@@ -458,7 +459,7 @@ def _find_reset_token_record(db: Session, token: str) -> Optional[PasswordResetT
     )
 
 
-def _send_password_reset_email(user: User, raw_token: str) -> None:
+def _send_password_reset_email(user: User, raw_token: str) -> EmailDeliveryResult:
     reset_url = build_frontend_url({
         "auth": "reset-password",
         "token": raw_token,
@@ -469,7 +470,7 @@ def _send_password_reset_email(user: User, raw_token: str) -> None:
         reset_url=reset_url,
         expires_minutes=PASSWORD_RESET_TOKEN_MINUTES,
     )
-    send_transactional_email(
+    return send_transactional_email(
         recipient_email=user.email,
         subject="Reset your InsightPro password",
         html_body=html_body,
@@ -761,22 +762,27 @@ def register_user(
             detail="Registration could not be completed.",
         )
 
+    challenge_otp_record = pending_otp
     email_sent = True
     message = "Registration successful. Enter the verification code sent to your email."
     try:
-        _send_verification_email(new_user, company_name, pending_otp_code)
+        delivery_result = _send_verification_email(new_user, company_name, pending_otp_code)
+        if not delivery_result.delivered_externally:
+            email_sent = False
+            message = "Registration completed, but email delivery is running in console mode. Check backend logs for the verification code or configure SMTP to send real emails."
     except EmailDeliveryError as exc:
         logger.warning("Failed to send verification email to %s: %s", new_user.email, exc)
         pending_otp.used = True
         pending_otp.used_at = _utcnow()
         db.commit()
+        challenge_otp_record = None
         email_sent = False
         message = "Registration completed, but the verification email could not be sent. Use resend to request a new code."
 
     return _build_verification_challenge(
         email=new_user.email,
         message=message,
-        otp_record=pending_otp if email_sent else None,
+        otp_record=challenge_otp_record,
         email_sent=email_sent,
     )
 
@@ -938,22 +944,27 @@ def resend_email_otp(
     db.commit()
     db.refresh(otp_record)
 
+    challenge_otp_record = otp_record
     email_sent = True
     message = "A new verification code has been sent to your email."
     try:
-        _send_verification_email(user, _safe_company_name(user, db) or "your workspace", otp_code)
+        delivery_result = _send_verification_email(user, _safe_company_name(user, db) or "your workspace", otp_code)
+        if not delivery_result.delivered_externally:
+            email_sent = False
+            message = "Email delivery is running in console mode. Check backend logs for the latest verification code or configure SMTP to send real emails."
     except EmailDeliveryError as exc:
         logger.warning("Failed to resend verification email to %s: %s", user.email, exc)
         otp_record.used = True
         otp_record.used_at = _utcnow()
         db.commit()
+        challenge_otp_record = None
         email_sent = False
         message = "We could not send a new verification email right now. Please try again shortly."
 
     return _build_verification_challenge(
         email=user.email,
         message=message,
-        otp_record=otp_record if email_sent else None,
+        otp_record=challenge_otp_record,
         email_sent=email_sent,
     )
 
@@ -984,7 +995,12 @@ def forgot_password(
     db.refresh(token_record)
 
     try:
-        _send_password_reset_email(user, raw_token)
+        delivery_result = _send_password_reset_email(user, raw_token)
+        if not delivery_result.delivered_externally:
+            logger.warning(
+                "Password reset email for %s was rendered in console mode only. Configure SMTP to deliver real emails.",
+                user.email,
+            )
     except EmailDeliveryError as exc:
         logger.warning("Failed to send password reset email to %s: %s", user.email, exc)
         token_record.used = True

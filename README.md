@@ -163,6 +163,8 @@ Note: full mode can be very large (NLP/ML libs).
 
 - If you set `ENVIRONMENT=production` on the backend, you must set `JWT_SECRET_KEY` (required by the backend).
 - If you host the frontend separately (different domain), set backend `CORS_ORIGINS` to your frontend URL.
+- The frontend container now proxies API calls through `API_UPSTREAM`. In local Docker Compose it defaults to `http://backend:8001`, but in hosted environments you should override it to the real backend URL or internal service address exposed by your platform.
+- If you deploy the frontend as static files without the bundled nginx reverse proxy, set `VITE_API_BASE` at build time to your public backend URL so the app does not fall back to same-origin `/api` requests.
 
 ---
 

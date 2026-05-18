@@ -14,6 +14,7 @@ import backend.auth as auth_module
 import backend.routes.auth_routes as auth_routes
 from backend.database.connection import get_db
 from backend.database.models import Base, Branch, Company, EmailVerificationOTP, PasswordResetToken, User
+from backend.services.email_service import EmailDeliveryResult
 from src.tenant_paths import tenant_scope_dir
 
 
@@ -51,15 +52,21 @@ def registration_client(tmp_path, monkeypatch):
     monkeypatch.setattr(
         auth_routes,
         "_send_verification_email",
-        lambda user, company_name, otp_code: sent_verification_messages.append(
-            {"email": user.email, "company_name": company_name, "otp_code": otp_code}
+        lambda user, company_name, otp_code: (
+            sent_verification_messages.append(
+                {"email": user.email, "company_name": company_name, "otp_code": otp_code}
+            )
+            or EmailDeliveryResult(delivery_mode="smtp", delivered_externally=True)
         ),
     )
     monkeypatch.setattr(
         auth_routes,
         "_send_password_reset_email",
-        lambda user, raw_token: sent_reset_messages.append(
-            {"email": user.email, "token": raw_token}
+        lambda user, raw_token: (
+            sent_reset_messages.append(
+                {"email": user.email, "token": raw_token}
+            )
+            or EmailDeliveryResult(delivery_mode="smtp", delivered_externally=True)
         ),
     )
 
@@ -177,6 +184,41 @@ def test_unverified_user_cannot_login_until_otp_verified(registration_client):
     )
     assert login_response.status_code == 403
     assert login_response.json()["detail"] == "Email address is not verified. Please verify your email to continue."
+
+
+def test_register_console_mode_does_not_claim_external_email_delivery(registration_client, monkeypatch):
+    client, session_local, _, _, _, _ = registration_client
+
+    monkeypatch.setattr(
+        auth_routes,
+        "_send_verification_email",
+        lambda user, company_name, otp_code: EmailDeliveryResult(
+            delivery_mode="console",
+            delivered_externally=False,
+        ),
+    )
+
+    payload = {
+        "company_name": "Console Labs",
+        "branch_name": "HQ",
+        "full_name": "Mina Rahal",
+        "email": "mina@console.example",
+        "password": "StrongPass123",
+    }
+
+    response = client.post("/api/auth/register", json=payload)
+    assert response.status_code == 201
+
+    body = response.json()
+    assert body["verification_required"] is True
+    assert body["email_sent"] is False
+    assert "console mode" in body["message"].lower()
+    assert body["expires_in"] > 0
+    assert body["resend_available_in"] == auth_routes.EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS
+
+    with session_local() as db:
+        otp_record = db.query(EmailVerificationOTP).one()
+        assert otp_record.used is False
 
     verify_response = client.post(
         "/api/auth/verify-email",
