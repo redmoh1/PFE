@@ -16,7 +16,9 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Header, Query
+from fastapi import APIRouter, Query, Depends
+
+from backend.auth import get_tenant_scope, TenantScope
 
 
 router = APIRouter(prefix="/alerts", tags=["Alerts"])
@@ -28,18 +30,15 @@ def _utc_now_iso() -> str:
 
 def _active_alerts_impl(
     *,
+    tenant: TenantScope,
     source: Optional[str],
     warning_days: int,
     alert_days: int,
     lead_time_days: int,
     safety_days: int,
-    company_id: Optional[str],
 ) -> Dict[str, Any]:
     # Lazy import avoids circulars.
-    from backend.inventory_store import normalize_company_id
     from backend.routes.inventory_routes import get_inventory_status
-
-    company = normalize_company_id(company_id)
 
     payload = get_inventory_status(
         source=source,
@@ -47,7 +46,7 @@ def _active_alerts_impl(
         alert_days=alert_days,
         lead_time_days=lead_time_days,
         safety_days=safety_days,
-        company_id=company,
+        tenant=tenant,
     )
 
     items: List[Dict[str, Any]] = payload.get("items") or []
@@ -105,13 +104,13 @@ def get_active_alerts(
     alert_days: int = Query(default=3, ge=0, le=365),
     lead_time_days: int = Query(default=7, ge=0, le=365),
     safety_days: int = Query(default=0, ge=0, le=365),
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     return _active_alerts_impl(
+        tenant=tenant,
         source=source,
         warning_days=warning_days,
         alert_days=alert_days,
         lead_time_days=lead_time_days,
         safety_days=safety_days,
-        company_id=company_id,
     )

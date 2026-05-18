@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Header, Query, HTTPException
+from fastapi import APIRouter, Query, HTTPException, Depends
 from pydantic import BaseModel, Field
 
 from backend.notification_store import (
@@ -14,10 +14,18 @@ from backend.notification_store import (
     mark_notifications_read,
     unread_count,
 )
-from backend.inventory_store import normalize_company_id
+from backend.auth import get_tenant_scope, TenantScope
 
 
 router = APIRouter(prefix="/notifications", tags=["Notifications"])
+
+
+def _company_key_from_tenant(tenant: TenantScope) -> str:
+    if getattr(tenant, "company_name", None):
+        return str(tenant.company_name)
+    if int(getattr(tenant, "company_id", 0) or 0) == 1:
+        return "Acme Corp"
+    return str(tenant.company_id)
 
 
 class Notification(BaseModel):
@@ -37,20 +45,22 @@ class MarkReadRequest(BaseModel):
 def list_notifications(
     unread_only: bool = Query(default=False),
     limit: int = Query(default=100, ge=1, le=500),
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
-    company = normalize_company_id(company_id)
+    company = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
     conn = with_conn()
     try:
         items = store_list_notifications(
             conn,
             company_id=company,
+            branch_id=branch_id,
             limit=limit,
             unread_only=unread_only,
         )
         return {
             "ok": True,
-            "unread_count": unread_count(conn, company_id=company),
+            "unread_count": unread_count(conn, company_id=company, branch_id=branch_id),
             "count": len(items),
             "items": items,
         }
@@ -61,15 +71,17 @@ def list_notifications(
 @router.put("/{notification_id}/read", response_model=Dict[str, Any])
 def mark_notification_as_read(
     notification_id: int,
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
-    company = normalize_company_id(company_id)
+    company = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
     conn = with_conn()
     try:
         updated = mark_notification_read(
             conn,
             notification_id=notification_id,
             company_id=company,
+            branch_id=branch_id,
         )
         if not updated:
             raise HTTPException(status_code=404, detail="Notification not found")
@@ -81,13 +93,14 @@ def mark_notification_as_read(
 @router.post("/mark-read", response_model=Dict[str, Any])
 def mark_notifications_read_legacy(
     body: MarkReadRequest,
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     """Backward-compatible bulk mark-as-read endpoint."""
-    company = normalize_company_id(company_id)
+    company = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
     conn = with_conn()
     try:
-        updated = mark_notifications_read(conn, ids=body.ids, company_id=company)
+        updated = mark_notifications_read(conn, ids=body.ids, company_id=company, branch_id=branch_id)
     finally:
         conn.close()
     return {"ok": True, "updated": int(updated)}

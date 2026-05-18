@@ -45,33 +45,6 @@ const SalesAnalytics: React.FC = () => {
   const [previousProductData, setPreviousProductData] = useState<ComparisonDatum[]>([]);
   const [previousCityData, setPreviousCityData] = useState<ComparisonDatum[]>([]);
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 size={40} className="animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-error/10 border border-error/20 rounded-2xl p-6 flex items-start gap-4">
-        <AlertCircle className="text-error flex-shrink-0" size={24} />
-        <div>
-          <h3 className="font-bold text-error mb-1">Data Loading Error</h3>
-          <p className="text-sm text-text-secondary">{error}</p>
-          <button
-            onClick={refreshData}
-            className="mt-3 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition inline-flex items-center gap-2"
-          >
-            <RefreshCw size={16} />
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   const canCompare = Boolean(filters.startDate && filters.endDate);
   const previousRange = useMemo(() => {
     if (!canCompare) return null;
@@ -199,6 +172,33 @@ const SalesAnalytics: React.FC = () => {
     });
     return map;
   }, [cityDataWithComparison, COLORS]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 size={40} className="animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-error/10 border border-error/20 rounded-2xl p-6 flex items-start gap-4">
+        <AlertCircle className="text-error flex-shrink-0" size={24} />
+        <div>
+          <h3 className="font-bold text-error mb-1">Data Loading Error</h3>
+          <p className="text-sm text-text-secondary">{error}</p>
+          <button
+            onClick={refreshData}
+            className="mt-3 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition inline-flex items-center gap-2"
+          >
+            <RefreshCw size={16} />
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">

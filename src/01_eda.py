@@ -13,6 +13,7 @@ the system resolves semantic fields to actual column names dynamically.
 """
 
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import Dict, Optional
@@ -24,9 +25,9 @@ import matplotlib.pyplot as plt
 # Paths & Logging
 # -------------------------------------------------
 BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
-OUTPUT_DIR = BASE_DIR / "output"
-PLOTS_DIR = OUTPUT_DIR / "plots"
+DATA_DIR = Path(os.getenv("SI_DATA_DIR", str(BASE_DIR / "data")))
+OUTPUT_DIR = Path(os.getenv("SI_OUTPUT_DIR", str(BASE_DIR / "output")))
+PLOTS_DIR = Path(os.getenv("SI_PLOTS_DIR", str(OUTPUT_DIR / "plots")))
 LOGS_DIR = BASE_DIR / "logs"
 
 OUTPUT_DIR.mkdir(exist_ok=True)
@@ -399,11 +400,11 @@ def main():
         df = merge_data(sales, customers)
 
         # 🔥 IMPORTANT: save for Phase 2
-        df.to_csv(DATA_DIR / "merged_data.csv", index=False)
+        df.to_csv(OUTPUT_DIR / "merged_data.csv", index=False)
         logger.info("[OK] merged_data.csv generated for Phase 2")
         
         # Also save as cleaned_dataset.csv for ML pipelines (04_rfm, 05_recommendation, etc.)
-        df.to_csv(DATA_DIR / "cleaned_dataset.csv", index=False)
+        df.to_csv(OUTPUT_DIR / "cleaned_dataset.csv", index=False)
         logger.info("[OK] cleaned_dataset.csv generated for ML pipelines")
 
         kpis = compute_kpis(df)

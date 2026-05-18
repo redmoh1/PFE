@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth, useAuthFetch } from './AuthContext';
 import {
   SalesData,
@@ -11,6 +11,7 @@ import {
   DecisionInsight,
   DataQualityReport,
   AnalyticsFilters,
+  canSwitchBranches,
 } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE || '';
@@ -39,22 +40,8 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-// Helper to get auth token for fetch
-const getAuthHeaders = (token: string | null | undefined, companyId: string | null | undefined): HeadersInit => {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  if (companyId) {
-    headers['X-Company-ID'] = companyId;
-  }
-  return headers;
-};
-
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, token } = useAuth();
+  const { user, selectedBranchId } = useAuth();
   const authFetch = useAuthFetch();
   const [sales, setSales] = useState<SalesData[]>([]);
   const [forecast, setForecast] = useState<ForecastPoint[]>([]);
@@ -76,6 +63,21 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const activeControllerRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
+
+  const clearAnalyticsState = useCallback(() => {
+    setSales([]);
+    setForecast([]);
+    setSegments([]);
+    setRecommendations([]);
+    setSentiment([]);
+    setKpis(null);
+    setInsights([]);
+    setDataQuality(null);
+    setCityOptions([]);
+    setProductOptions([]);
+  }, []);
 
   const setFilters = useCallback((next: Partial<AnalyticsFilters>) => {
     setFiltersState(prev => ({ ...prev, ...next }));
@@ -136,96 +138,125 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
    * 4. NEVER uses cached or localStorage data for analytics
    */
   const fetchData = useCallback(async () => {
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+    activeControllerRef.current?.abort();
+
     if (!user) {
-      // Clear all state when no user
-      setSales([]);
-      setForecast([]);
-      setSegments([]);
-      setRecommendations([]);
-      setSentiment([]);
-      setKpis(null);
-      setInsights([]);
-      setDataQuality(null);
-      setCityOptions([]);
-      setProductOptions([]);
+      clearAnalyticsState();
       setIsLoading(false);
       return;
     }
 
+    const controller = new AbortController();
+    activeControllerRef.current = controller;
+    const isCurrentRequest = () => requestIdRef.current === requestId && !controller.signal.aborted;
+    const applyIfCurrent = (updater: () => void) => {
+      if (isCurrentRequest()) {
+        updater();
+      }
+    };
+
     setIsLoading(true);
     setError(null);
 
-    const headers = getAuthHeaders(token, user.company);
-    const fetchOpts: RequestInit = { headers, cache: 'no-store' };
+    const branchFromUser = user?.branchId !== undefined && user?.branchId !== null ? String(user.branchId) : '';
+    const effectiveBranch = canSwitchBranches(user?.role)
+      ? selectedBranchId || ''
+      : branchFromUser || selectedBranchId || '';
+    const fetchOpts: RequestInit = { cache: 'no-store', signal: controller.signal };
+
+    const getJson = async (url: string) => {
+      const response = await authFetch(url, fetchOpts);
+      if (!isCurrentRequest()) {
+        return { ok: false, empty: false, stale: true, data: null };
+      }
+      if (response.status === 204) return { ok: true, empty: true, data: null };
+      if (!response.ok) return { ok: false, empty: false, data: null };
+      const payload = await response.json();
+      if (!isCurrentRequest()) {
+        return { ok: false, empty: false, stale: true, data: null };
+      }
+      return { ok: true, empty: false, stale: false, data: payload?.data || payload };
+    };
 
     const analyticsParams = buildAnalyticsQuery();
+    if (effectiveBranch) {
+      analyticsParams.set('branch_id', effectiveBranch);
+    }
     const analyticsQs = analyticsParams.toString();
     const analyticsSuffix = analyticsQs ? `?${analyticsQs}` : '';
 
     const dateOnlyParams = buildAnalyticsQuery({}, { includeCityProduct: false });
+    if (effectiveBranch) {
+      dateOnlyParams.set('branch_id', effectiveBranch);
+    }
     const dateOnlyQs = dateOnlyParams.toString();
     const dateOnlySuffix = dateOnlyQs ? `?${dateOnlyQs}` : '';
 
     try {
       // Fetch KPIs
       try {
-        const kpiRes = await fetch(`${API_BASE_URL}/api/kpis${analyticsSuffix}`, fetchOpts);
-        if (kpiRes.status === 204) {
-          setKpis(null);
+        const kpiRes = await getJson(`/api/kpis${analyticsSuffix}`);
+        if (kpiRes.stale) return;
+        if (kpiRes.empty) {
+          applyIfCurrent(() => setKpis(null));
         } else if (kpiRes.ok) {
-          const kpiData = await kpiRes.json();
-          // Handle standardized response format
-          setKpis(kpiData.data || kpiData);
+          applyIfCurrent(() => setKpis(kpiRes.data));
         } else {
-          setKpis(null);
+          applyIfCurrent(() => setKpis(null));
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch KPIs:', e);
-        setKpis(null);
+        applyIfCurrent(() => setKpis(null));
       }
 
       // Fetch filter options (date-scoped, not city/product scoped)
       try {
-        const citiesRes = await fetch(`${API_BASE_URL}/api/top-cities${dateOnlySuffix ? `${dateOnlySuffix}&limit=50` : '?limit=50'}`, fetchOpts);
-        if (citiesRes.ok) {
-          const payload = await citiesRes.json();
-          const data = payload?.data || payload;
+        const citiesRes = await getJson(`/api/top-cities${dateOnlySuffix ? `${dateOnlySuffix}&limit=50` : '?limit=50'}`);
+        if (citiesRes.stale) return;
+        if (citiesRes.ok && !citiesRes.empty) {
+          const data = citiesRes.data;
           const options = (Array.isArray(data) ? data : []).map((c: any) => String(c.city)).filter(Boolean);
-          setCityOptions(options);
+          applyIfCurrent(() => setCityOptions(options));
         } else {
-          setCityOptions([]);
+          applyIfCurrent(() => setCityOptions([]));
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch city options:', e);
-        setCityOptions([]);
+        applyIfCurrent(() => setCityOptions([]));
       }
 
       try {
-        const productsRes = await fetch(`${API_BASE_URL}/api/top-products${dateOnlySuffix ? `${dateOnlySuffix}&limit=50` : '?limit=50'}`, fetchOpts);
-        if (productsRes.ok) {
-          const payload = await productsRes.json();
-          const data = payload?.data || payload;
+        const productsRes = await getJson(`/api/top-products${dateOnlySuffix ? `${dateOnlySuffix}&limit=50` : '?limit=50'}`);
+        if (productsRes.stale) return;
+        if (productsRes.ok && !productsRes.empty) {
+          const data = productsRes.data;
           const options = (Array.isArray(data) ? data : []).map((p: any) => String(p.product_id)).filter(Boolean);
-          setProductOptions(options);
+          applyIfCurrent(() => setProductOptions(options));
         } else {
-          setProductOptions([]);
+          applyIfCurrent(() => setProductOptions([]));
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch product options:', e);
-        setProductOptions([]);
+        applyIfCurrent(() => setProductOptions([]));
       }
 
       // Fetch sales data (raw data endpoint)
       try {
         const salesParams = buildAnalyticsQuery();
         salesParams.set('limit', '100');
-        const salesRes = await fetch(`${API_BASE_URL}/api/raw-data?${salesParams.toString()}`, fetchOpts);
-        if (salesRes.status === 204) {
-          setSales([]);
+        if (effectiveBranch) salesParams.set('branch_id', effectiveBranch);
+        const salesRes = await getJson(`/api/raw-data?${salesParams.toString()}`);
+        if (salesRes.stale) return;
+        if (salesRes.empty) {
+          applyIfCurrent(() => setSales([]));
         } else if (salesRes.ok) {
-          const salesResponse = await salesRes.json();
-          const salesData = salesResponse.data || salesResponse;
-          setSales(salesData.map((item: any, idx: number) => ({
+          const salesData = salesRes.data;
+          applyIfCurrent(() => setSales(salesData.map((item: any, idx: number) => ({
             id: item.OrderID || item.Product_ID || `s-${idx}`,
             date: item.OrderDate || item.Sale_Date || item.Date || new Date().toISOString().split('T')[0],
             amount: item.TotalPrice || item.Sales_Amount || 0,
@@ -233,23 +264,24 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             category: 'Product',
             city: item.City || item.Region || 'Unknown',
             customerId: item.CustomerID || 'c-unknown'
-          })));
+          }))));
         } else {
-          setSales([]);
+          applyIfCurrent(() => setSales([]));
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch sales data:', e);
-        setSales([]);
+        applyIfCurrent(() => setSales([]));
       }
 
       // Fetch forecast data
       try {
-        const forecastRes = await fetch(`${API_BASE_URL}/api/monthly-sales${analyticsSuffix}`, fetchOpts);
-        if (forecastRes.status === 204) {
-          setForecast([]);
+        const forecastRes = await getJson(`/api/monthly-sales${analyticsSuffix}`);
+        if (forecastRes.stale) return;
+        if (forecastRes.empty) {
+          applyIfCurrent(() => setForecast([]));
         } else if (forecastRes.ok) {
-          const forecastResponse = await forecastRes.json();
-          const forecastData = forecastResponse.data || forecastResponse;
+          const forecastData = forecastRes.data;
           const currentPoints: ForecastPoint[] = (Array.isArray(forecastData) ? forecastData : []).map((item: any) => ({
             date: item.month || item.date,
             actual: item.actual_sales ?? item.actual ?? undefined,
@@ -265,148 +297,163 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 { startDate: prev.startDate, endDate: prev.endDate },
                 { includeCityProduct: true }
               );
-              const prevRes = await fetch(`${API_BASE_URL}/api/monthly-sales?${prevParams.toString()}`, fetchOpts);
-              if (prevRes.ok && prevRes.status !== 204) {
-                const prevPayload = await prevRes.json();
-                const prevData = prevPayload?.data || prevPayload;
+              if (effectiveBranch) {
+                prevParams.set('branch_id', effectiveBranch);
+              }
+              const prevRes = await getJson(`/api/monthly-sales?${prevParams.toString()}`);
+              if (prevRes.stale) return;
+              if (prevRes.ok && !prevRes.empty) {
+                const prevData = prevRes.data;
                 const prevPoints: ForecastPoint[] = (Array.isArray(prevData) ? prevData : []).map((item: any) => ({
                   date: item.month || item.date,
                   actual: item.actual_sales ?? item.actual ?? undefined,
                   forecast: item.forecasted_sales ?? item.forecast ?? undefined,
                 }));
-                const prevMap = new Map<string, ForecastPoint>();
-                prevPoints.forEach(p => prevMap.set(p.date, p));
-
-                const merged = currentPoints.map(p => {
-                  const prevPoint = prevMap.get(p.date);
+                const merged = currentPoints.map((p, index) => {
+                  const prevPoint = prevPoints[index];
                   return {
                     ...p,
                     previous_actual: prevPoint?.actual,
                     previous_forecast: prevPoint?.forecast,
+                    previous_period_date: prevPoint?.date,
                   };
                 });
-                setForecast(merged);
+                applyIfCurrent(() => setForecast(merged));
               } else {
-                setForecast(currentPoints);
+                applyIfCurrent(() => setForecast(currentPoints));
               }
             } else {
-              setForecast(currentPoints);
+              applyIfCurrent(() => setForecast(currentPoints));
             }
           } else {
-            setForecast(currentPoints);
+            applyIfCurrent(() => setForecast(currentPoints));
           }
         } else {
-          setForecast([]);
+          applyIfCurrent(() => setForecast([]));
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch forecast data:', e);
-        setForecast([]);
+        applyIfCurrent(() => setForecast([]));
       }
 
       // Fetch recommendations - ALWAYS fresh from server with JWT auth
       try {
-        const recsRes = await fetch(`${API_BASE_URL}/api/recommendations?limit=10`, fetchOpts);
-        if (recsRes.status === 204) {
+        const recsRes = await getJson('/api/recommendations?limit=10');
+        if (recsRes.stale) return;
+        if (recsRes.empty) {
           console.log('[DataContext] Recommendations API returned 204 - clearing state');
-          setRecommendations([]);
+          applyIfCurrent(() => setRecommendations([]));
         } else if (recsRes.ok) {
-          const recsResponse = await recsRes.json();
-          const recsData = recsResponse.data || recsResponse;
+          const recsData = recsRes.data;
           if (Array.isArray(recsData) && recsData.length > 0) {
-            setRecommendations(recsData.map((item: any, idx: number) => ({
+            applyIfCurrent(() => setRecommendations(recsData.map((item: any, idx: number) => ({
               id: `rec-${idx}`,
               baseProduct: item.if_product || '',
               recommendedProduct: item.then_product || '',
               confidence: item.confidence || 0,
               lift: item.lift || 0
-            })));
+            }))));
           } else {
-            setRecommendations([]);
+            applyIfCurrent(() => setRecommendations([]));
           }
         } else {
           console.warn('Recommendations API returned non-OK status:', recsRes.status);
-          setRecommendations([]);
+          applyIfCurrent(() => setRecommendations([]));
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch recommendations:', e);
-        setRecommendations([]);
+        applyIfCurrent(() => setRecommendations([]));
       }
 
       // Fetch RFM segmentation data - ALWAYS fresh from server with JWT auth
       try {
-        const segmentRes = await fetch(`${API_BASE_URL}/api/segmentation`, fetchOpts);
-        if (segmentRes.status === 204) {
+        const segmentRes = await getJson('/api/segmentation');
+        if (segmentRes.stale) return;
+        if (segmentRes.empty) {
           console.log('[DataContext] Segmentation API returned 204 - clearing state');
-          setSegments([]);
+          applyIfCurrent(() => setSegments([]));
         } else if (segmentRes.ok) {
-          const segmentResponse = await segmentRes.json();
-          const segmentData = segmentResponse.data || segmentResponse;
+          const segmentData = segmentRes.data;
           const segmentsArr = segmentData.segments || segmentData;
           if (Array.isArray(segmentsArr) && segmentsArr.length > 0) {
-            setSegments(segmentsArr.map((item: any) => ({
+            applyIfCurrent(() => setSegments(segmentsArr.map((item: any) => ({
               name: item.segment || item.name,
               count: item.customer_count || item.count,
               color: item.color,
               recency: item.avg_recency || item.recency,
               frequency: item.avg_frequency || item.frequency,
               monetary: item.avg_monetary || item.monetary
-            })));
+            }))));
           } else {
-            setSegments([]);
+            applyIfCurrent(() => setSegments([]));
           }
         } else {
           console.warn('Segmentation API returned non-OK status:', segmentRes.status);
-          setSegments([]);
+          applyIfCurrent(() => setSegments([]));
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch segmentation:', e);
-        setSegments([]);
+        applyIfCurrent(() => setSegments([]));
       }
 
       // Fetch Decision Insights (rule-based)
       try {
         const insightsParams = buildAnalyticsQuery();
         insightsParams.set('limit', '8');
-        const insightsRes = await fetch(`${API_BASE_URL}/api/insights?${insightsParams.toString()}`, fetchOpts);
-        if (insightsRes.status === 204) {
-          setInsights([]);
+        if (effectiveBranch) insightsParams.set('branch_id', effectiveBranch);
+        const insightsRes = await getJson(`/api/insights?${insightsParams.toString()}`);
+        if (insightsRes.stale) return;
+        if (insightsRes.empty) {
+          applyIfCurrent(() => setInsights([]));
         } else if (insightsRes.ok) {
-          const payload = await insightsRes.json();
-          const items = payload?.insights || payload?.data || [];
-          setInsights(Array.isArray(items) ? items : []);
+          const payload = insightsRes.data;
+          const items = payload?.insights || payload || [];
+          applyIfCurrent(() => setInsights(Array.isArray(items) ? items : []));
         } else {
-          setInsights([]);
+          applyIfCurrent(() => setInsights([]));
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch insights:', e);
-        setInsights([]);
+        applyIfCurrent(() => setInsights([]));
       }
 
       // Fetch Data Quality Report
       try {
-        const dqRes = await fetch(`${API_BASE_URL}/api/data-quality`, fetchOpts);
-        if (dqRes.status === 204) {
-          setDataQuality(null);
+        const dqRes = await getJson('/api/data-quality');
+        if (dqRes.stale) return;
+        if (dqRes.empty) {
+          applyIfCurrent(() => setDataQuality(null));
         } else if (dqRes.ok) {
-          const payload = await dqRes.json();
-          setDataQuality(payload?.data || payload);
+          applyIfCurrent(() => setDataQuality(dqRes.data));
         } else {
-          setDataQuality(null);
+          applyIfCurrent(() => setDataQuality(null));
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch data quality report:', e);
-        setDataQuality(null);
+        applyIfCurrent(() => setDataQuality(null));
       }
 
-      setError(null);
+      applyIfCurrent(() => setError(null));
     } catch (err) {
+      if (!isCurrentRequest()) return;
+      if (controller.signal.aborted) return;
       console.error('Failed to fetch data:', err);
       const errorMessage = err instanceof Error ? err.message : 'Unknown error';
-      setError(`Failed to load data from server: ${errorMessage}`);
+      applyIfCurrent(() => setError(`Failed to load data from server: ${errorMessage}`));
     } finally {
-      setIsLoading(false);
+      if (activeControllerRef.current === controller) {
+        activeControllerRef.current = null;
+      }
+      if (isCurrentRequest()) {
+        setIsLoading(false);
+      }
     }
-  }, [user, token, buildAnalyticsQuery, computePreviousRange, filters]);
+  }, [user, selectedBranchId, authFetch, buildAnalyticsQuery, computePreviousRange, filters, clearAnalyticsState]);
 
   /**
    * CRITICAL: Reset ALL analytics state immediately.
@@ -418,18 +465,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
    */
   const resetAllAnalytics = useCallback(() => {
     console.log('[DataContext] resetAllAnalytics called - clearing ALL state');
+    requestIdRef.current += 1;
+    activeControllerRef.current?.abort();
+    activeControllerRef.current = null;
     
     // Immediately clear all state
-    setSales([]);
-    setForecast([]);
-    setSegments([]);
-    setRecommendations([]);
-    setSentiment([]);
-    setKpis(null);
-    setInsights([]);
-    setDataQuality(null);
-    setCityOptions([]);
-    setProductOptions([]);
+    clearAnalyticsState();
     setError(null);
     
     // Clear local storage for this tenant (no stale cached data)
@@ -438,7 +479,13 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem(tenantKey);
       console.log(`[DataContext] Cleared localStorage for ${tenantKey}`);
     }
-  }, [user]);
+  }, [user, clearAnalyticsState]);
+
+  useEffect(() => {
+    return () => {
+      activeControllerRef.current?.abort();
+    };
+  }, []);
 
   // Fetch data when user changes - DO NOT use localStorage for analytics
   useEffect(() => {

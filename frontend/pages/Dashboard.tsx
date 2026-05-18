@@ -1,8 +1,9 @@
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useData } from '../store/DataContext';
 import { useAuthFetch } from '../store/AuthContext';
 import FiltersBar from '../components/FiltersBar';
+import BranchSelector from '../components/BranchSelector';
 import { 
   TrendingUp, 
   Users, 
@@ -74,19 +75,73 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
   const [alertItems, setAlertItems] = useState<NotificationItem[]>([]);
   const [alertsLoading, setAlertsLoading] = useState(false);
+  const [branchPerformance, setBranchPerformance] = useState<Array<{ id: number; name: string; sales: number }>>([]);
+  const [authSuccessMessage, setAuthSuccessMessage] = useState('');
 
-  const loadActiveAlerts = async () => {
+  const loadBranchPerformance = useCallback(async (isCurrent: () => boolean = () => true) => {
+    try {
+      const performanceRes = await authFetch('/api/branches/performance', { cache: 'no-store' });
+      if (!isCurrent()) return;
+      if (performanceRes.ok) {
+        const payload = await performanceRes.json();
+        if (!isCurrent()) return;
+        setBranchPerformance(
+          Array.isArray(payload)
+            ? payload.map((branch) => ({
+                id: Number(branch.id),
+                name: String(branch.name || ''),
+                sales: Number(branch.sales || 0),
+              }))
+            : []
+        );
+        return;
+      }
+
+      const branchesRes = await authFetch('/api/branches', { cache: 'no-store' });
+      if (!isCurrent()) return;
+      if (!branchesRes.ok) {
+        setBranchPerformance([]);
+        return;
+      }
+      const branches = (await branchesRes.json()) as Array<{ id: number; name: string; status?: string }>;
+      if (!isCurrent()) return;
+      const activeBranches = (branches || []).filter((branch) => String(branch.status || '').toLowerCase() !== 'inactive');
+      const analytics = await Promise.all(
+        activeBranches.map(async (branch) => {
+          try {
+            const res = await authFetch(`/api/branches/${branch.id}/analytics`, { cache: 'no-store' });
+            if (!res.ok) return null;
+            const payload = await res.json();
+            return { id: branch.id, name: branch.name, sales: Number(payload.total_revenue || 0) };
+          } catch {
+            return null;
+          }
+        })
+      );
+      if (!isCurrent()) return;
+      setBranchPerformance((analytics.filter(Boolean) as Array<{ id: number; name: string; sales: number }>));
+    } catch {
+      if (!isCurrent()) return;
+      setBranchPerformance([]);
+    }
+  }, [authFetch]);
+
+  const loadActiveAlerts = useCallback(async (isCurrent: () => boolean = () => true) => {
+    if (!isCurrent()) return;
     setAlertsLoading(true);
     try {
       // SINGLE SOURCE OF TRUTH for active alerts.
       const res = await authFetch('/alerts/active', { cache: 'no-store' });
+      if (!isCurrent()) return;
       if (!res.ok) {
         const text = await res.text();
+        if (!isCurrent()) return;
         console.error('[Dashboard] /alerts/active failed', { status: res.status, body: text?.slice(0, 300) });
         setAlertItems([]);
         return;
       }
       const payload = await res.json();
+      if (!isCurrent()) return;
       const items = (payload?.items || []) as any[];
       // Map alert schema to the NotificationItem-like shape used by the UI.
       const mapped: NotificationItem[] = items.map((a) => ({
@@ -109,22 +164,42 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       }));
       setAlertItems(mapped);
     } catch {
+      if (!isCurrent()) return;
       setAlertItems([]);
     } finally {
-      setAlertsLoading(false);
+      if (isCurrent()) {
+        setAlertsLoading(false);
+      }
     }
-  };
+  }, [authFetch]);
 
   useEffect(() => {
-    loadActiveAlerts();
-    const onInventoryChanged = () => loadActiveAlerts();
+    let isActive = true;
+    const isCurrent = () => isActive;
+
+    void loadActiveAlerts(isCurrent);
+    void loadBranchPerformance(isCurrent);
+    const onInventoryChanged = () => {
+      void loadActiveAlerts(isCurrent);
+    };
     window.addEventListener('inventory:changed', onInventoryChanged);
-    const intervalId = window.setInterval(loadActiveAlerts, 30000);
+    const intervalId = window.setInterval(() => {
+      void loadActiveAlerts(isCurrent);
+    }, 30000);
     return () => {
+      isActive = false;
       window.removeEventListener('inventory:changed', onInventoryChanged);
       window.clearInterval(intervalId);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadActiveAlerts, loadBranchPerformance]);
+
+  useEffect(() => {
+    const message = sessionStorage.getItem('auth_success_message') || '';
+    if (!message) {
+      return;
+    }
+    setAuthSuccessMessage(message);
+    sessionStorage.removeItem('auth_success_message');
   }, []);
 
   const activeAlertsSorted = useMemo(() => {
@@ -253,12 +328,59 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {authSuccessMessage && (
+        <div className="flex items-start justify-between gap-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-emerald-900 shadow-sm">
+          <div>
+            <p className="font-semibold">Workspace ready</p>
+            <p className="mt-1 text-sm text-emerald-800">{authSuccessMessage}</p>
+          </div>
+          <button
+            type="button"
+            className="shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium text-emerald-800 hover:bg-emerald-100"
+            onClick={() => setAuthSuccessMessage('')}
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Executive Overview</h2>
           <p className="text-text-secondary dark:text-text-secondaryDark">Real-time performance metrics and ML-driven insights.</p>
         </div>
+        <div className="md:hidden">
+          <BranchSelector />
+        </div>
       </div>
+
+      {branchPerformance.length > 1 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-card-light dark:bg-card-dark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <p className="text-xs text-text-secondary">Top Performing Branch</p>
+            {(() => {
+              const top = [...branchPerformance].sort((a, b) => b.sales - a.sales)[0];
+              return (
+                <>
+                  <p className="text-lg font-bold mt-1"> {top?.name || 'N/A'}</p>
+                  <p className="text-sm text-text-secondary">Sales: ${Number(top?.sales || 0).toLocaleString()}</p>
+                </>
+              );
+            })()}
+          </div>
+          <div className="bg-card-light dark:bg-card-dark p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <p className="text-xs text-text-secondary">Lowest Performing Branch</p>
+            {(() => {
+              const low = [...branchPerformance].sort((a, b) => a.sales - b.sales)[0];
+              return (
+                <>
+                  <p className="text-lg font-bold mt-1">{low?.name || 'N/A'}</p>
+                  <p className="text-sm text-text-secondary">Sales: ${Number(low?.sales || 0).toLocaleString()}</p>
+                </>
+              );
+            })()}
+          </div>
+        </div>
+      )}
 
       <FiltersBar
         filters={filters}
@@ -543,7 +665,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
             </p>
           </div>
           <button
-            onClick={loadActiveAlerts}
+            onClick={() => {
+              void loadActiveAlerts();
+            }}
             className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-sm"
             type="button"
             disabled={alertsLoading}

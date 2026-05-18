@@ -1,11 +1,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useData } from '../store/DataContext';
-import { useAuth } from '../store/AuthContext';
+import { useAuth, useAuthFetch } from '../store/AuthContext';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { Info, Loader2, Upload } from 'lucide-react';
-
-const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 interface SegmentationMetadata {
   total_customers: number;
@@ -18,6 +16,7 @@ interface SegmentationMetadata {
 const Segmentation: React.FC = () => {
   const { segments } = useData();
   const { user } = useAuth();
+  const authFetch = useAuthFetch();
   const [metadata, setMetadata] = useState<SegmentationMetadata | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,8 +24,7 @@ const Segmentation: React.FC = () => {
     const fetchMetadata = async () => {
       if (!user) return;
       try {
-        const headers = { 'X-Company-ID': user.company };
-        const res = await fetch(`${API_BASE}/api/segmentation`, { headers });
+        const res = await authFetch('/api/segmentation');
         if (res.status === 204) {
           setMetadata(null);
         } else if (res.ok) {
@@ -40,7 +38,7 @@ const Segmentation: React.FC = () => {
       }
     };
     fetchMetadata();
-  }, [user]);
+  }, [user, authFetch]);
 
   const hasData = segments && segments.length > 0;
 

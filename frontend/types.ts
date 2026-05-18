@@ -1,9 +1,81 @@
 
 export enum UserRole {
-  ADMIN = 'admin',
-  ANALYST = 'analyst',
+  SUPER_ADMIN = 'super_admin',
+  COMPANY_ADMIN = 'company_admin',
+  BRANCH_ADMIN = 'branch_admin',
+  EMPLOYEE = 'employee',
   VIEWER = 'viewer',
+  ADMIN = 'company_admin',
+  BRANCH_MANAGER = 'branch_admin',
+  ANALYST = 'viewer',
 }
+
+export const normalizeUserRole = (role?: string | UserRole | null): UserRole => {
+  const value = String(role || '').trim().toLowerCase();
+
+  switch (value) {
+    case 'super_admin':
+      return UserRole.SUPER_ADMIN;
+    case 'admin':
+    case 'company_admin':
+      return UserRole.COMPANY_ADMIN;
+    case 'branch_manager':
+    case 'branch_admin':
+      return UserRole.BRANCH_ADMIN;
+    case 'employee':
+      return UserRole.EMPLOYEE;
+    case 'analyst':
+    case 'viewer':
+      return UserRole.VIEWER;
+    default:
+      return UserRole.VIEWER;
+  }
+};
+
+export const isCompanyAdminRole = (role?: string | UserRole | null): boolean => {
+  const normalized = normalizeUserRole(role);
+  return normalized === UserRole.SUPER_ADMIN || normalized === UserRole.COMPANY_ADMIN;
+};
+
+export const isBranchAdminRole = (role?: string | UserRole | null): boolean => {
+  return normalizeUserRole(role) === UserRole.BRANCH_ADMIN;
+};
+
+export const isReadOnlyRole = (role?: string | UserRole | null): boolean => {
+  const normalized = normalizeUserRole(role);
+  return normalized === UserRole.EMPLOYEE || normalized === UserRole.VIEWER;
+};
+
+export type AppPage =
+  | 'dashboard'
+  | 'sales'
+  | 'forecasting'
+  | 'segmentation'
+  | 'recommendations'
+  | 'sentiment'
+  | 'inventory'
+  | 'upload'
+  | 'settings';
+
+export const canSwitchBranches = (role?: string | UserRole | null): boolean => {
+  return isCompanyAdminRole(role);
+};
+
+export const canManageBranchData = (role?: string | UserRole | null): boolean => {
+  const normalized = normalizeUserRole(role);
+  return normalized === UserRole.SUPER_ADMIN || normalized === UserRole.COMPANY_ADMIN || normalized === UserRole.BRANCH_ADMIN;
+};
+
+export const canAccessPage = (page: AppPage, role?: string | UserRole | null): boolean => {
+  switch (page) {
+    case 'settings':
+      return isCompanyAdminRole(role);
+    case 'upload':
+      return canManageBranchData(role);
+    default:
+      return true;
+  }
+};
 
 export interface User {
   id: string;
@@ -11,8 +83,28 @@ export interface User {
   name?: string;
   company: string;
   companyId?: number;
+  branchId?: string | number | null;
   role: UserRole;
   avatar?: string;
+}
+
+export interface BranchManager {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string | null;
+}
+
+export interface Branch {
+  id: number;
+  name: string;
+  city: string;
+  phone?: string | null;
+  manager_id?: string | null;
+  manager_name?: string | null;
+  manager?: BranchManager | null;
+  created_at: string;
+  status: string;
 }
 
 export interface SalesData {
@@ -121,6 +213,7 @@ export interface DataQualityReport {
 export interface DatasetMeta {
   id: number;
   company_id: string;
+  branch_id?: string | null;
   dataset_type: string;
   file_name: string;
   row_count: number;
@@ -136,6 +229,44 @@ export interface DatasetPreview {
   row_count: number;
   columns: string[];
   rows: Record<string, any>[];
+}
+
+export interface MappingFieldDefinition {
+  key: string;
+  label: string;
+  required: boolean;
+  description: string;
+  canonical_column: string;
+}
+
+export interface DatasetUploadPreparation {
+  upload_id: string;
+  dataset_type: 'sales' | 'customers' | 'reviews';
+  file_name: string;
+  row_count: number;
+  columns: string[];
+  preview_rows: Record<string, any>[];
+  fields: MappingFieldDefinition[];
+  suggested_mapping: Record<string, string | null>;
+  saved_mapping: Record<string, string | null>;
+  initial_mapping: Record<string, string | null>;
+  mapping_source?: string | null;
+  profile_id?: number | null;
+  replace_dataset_id?: number | null;
+  expires_at: string;
+}
+
+export interface DatasetMappingValidationResponse {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+  mapping: Record<string, string | null>;
+}
+
+export interface DatasetMappingConfirmResponse {
+  dataset: DatasetMeta;
+  mapping_saved: boolean;
+  standardized_columns: string[];
 }
 
 export interface AppState {

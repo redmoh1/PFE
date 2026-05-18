@@ -22,6 +22,8 @@ The project consists of three main components:
 | **Customer Lifetime Value** | CLV-based segmentation (Platinum/Gold/Silver/Bronze) |
 | **Multi-Tenant** | Company-based data isolation for SaaS deployment |
 | **Schema Resolver** | Works with any CSV column names |
+| **Branch Isolation** | Tenant-scoped storage and analytics per company/branch |
+| **RBAC** | JWT-backed roles for SUPER_ADMIN, COMPANY_ADMIN, BRANCH_ADMIN, EMPLOYEE, VIEWER |
 
 ---
 
@@ -86,6 +88,24 @@ Sales_Intelligence_Project/
 ├── tests/                      # Unit tests
 └── README.md                   # This file
 ```
+
+### Tenant storage layout
+
+Analytics and uploads are stored under tenant folders instead of shared CSV outputs:
+
+```
+data/
+   company_<id>/
+      branch_<id>/
+         uploads/
+         outputs/
+         forecasts/
+         segmentation/
+         sentiment/
+         recommendations/
+```
+
+Company admins can switch branches in the UI. Branch admins are locked to their assigned branch, and the backend validates access from JWT claims only.
 
 ---
 
@@ -152,12 +172,14 @@ Open a terminal in the project root directory and run:
 
 ```bash
 python -m pip install -r backend/requirements.txt
-python -m uvicorn backend.main:app --reload --port 8000
+python -m uvicorn backend.main:app --reload --port 8001
 ```
 
-Once running, the API will be available at: **http://localhost:8000**
+Once running, the API will be available at: **http://localhost:8001**
 
-You can explore the API documentation at: **http://localhost:8000/docs** (Swagger UI)
+You can explore the API documentation at: **http://localhost:8001/docs** (Swagger UI)
+
+Do not run `uvicorn main:app` from the `frontend/` folder. The backend app lives at `backend.main:app` and should be started from the project root.
 
 ### Step 2: Start the Frontend Dashboard
 
@@ -177,7 +199,7 @@ If you want to run both the backend and frontend simultaneously, you will need t
 
 **Terminal 1 - Backend:**
 ```bash
-python -m uvicorn backend.main:app --reload --port 8000
+python -m uvicorn backend.main:app --reload --port 8001
 ```
 
 **Terminal 2 - Frontend:**
@@ -311,16 +333,16 @@ FORECAST_HORIZON=6
 You can test the API endpoints using curl or Postman:
 
 ```bash
-curl http://localhost:8000/api/health
-curl http://localhost:8000/api/kpis
-curl http://localhost:8000/api/monthly-sales
+curl http://localhost:8001/api/health
+curl http://localhost:8001/api/kpis
+curl http://localhost:8001/api/monthly-sales
 ```
 
 ### Testing the Frontend
 
 Make sure the React app is configured to connect to the API at:
 ```
-http://localhost:8000
+http://localhost:8001
 ```
 
 ---
@@ -329,7 +351,7 @@ http://localhost:8000
 
 For more detailed information, check these resources:
 
-- **API Documentation**: http://localhost:8000/docs (Swagger UI)
+- **API Documentation**: http://localhost:8001/docs (Swagger UI)
 - **Frontend Guide**: [Frontend README](frontend/README.md)
 
 ---
@@ -362,7 +384,7 @@ If you would like to contribute to this project:
 
 If you run into issues or have questions, check these resources:
 
-- API Documentation at http://localhost:8000/docs
+- API Documentation at http://localhost:8001/docs
 - System logs in `logs/` folder
 - Backend code in `backend/main.py`
 

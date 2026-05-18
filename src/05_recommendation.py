@@ -36,6 +36,7 @@ Business Value:
 """
 
 import sys
+import os
 import logging
 from pathlib import Path
 from typing import Tuple, List, Dict, Any, Optional
@@ -48,14 +49,16 @@ from sklearn.preprocessing import MultiLabelBinarizer
 
 # Paths & Logging
 BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = Path(os.getenv("SI_DATA_DIR", str(BASE_DIR / "data")))
 LOGS_DIR = BASE_DIR / "logs"
-OUTPUT_DIR = BASE_DIR / "output"
-PLOTS_DIR = OUTPUT_DIR / "plots"
+OUTPUT_DIR = Path(os.getenv("SI_OUTPUT_DIR", str(BASE_DIR / "output")))
+PLOTS_DIR = Path(os.getenv("SI_PLOTS_DIR", str(OUTPUT_DIR / "plots")))
+RECOMMENDATIONS_DIR = Path(os.getenv("SI_RECOMMENDATIONS_DIR", str(BASE_DIR / "output" / "recommendations")))
 
 LOGS_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
 PLOTS_DIR.mkdir(exist_ok=True)
+RECOMMENDATIONS_DIR.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -111,6 +114,8 @@ def resolve_recommendation_columns(df: pd.DataFrame) -> Dict[str, Optional[str]]
 def find_data_file() -> Path:
     """Find data file in multiple possible locations."""
     possible_paths = [
+        OUTPUT_DIR / "cleaned_dataset.csv",
+        OUTPUT_DIR / "merged_data.csv",
         DATA_DIR / "cleaned_dataset.csv",
         DATA_DIR / "merged_data.csv",
         DATA_DIR / "sales.csv",
@@ -633,7 +638,7 @@ def main() -> None:
             logger.warning("  *** Dataset may be too small for meaningful recommendations ***")
             
             # CRITICAL: Delete old product_recommendations.csv to ensure no stale data
-            output_path = DATA_DIR / "product_recommendations.csv"
+            output_path = RECOMMENDATIONS_DIR / "product_recommendations.csv"
             if output_path.exists():
                 try:
                     output_path.unlink()
@@ -663,7 +668,7 @@ def main() -> None:
         plot_association_rules(rules, PLOTS_DIR)
         logger.info(f"  Status: Generated 3 visualizations")
         
-        output_path = DATA_DIR / "product_recommendations.csv"
+        output_path = RECOMMENDATIONS_DIR / "product_recommendations.csv"
         save_recommendation_results(rules_display, output_path)
         
         logger.info("\n" + "=" * 70)

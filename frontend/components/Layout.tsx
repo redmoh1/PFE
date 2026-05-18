@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../store/AuthContext';
 import { NotificationBell } from './NotificationBell';
+import BranchSelector from './BranchSelector';
+import { AppPage, canAccessPage } from '../types';
 import { 
   LayoutDashboard, 
   BarChart3, 
@@ -22,8 +24,8 @@ import {
 
 interface LayoutProps {
   children: React.ReactNode;
-  onNavigate: (page: string) => void;
-  currentPage: string;
+  onNavigate: (page: AppPage) => void;
+  currentPage: AppPage;
   isDark: boolean;
   onToggleTheme: () => void;
 }
@@ -35,7 +37,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentPage, isDa
 
   const desktopWidthClass = isSidebarCollapsed ? 'lg:w-20' : 'lg:w-64';
 
-  const handleNavigate = (pageId: string) => {
+  const handleNavigate = (pageId: AppPage) => {
     onNavigate(pageId);
     setMobileSidebarOpen(false);
   };
@@ -54,6 +56,12 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentPage, isDa
     { id: 'upload', label: 'Data Ingestion', icon: Upload },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
+
+  const visibleNavItems = navItems.filter((item) => {
+    if (item.type === 'divider') return true;
+    if (!item.id) return true;
+    return canAccessPage(item.id as AppPage, user?.role);
+  });
 
   return (
     <div className="flex h-screen overflow-hidden bg-background-light dark:bg-background-dark">
@@ -83,7 +91,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentPage, isDa
         </div>
 
         <nav className="flex-1 px-3 lg:px-4 space-y-1 overflow-y-auto custom-scrollbar">
-          {navItems.map((item, idx) => {
+          {visibleNavItems.map((item, idx) => {
             if (item.type === 'divider') {
               return <div key={`divider-${idx}`} className="h-px bg-slate-200 dark:bg-slate-800 my-4" />;
             }
@@ -93,7 +101,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentPage, isDa
             return (
               <button
                 key={item.id}
-                onClick={() => handleNavigate(item.id!)}
+                onClick={() => handleNavigate(item.id as AppPage)}
                 className={`w-full flex items-center gap-3 p-2.5 lg:p-3 rounded-xl transition-all ${
                   isActive 
                     ? 'bg-primary/10 text-primary' 
@@ -147,6 +155,9 @@ const Layout: React.FC<LayoutProps> = ({ children, onNavigate, currentPage, isDa
           </div>
           
           <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden md:block">
+              <BranchSelector />
+            </div>
             <button 
               onClick={onToggleTheme}
               className="p-2 text-text-secondary hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"

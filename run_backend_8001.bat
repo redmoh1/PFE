@@ -1,6 +1,7 @@
 @echo off
 setlocal
-cd /d "%~dp0backend"
-REM Runs FastAPI backend (v1) on port 8001
-"%~dp0..\.venv\Scripts\python.exe" -m uvicorn main:app --host 127.0.0.1 --port 8001 --log-level info
+cd /d "%~dp0"
+REM Runs FastAPI backend on port 8001
+REM Run from project root so `backend.*` and `src.*` imports resolve consistently
+"%~dp0.venv\Scripts\python.exe" -m uvicorn backend.main:app --host 127.0.0.1 --port 8001 --log-level info
 pause

@@ -1,9 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../store/AuthContext';
+import { useAuth, useAuthFetch } from '../store/AuthContext';
 import { Info, Lightbulb, Loader2, ShoppingCart, Percent, Zap, Upload } from 'lucide-react';
-
-const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 interface Recommendation {
   if_product: string;
@@ -14,6 +12,7 @@ interface Recommendation {
 
 const Recommendations: React.FC = () => {
   const { user } = useAuth();
+  const authFetch = useAuthFetch();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,8 +23,7 @@ const Recommendations: React.FC = () => {
         return;
       }
       try {
-        const headers = { 'X-Company-ID': user.company };
-        const res = await fetch(`${API_BASE}/api/recommendations?limit=10`, { headers });
+        const res = await authFetch('/api/recommendations?limit=10');
         if (res.status === 204) {
           setRecommendations([]);
         } else if (res.ok) {
@@ -43,7 +41,7 @@ const Recommendations: React.FC = () => {
       }
     };
     fetchRecommendations();
-  }, [user]);
+  }, [user, authFetch]);
 
   const hasData = recommendations && recommendations.length > 0;
   const avgConfidence = hasData 

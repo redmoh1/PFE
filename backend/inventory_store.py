@@ -58,7 +58,7 @@ def connect() -> sqlite3.Connection:
 def init_db(conn: sqlite3.Connection) -> None:
     """Create inventory tables if they do not exist."""
 
-    # New schema (multi-tenant): (company_id, product_name) composite PK
+    # New schema (multi-tenant + branch): (company_id, branch_id, product_name) composite PK
     # Migration: if an old single-tenant table exists, move rows to the new schema.
     existing_cols = []
     try:
@@ -72,24 +72,53 @@ def init_db(conn: sqlite3.Connection) -> None:
             """
             CREATE TABLE IF NOT EXISTS inventory_stock_v2 (
                 company_id TEXT NOT NULL,
+                branch_id TEXT NOT NULL,
                 product_name TEXT NOT NULL,
                 current_stock INTEGER NOT NULL,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
-                PRIMARY KEY(company_id, product_name)
+                PRIMARY KEY(company_id, branch_id, product_name)
             )
             """
         )
         conn.execute(
             """
-            INSERT OR IGNORE INTO inventory_stock_v2 (company_id, product_name, current_stock, created_at, updated_at)
-            SELECT ?, product_name, current_stock, created_at, updated_at
+            INSERT OR IGNORE INTO inventory_stock_v2 (company_id, branch_id, product_name, current_stock, created_at, updated_at)
+            SELECT ?, ?, product_name, current_stock, created_at, updated_at
             FROM inventory_stock
             """,
-            ("Acme Corp",),
+            ("Acme Corp", "GLOBAL"),
         )
         conn.execute("DROP TABLE inventory_stock")
         conn.execute("ALTER TABLE inventory_stock_v2 RENAME TO inventory_stock")
+        conn.commit()
+        return
+
+    if existing_cols and "branch_id" not in existing_cols:
+        logger.info("[INVENTORY] Migrating inventory_stock to branch-aware schema")
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS inventory_stock_v3 (
+                company_id TEXT NOT NULL,
+                branch_id TEXT NOT NULL,
+                product_name TEXT NOT NULL,
+                current_stock INTEGER NOT NULL,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                PRIMARY KEY(company_id, branch_id, product_name)
+            )
+            """
+        )
+        conn.execute(
+            """
+            INSERT OR IGNORE INTO inventory_stock_v3 (company_id, branch_id, product_name, current_stock, created_at, updated_at)
+            SELECT company_id, ?, product_name, current_stock, created_at, updated_at
+            FROM inventory_stock
+            """,
+            ("GLOBAL",),
+        )
+        conn.execute("DROP TABLE inventory_stock")
+        conn.execute("ALTER TABLE inventory_stock_v3 RENAME TO inventory_stock")
         conn.commit()
         return
 
@@ -97,11 +126,12 @@ def init_db(conn: sqlite3.Connection) -> None:
         """
         CREATE TABLE IF NOT EXISTS inventory_stock (
             company_id TEXT NOT NULL,
+            branch_id TEXT NOT NULL,
             product_name TEXT NOT NULL,
             current_stock INTEGER NOT NULL,
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL,
-            PRIMARY KEY(company_id, product_name)
+            PRIMARY KEY(company_id, branch_id, product_name)
         )
         """
     )
@@ -119,12 +149,19 @@ def init_deleted_products_db(conn: sqlite3.Connection) -> None:
         """
         CREATE TABLE IF NOT EXISTS inventory_deleted_products (
             company_id TEXT NOT NULL,
+            branch_id TEXT NOT NULL,
             product_name TEXT NOT NULL,
             deleted_at TEXT NOT NULL,
-            PRIMARY KEY(company_id, product_name)
+            PRIMARY KEY(company_id, branch_id, product_name)
         )
         """
     )
+    try:
+        cols = [r["name"] for r in conn.execute("PRAGMA table_info(inventory_deleted_products)").fetchall()]
+        if "branch_id" not in cols:
+            conn.execute("ALTER TABLE inventory_deleted_products ADD COLUMN branch_id TEXT NOT NULL DEFAULT 'GLOBAL'")
+    except Exception:
+        pass
     conn.commit()
 
 
@@ -140,14 +177,21 @@ def init_product_costs_db(conn: sqlite3.Connection) -> None:
         """
         CREATE TABLE IF NOT EXISTS inventory_product_costs (
             company_id TEXT NOT NULL,
+            branch_id TEXT NOT NULL,
             product_name TEXT NOT NULL,
             cost_per_unit REAL NOT NULL,
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL,
-            PRIMARY KEY(company_id, product_name)
+            PRIMARY KEY(company_id, branch_id, product_name)
         )
         """
     )
+    try:
+        cols = [r["name"] for r in conn.execute("PRAGMA table_info(inventory_product_costs)").fetchall()]
+        if "branch_id" not in cols:
+            conn.execute("ALTER TABLE inventory_product_costs ADD COLUMN branch_id TEXT NOT NULL DEFAULT 'GLOBAL'")
+    except Exception:
+        pass
     conn.commit()
 
 
@@ -159,6 +203,7 @@ def init_stock_movements_db(conn: sqlite3.Connection) -> None:
         CREATE TABLE IF NOT EXISTS stock_movements (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             company_id TEXT NOT NULL,
+            branch_id TEXT NOT NULL,
             product_name TEXT NOT NULL,
             date TEXT NOT NULL,
             type TEXT NOT NULL,
@@ -174,12 +219,14 @@ def init_stock_movements_db(conn: sqlite3.Connection) -> None:
         cols = [r["name"] for r in conn.execute("PRAGMA table_info(stock_movements)").fetchall()]
         if "balance_after" not in cols:
             conn.execute("ALTER TABLE stock_movements ADD COLUMN balance_after INTEGER")
+        if "branch_id" not in cols:
+            conn.execute("ALTER TABLE stock_movements ADD COLUMN branch_id TEXT NOT NULL DEFAULT 'GLOBAL'")
     except Exception:
         # Non-blocking; table still works without the column for reads.
         pass
 
     conn.execute(
-        "CREATE INDEX IF NOT EXISTS idx_stock_movements_lookup ON stock_movements(company_id, product_name, date)"
+        "CREATE INDEX IF NOT EXISTS idx_stock_movements_lookup ON stock_movements(company_id, branch_id, product_name, date)"
     )
     conn.commit()
 
@@ -213,35 +260,42 @@ def normalize_company_id(company_id: Optional[str]) -> str:
     return text or "Acme Corp"
 
 
+def normalize_branch_id(branch_id: Optional[str]) -> str:
+    text = (branch_id or "").strip()
+    return text or "GLOBAL"
+
+
 def upsert_stock(
     conn: sqlite3.Connection,
     product_name: str,
     current_stock: int,
     company_id: Optional[str] = None,
+    branch_id: Optional[str] = None,
     movement_reason: str = "Manual Adjustment",
 ) -> None:
     init_db(conn)
     now = _utc_now_iso()
     product = normalize_product_name(product_name)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
 
     # Track previous stock so we can record a movement without changing the core stock behavior.
     prev_row = conn.execute(
-        "SELECT current_stock FROM inventory_stock WHERE company_id = ? AND product_name = ?",
-        (company, product),
+        "SELECT current_stock FROM inventory_stock WHERE company_id = ? AND branch_id = ? AND product_name = ?",
+        (company, branch, product),
     ).fetchone()
     prev_stock = int(prev_row["current_stock"]) if prev_row else 0
     next_stock = int(current_stock)
 
     conn.execute(
         """
-        INSERT INTO inventory_stock (company_id, product_name, current_stock, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?)
-        ON CONFLICT(company_id, product_name) DO UPDATE SET
+        INSERT INTO inventory_stock (company_id, branch_id, product_name, current_stock, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(company_id, branch_id, product_name) DO UPDATE SET
             current_stock = excluded.current_stock,
             updated_at = excluded.updated_at
         """,
-        (company, product, next_stock, now, now),
+        (company, branch, product, next_stock, now, now),
     )
     conn.commit()
 
@@ -256,6 +310,7 @@ def upsert_stock(
             reason=movement_reason,
             balance_after=next_stock,
             company_id=company,
+            branch_id=branch,
             date=now,
         )
 
@@ -265,6 +320,7 @@ def increment_stock(
     product_name: str,
     delta: int,
     company_id: Optional[str] = None,
+    branch_id: Optional[str] = None,
     movement_reason: str = "Manual Adjustment",
 ) -> None:
     """Increase stock by delta; creates the row if missing."""
@@ -272,10 +328,11 @@ def increment_stock(
     init_db(conn)
     product = normalize_product_name(product_name)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
 
     row = conn.execute(
-        "SELECT current_stock FROM inventory_stock WHERE company_id = ? AND product_name = ?",
-        (company, product),
+        "SELECT current_stock FROM inventory_stock WHERE company_id = ? AND branch_id = ? AND product_name = ?",
+        (company, branch, product),
     ).fetchone()
 
     current = int(row["current_stock"]) if row else 0
@@ -283,54 +340,58 @@ def increment_stock(
     if new_value < 0:
         new_value = 0
     # upsert_stock will record the movement (IN/OUT) based on the resulting delta.
-    upsert_stock(conn, product, new_value, company_id=company, movement_reason=movement_reason)
+    upsert_stock(conn, product, new_value, company_id=company, branch_id=branch, movement_reason=movement_reason)
 
 
-def get_stock_map(conn: sqlite3.Connection, company_id: Optional[str] = None) -> Dict[str, int]:
+def get_stock_map(conn: sqlite3.Connection, company_id: Optional[str] = None, branch_id: Optional[str] = None) -> Dict[str, int]:
     init_db(conn)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
     rows = conn.execute(
-        "SELECT product_name, current_stock FROM inventory_stock WHERE company_id = ?",
-        (company,),
+        "SELECT product_name, current_stock FROM inventory_stock WHERE company_id = ? AND branch_id = ?",
+        (company, branch),
     ).fetchall()
     return {str(r["product_name"]): int(r["current_stock"]) for r in rows}
 
 
-def list_manual_products(conn: sqlite3.Connection, company_id: Optional[str] = None) -> List[str]:
+def list_manual_products(conn: sqlite3.Connection, company_id: Optional[str] = None, branch_id: Optional[str] = None) -> List[str]:
     init_db(conn)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
     rows = conn.execute(
-        "SELECT product_name FROM inventory_stock WHERE company_id = ? ORDER BY product_name",
-        (company,),
+        "SELECT product_name FROM inventory_stock WHERE company_id = ? AND branch_id = ? ORDER BY product_name",
+        (company, branch),
     ).fetchall()
     return [str(r["product_name"]) for r in rows]
 
 
-def get_deleted_products_set(conn: sqlite3.Connection, company_id: Optional[str] = None) -> set[str]:
+def get_deleted_products_set(conn: sqlite3.Connection, company_id: Optional[str] = None, branch_id: Optional[str] = None) -> set[str]:
     init_deleted_products_db(conn)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
     rows = conn.execute(
-        "SELECT product_name FROM inventory_deleted_products WHERE company_id = ?",
-        (company,),
+        "SELECT product_name FROM inventory_deleted_products WHERE company_id = ? AND branch_id = ?",
+        (company, branch),
     ).fetchall()
     return {str(r["product_name"]) for r in rows}
 
 
-def mark_product_deleted(conn: sqlite3.Connection, product_name: str, company_id: Optional[str] = None) -> None:
+def mark_product_deleted(conn: sqlite3.Connection, product_name: str, company_id: Optional[str] = None, branch_id: Optional[str] = None) -> None:
     init_deleted_products_db(conn)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
     product = normalize_product_name(product_name)
     conn.execute(
         """
-        INSERT OR REPLACE INTO inventory_deleted_products (company_id, product_name, deleted_at)
-        VALUES (?, ?, ?)
+        INSERT OR REPLACE INTO inventory_deleted_products (company_id, branch_id, product_name, deleted_at)
+        VALUES (?, ?, ?, ?)
         """,
-        (company, product, _utc_now_iso()),
+        (company, branch, product, _utc_now_iso()),
     )
     conn.commit()
 
 
-def delete_stock_row(conn: sqlite3.Connection, product_name: str, company_id: Optional[str] = None) -> int:
+def delete_stock_row(conn: sqlite3.Connection, product_name: str, company_id: Optional[str] = None, branch_id: Optional[str] = None) -> int:
     """Remove product from stock tracking table.
 
     This does not touch any sales datasets. Soft-delete is tracked separately in
@@ -339,10 +400,11 @@ def delete_stock_row(conn: sqlite3.Connection, product_name: str, company_id: Op
 
     init_db(conn)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
     product = normalize_product_name(product_name)
     cur = conn.execute(
-        "DELETE FROM inventory_stock WHERE company_id = ? AND product_name = ?",
-        (company, product),
+        "DELETE FROM inventory_stock WHERE company_id = ? AND branch_id = ? AND product_name = ?",
+        (company, branch, product),
     )
     conn.commit()
     try:
@@ -359,6 +421,7 @@ def record_stock_movement(
     reason: str,
     balance_after: Optional[int] = None,
     company_id: Optional[str] = None,
+    branch_id: Optional[str] = None,
     date: Optional[str] = None,
 ) -> None:
     """Insert a movement record.
@@ -368,6 +431,7 @@ def record_stock_movement(
 
     init_stock_movements_db(conn)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
     product = normalize_product_name(product_name)
     when = date or _utc_now_iso()
 
@@ -391,10 +455,10 @@ def record_stock_movement(
     try:
         conn.execute(
             """
-            INSERT INTO stock_movements (company_id, product_name, date, type, quantity, reason, balance_after)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO stock_movements (company_id, branch_id, product_name, date, type, quantity, reason, balance_after)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (company, product, when, t, qty, r, bal),
+            (company, branch, product, when, t, qty, r, bal),
         )
         conn.commit()
         return
@@ -402,10 +466,10 @@ def record_stock_movement(
         # Backward compatibility: DB might not have balance_after yet.
         conn.execute(
             """
-            INSERT INTO stock_movements (company_id, product_name, date, type, quantity, reason)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO stock_movements (company_id, branch_id, product_name, date, type, quantity, reason)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (company, product, when, t, qty, r),
+            (company, branch, product, when, t, qty, r),
         )
         conn.commit()
 
@@ -414,10 +478,12 @@ def list_stock_movements(
     conn: sqlite3.Connection,
     product_name: str,
     company_id: Optional[str] = None,
+    branch_id: Optional[str] = None,
     limit: int = 500,
 ) -> List[Dict[str, object]]:
     init_stock_movements_db(conn)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
     product = normalize_product_name(product_name)
     take = max(1, min(int(limit), 2000))
 
@@ -426,11 +492,11 @@ def list_stock_movements(
             """
             SELECT id, product_name, date, type, quantity, reason, balance_after
             FROM stock_movements
-            WHERE company_id = ? AND product_name = ?
+            WHERE company_id = ? AND branch_id = ? AND product_name = ?
             ORDER BY date DESC, id DESC
             LIMIT ?
             """,
-            (company, product, take),
+            (company, branch, product, take),
         ).fetchall()
         has_balance = True
     except sqlite3.OperationalError:
@@ -438,11 +504,11 @@ def list_stock_movements(
             """
             SELECT id, product_name, date, type, quantity, reason
             FROM stock_movements
-            WHERE company_id = ? AND product_name = ?
+            WHERE company_id = ? AND branch_id = ? AND product_name = ?
             ORDER BY date DESC, id DESC
             LIMIT ?
             """,
-            (company, product, take),
+            (company, branch, product, take),
         ).fetchall()
         has_balance = False
 
@@ -472,9 +538,11 @@ def upsert_cost_per_unit(
     product_name: str,
     cost_per_unit: float,
     company_id: Optional[str] = None,
+    branch_id: Optional[str] = None,
 ) -> None:
     init_product_costs_db(conn)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
     product = normalize_product_name(product_name)
 
     try:
@@ -488,34 +556,36 @@ def upsert_cost_per_unit(
     now = _utc_now_iso()
     conn.execute(
         """
-        INSERT INTO inventory_product_costs (company_id, product_name, cost_per_unit, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?)
-        ON CONFLICT(company_id, product_name) DO UPDATE SET
+        INSERT INTO inventory_product_costs (company_id, branch_id, product_name, cost_per_unit, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT(company_id, branch_id, product_name) DO UPDATE SET
             cost_per_unit = excluded.cost_per_unit,
             updated_at = excluded.updated_at
         """,
-        (company, product, value, now, now),
+        (company, branch, product, value, now, now),
     )
     conn.commit()
 
 
-def get_cost_per_unit_map(conn: sqlite3.Connection, company_id: Optional[str] = None) -> Dict[str, float]:
+def get_cost_per_unit_map(conn: sqlite3.Connection, company_id: Optional[str] = None, branch_id: Optional[str] = None) -> Dict[str, float]:
     init_product_costs_db(conn)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
     rows = conn.execute(
-        "SELECT product_name, cost_per_unit FROM inventory_product_costs WHERE company_id = ?",
-        (company,),
+        "SELECT product_name, cost_per_unit FROM inventory_product_costs WHERE company_id = ? AND branch_id = ?",
+        (company, branch),
     ).fetchall()
     return {str(r["product_name"]): float(r["cost_per_unit"]) for r in rows}
 
 
-def delete_cost_row(conn: sqlite3.Connection, product_name: str, company_id: Optional[str] = None) -> int:
+def delete_cost_row(conn: sqlite3.Connection, product_name: str, company_id: Optional[str] = None, branch_id: Optional[str] = None) -> int:
     init_product_costs_db(conn)
     company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id)
     product = normalize_product_name(product_name)
     cur = conn.execute(
-        "DELETE FROM inventory_product_costs WHERE company_id = ? AND product_name = ?",
-        (company, product),
+        "DELETE FROM inventory_product_costs WHERE company_id = ? AND branch_id = ? AND product_name = ?",
+        (company, branch, product),
     )
     conn.commit()
     try:

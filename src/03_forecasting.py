@@ -21,6 +21,7 @@ The pipeline controller will skip forecasting if these conditions aren't met.
 """
 
 import sys
+import os
 import logging
 from pathlib import Path
 from typing import Tuple, Optional, Dict
@@ -35,14 +36,17 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 # Paths & Logging
 # -------------------------------------------------
 BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = Path(os.getenv("SI_DATA_DIR", str(BASE_DIR / "data")))
 LOGS_DIR = BASE_DIR / "logs"
-OUTPUT_DIR = BASE_DIR / "output"
-PLOTS_DIR = OUTPUT_DIR / "plots"
+OUTPUT_DIR = Path(os.getenv("SI_OUTPUT_DIR", str(BASE_DIR / "output")))
+PLOTS_DIR = Path(os.getenv("SI_PLOTS_DIR", str(OUTPUT_DIR / "plots")))
+FORECASTS_DIR = Path(os.getenv("SI_FORECASTS_DIR", str(BASE_DIR / "output" / "forecasts")))
+TENANT_ROOT = Path(os.getenv("SI_TENANT_ROOT", str(BASE_DIR / "data")))
 
 LOGS_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
 PLOTS_DIR.mkdir(exist_ok=True)
+FORECASTS_DIR.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -101,7 +105,9 @@ def resolve_forecasting_columns(df: pd.DataFrame) -> Dict[str, Optional[str]]:
 def find_data_file() -> Path:
     """Find data file in multiple possible locations."""
     possible_paths = [
+        OUTPUT_DIR / "cleaned_dataset.csv",
         DATA_DIR / "cleaned_dataset.csv",
+        OUTPUT_DIR / "merged_data.csv",
         DATA_DIR / "sales.csv",
         DATA_DIR / "merged_data.csv",
     ]
@@ -328,9 +334,12 @@ def main():
             "ForecastedSales": future_sales
         })
 
-        output_path = DATA_DIR / "sales_forecast.csv"
+        output_path = FORECASTS_DIR / "sales_forecast.csv"
+        alias_path = TENANT_ROOT / "forecast.csv"
         forecast_df.to_csv(output_path, index=False)
+        forecast_df.to_csv(alias_path, index=False)
         logger.info(f"Forecast saved to {output_path}")
+        logger.info(f"Forecast alias saved to {alias_path}")
 
         logger.info("=" * 60)
         logger.info("PHASE 3 COMPLETED SUCCESSFULLY")

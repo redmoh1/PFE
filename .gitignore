@@ -10,12 +10,36 @@ __pycache__/
 .venv/
 venv/
 
+# Local secrets
+.env
+.env.*
+!.env.example
+
 # Node
 node_modules/
 
 # Project runtime artifacts
 logs/
 output/
+
+# Local debug exports
+/_debug_import.txt
+/_import_err.txt
+/_import_result.txt
+/_uvicorn_stderr.txt
+/_uvicorn_stdout.txt
+/_upload_probe.csv
+/_memoire_test.docx
+/MEMOIRE.docx
+
+# Tenant runtime uploads
+data/company_*/
+data/forecast.csv
+data/product_recommendations.csv
+data/rfm_table.csv
+data/sales.csv
+data/sales_forecast.csv
+data/sentiment_results.csv
 
 # Local databases / runtime state
 data/*.db
@@ -28,6 +52,5 @@ __pycache__/
 *.pyc
 
 data/*.db
-data/*.csv
 
 logs/*.log

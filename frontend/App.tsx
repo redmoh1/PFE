@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './store/AuthContext';
 import { DataProvider } from './store/DataContext';
 import Layout from './components/Layout';
@@ -13,11 +13,26 @@ import Sentiment from './pages/Sentiment';
 import DataUpload from './pages/DataUpload';
 import Settings from './pages/Settings';
 import Inventory from './pages/Inventory';
+import { AppPage, canAccessPage } from './types';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  const [currentPage, setCurrentPage] = useState('dashboard');
+  const { user } = useAuth();
+  const [currentPage, setCurrentPage] = useState<AppPage>('dashboard');
   const [isDark, setIsDark] = useState(false);
+  const resolvedPage: AppPage = canAccessPage(currentPage, user?.role) ? currentPage : 'dashboard';
+
+  const handleNavigate = useCallback((pageId: string) => {
+    const nextPage = pageId as AppPage;
+    setCurrentPage(canAccessPage(nextPage, user?.role) ? nextPage : 'dashboard');
+  }, [user?.role]);
+
+  useEffect(() => {
+    if (isAuthenticated && !canAccessPage(currentPage, user?.role)) {
+      setCurrentPage('dashboard');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, isAuthenticated, user?.role]);
 
   useEffect(() => {
     if (isDark) {
@@ -32,8 +47,8 @@ const AppContent: React.FC = () => {
   }
 
   const renderPage = () => {
-    switch (currentPage) {
-      case 'dashboard': return <Dashboard onNavigate={setCurrentPage} />;
+    switch (resolvedPage) {
+      case 'dashboard': return <Dashboard onNavigate={handleNavigate} />;
       case 'sales': return <SalesAnalytics />;
       case 'forecasting': return <Forecasting />;
       case 'segmentation': return <Segmentation />;
@@ -48,8 +63,8 @@ const AppContent: React.FC = () => {
 
   return (
     <Layout 
-      onNavigate={setCurrentPage} 
-      currentPage={currentPage}
+      onNavigate={handleNavigate} 
+      currentPage={resolvedPage}
       isDark={isDark}
       onToggleTheme={() => setIsDark(!isDark)}
     >

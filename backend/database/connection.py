@@ -45,6 +45,16 @@ else:
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
+def _sqlite_table_columns(conn, table_name: str) -> set[str]:
+    return {str(row[1]) for row in conn.exec_driver_sql(f"PRAGMA table_info({table_name})").fetchall()}
+
+
+def _ensure_sqlite_column(conn, table_name: str, column_name: str, definition: str) -> None:
+    columns = _sqlite_table_columns(conn, table_name)
+    if column_name not in columns:
+        conn.exec_driver_sql(f"ALTER TABLE {table_name} ADD COLUMN {column_name} {definition}")
+
+
 def init_db():
     """Initialize database tables.
     
@@ -52,6 +62,26 @@ def init_db():
     For production, use Alembic migrations instead.
     """
     Base.metadata.create_all(bind=engine)
+
+    # Lightweight migrations for older local databases.
+    with engine.begin() as conn:
+        if DATABASE_URL.startswith("sqlite"):
+            _ensure_sqlite_column(conn, "users", "branch_id", "INTEGER")
+            _ensure_sqlite_column(conn, "users", "company_id", "INTEGER")
+            _ensure_sqlite_column(conn, "users", "is_active", "BOOLEAN NOT NULL DEFAULT 1")
+            _ensure_sqlite_column(conn, "users", "is_email_verified", "BOOLEAN NOT NULL DEFAULT 1")
+            _ensure_sqlite_column(conn, "users", "email_verified_at", "DATETIME")
+
+            _ensure_sqlite_column(conn, "branches", "phone", "VARCHAR(255)")
+            _ensure_sqlite_column(conn, "branches", "is_active", "BOOLEAN NOT NULL DEFAULT 1")
+
+            # Older local databases can miss tenant-scoping columns on analytics tables.
+            _ensure_sqlite_column(conn, "forecast_results", "branch_id", "INTEGER")
+            _ensure_sqlite_column(conn, "rfm_results", "branch_id", "INTEGER")
+            _ensure_sqlite_column(conn, "sentiment_results", "branch_id", "INTEGER")
+            _ensure_sqlite_column(conn, "model_performance_logs", "branch_id", "INTEGER")
+            _ensure_sqlite_column(conn, "notifications", "branch_id", "INTEGER")
+
     print(f"Database initialized at: {DATABASE_URL}")
 
 
@@ -79,3 +109,6 @@ def reset_db():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     print("Database reset complete")
+
+
+init_db()

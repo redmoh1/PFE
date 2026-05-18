@@ -11,6 +11,35 @@
 
 This document outlines the comprehensive improvements made to transform the Sales Intelligence system from a proof-of-concept to a production-ready, enterprise-grade platform. All enhancements maintain backward compatibility with the existing structure while adding scientific rigor, security, and scalability.
 
+## 🏗️ FINALIZED SaaS ARCHITECTURE
+
+The current implementation now uses a tenant-scoped SaaS model with JWT-derived authorization and branch-aware analytics storage.
+
+### Core guarantees
+- Company and branch access come from JWT claims on the backend, not from frontend headers.
+- Branch managers are locked to their assigned branch.
+- Company admins can switch between branches or view company-wide analytics.
+- Analytics outputs are written under tenant folders instead of shared global CSV files.
+
+### Storage layout
+```
+data/
+   company_<id>/
+      branch_<id>/
+         uploads/
+         outputs/
+         forecasts/
+         segmentation/
+         sentiment/
+         recommendations/
+```
+
+### Role model
+- `SUPER_ADMIN` - full system access
+- `COMPANY_ADMIN` - company-wide branch management and analytics
+- `BRANCH_ADMIN` - branch-scoped operational access
+- `EMPLOYEE` / `VIEWER` - read-only access to allowed modules
+
 ---
 
 ## ✅ IMPROVEMENTS IMPLEMENTED

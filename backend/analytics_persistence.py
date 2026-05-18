@@ -37,6 +37,8 @@ import pandas as pd
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, Column, Integer, String, Float, DateTime, ForeignKey, Text, JSON
 
+from src.tenant_paths import derived_output_paths
+
 # Ensure backend directory is in path for imports
 BACKEND_DIR = Path(__file__).resolve().parent
 if str(BACKEND_DIR) not in sys.path:
@@ -97,6 +99,7 @@ def get_or_create_company(db: Session, company_id: str) -> Optional[int]:
 def save_forecast_results(
     forecast_data: List[Dict[str, Any]],
     company_id: str = "Acme Corp",
+    branch_id: Optional[str] = None,
     model_type: str = "LinearRegression",
     model_version: int = 1,
     forecast_periods: int = 12,
@@ -127,12 +130,14 @@ def save_forecast_results(
         # Delete existing forecasts for this company/model combination
         db.query(ForecastResult).filter(
             ForecastResult.company_id == company_db_id,
+            ForecastResult.branch_id == (int(branch_id) if branch_id is not None else None),
             ForecastResult.model_type == model_type,
         ).delete()
         
         # Create new forecast result
         forecast = ForecastResult(
             company_id=company_db_id,
+            branch_id=int(branch_id) if branch_id is not None else None,
             model_type=model_type,
             model_version=model_version,
             forecast_periods=forecast_periods,
@@ -160,6 +165,7 @@ def save_forecast_results(
 
 def get_forecast_results(
     company_id: str = "Acme Corp",
+    branch_id: Optional[str] = None,
     model_type: Optional[str] = None,
 ) -> Optional[pd.DataFrame]:
     """
@@ -179,6 +185,10 @@ def get_forecast_results(
         query = db.query(ForecastResult).filter(
             ForecastResult.company_id == company_db_id
         )
+        if branch_id is None:
+            query = query.filter(ForecastResult.branch_id.is_(None))
+        else:
+            query = query.filter(ForecastResult.branch_id == int(branch_id))
         
         if model_type:
             query = query.filter(ForecastResult.model_type == model_type)
@@ -218,14 +228,17 @@ def get_forecast_results(
         db.close()
 
 
-def delete_forecast_results(company_id: str = "Acme Corp") -> int:
+def delete_forecast_results(company_id: str = "Acme Corp", branch_id: Optional[str] = None) -> int:
     """Delete all forecast results for a company. Returns count of deleted records."""
     db = SessionLocal()
     try:
         company_db_id = get_or_create_company(db, company_id)
-        count = db.query(ForecastResult).filter(
-            ForecastResult.company_id == company_db_id
-        ).delete()
+        query = db.query(ForecastResult).filter(ForecastResult.company_id == company_db_id)
+        if branch_id is None:
+            query = query.filter(ForecastResult.branch_id.is_(None))
+        else:
+            query = query.filter(ForecastResult.branch_id == int(branch_id))
+        count = query.delete()
         db.commit()
         logger.info(f"Deleted {count} forecast records for company {company_id}")
         return count
@@ -244,6 +257,7 @@ def delete_forecast_results(company_id: str = "Acme Corp") -> int:
 def save_rfm_results(
     rfm_data: pd.DataFrame,
     company_id: str = "Acme Corp",
+    branch_id: Optional[str] = None,
 ) -> bool:
     """
     Save RFM segmentation results to database.
@@ -263,6 +277,8 @@ def save_rfm_results(
         # Delete existing RFM results for this company
         db.query(RFMResult).filter(
             RFMResult.company_id == company_db_id
+        ).filter(
+            RFMResult.branch_id == (int(branch_id) if branch_id is not None else None)
         ).delete()
         db.commit()
         
@@ -287,6 +303,7 @@ def save_rfm_results(
             try:
                 rfm = RFMResult(
                     company_id=company_db_id,
+                    branch_id=int(branch_id) if branch_id is not None else None,
                     customer_id=str(row.get("customer_id", "")),
                     customer_name=str(row.get("customer_name", "")) if "customer_name" in row else None,
                     recency=int(row.get("recency", 0)),
@@ -314,7 +331,7 @@ def save_rfm_results(
         db.close()
 
 
-def get_rfm_results(company_id: str = "Acme Corp") -> Optional[pd.DataFrame]:
+def get_rfm_results(company_id: str = "Acme Corp", branch_id: Optional[str] = None) -> Optional[pd.DataFrame]:
     """
     Get RFM segmentation results from database.
     
@@ -325,9 +342,12 @@ def get_rfm_results(company_id: str = "Acme Corp") -> Optional[pd.DataFrame]:
     try:
         company_db_id = get_or_create_company(db, company_id)
         
-        results = db.query(RFMResult).filter(
-            RFMResult.company_id == company_db_id
-        ).all()
+        query = db.query(RFMResult).filter(RFMResult.company_id == company_db_id)
+        if branch_id is None:
+            query = query.filter(RFMResult.branch_id.is_(None))
+        else:
+            query = query.filter(RFMResult.branch_id == int(branch_id))
+        results = query.all()
         
         if not results:
             logger.info(f"No RFM results found in database for company {company_id}")
@@ -359,14 +379,17 @@ def get_rfm_results(company_id: str = "Acme Corp") -> Optional[pd.DataFrame]:
         db.close()
 
 
-def delete_rfm_results(company_id: str = "Acme Corp") -> int:
+def delete_rfm_results(company_id: str = "Acme Corp", branch_id: Optional[str] = None) -> int:
     """Delete all RFM results for a company. Returns count of deleted records."""
     db = SessionLocal()
     try:
         company_db_id = get_or_create_company(db, company_id)
-        count = db.query(RFMResult).filter(
-            RFMResult.company_id == company_db_id
-        ).delete()
+        query = db.query(RFMResult).filter(RFMResult.company_id == company_db_id)
+        if branch_id is None:
+            query = query.filter(RFMResult.branch_id.is_(None))
+        else:
+            query = query.filter(RFMResult.branch_id == int(branch_id))
+        count = query.delete()
         db.commit()
         logger.info(f"Deleted {count} RFM records for company {company_id}")
         return count
@@ -385,6 +408,7 @@ def delete_rfm_results(company_id: str = "Acme Corp") -> int:
 def save_sentiment_results(
     sentiment_data: pd.DataFrame,
     company_id: str = "Acme Corp",
+    branch_id: Optional[str] = None,
     analysis_method: str = "textblob",
 ) -> bool:
     """
@@ -406,6 +430,8 @@ def save_sentiment_results(
         # Delete existing sentiment results for this company
         db.query(SentimentResult).filter(
             SentimentResult.company_id == company_db_id
+        ).filter(
+            SentimentResult.branch_id == (int(branch_id) if branch_id is not None else None)
         ).delete()
         db.commit()
         
@@ -449,6 +475,7 @@ def save_sentiment_results(
             try:
                 sentiment = SentimentResult(
                     company_id=company_db_id,
+                    branch_id=int(branch_id) if branch_id is not None else None,
                     review_id=str(row.get("ReviewID", row.get("review_id", idx))),
                     review_text=str(row[text_col])[:5000],  # Limit length
                     sentiment=str(row[sentiment_col]),
@@ -476,7 +503,7 @@ def save_sentiment_results(
         db.close()
 
 
-def get_sentiment_results(company_id: str = "Acme Corp") -> Optional[pd.DataFrame]:
+def get_sentiment_results(company_id: str = "Acme Corp", branch_id: Optional[str] = None) -> Optional[pd.DataFrame]:
     """
     Get Customer Feedback results from database.
     
@@ -487,9 +514,12 @@ def get_sentiment_results(company_id: str = "Acme Corp") -> Optional[pd.DataFram
     try:
         company_db_id = get_or_create_company(db, company_id)
         
-        results = db.query(SentimentResult).filter(
-            SentimentResult.company_id == company_db_id
-        ).all()
+        query = db.query(SentimentResult).filter(SentimentResult.company_id == company_db_id)
+        if branch_id is None:
+            query = query.filter(SentimentResult.branch_id.is_(None))
+        else:
+            query = query.filter(SentimentResult.branch_id == int(branch_id))
+        results = query.all()
         
         if not results:
             logger.info(f"No sentiment results found in database for company {company_id}")
@@ -520,14 +550,17 @@ def get_sentiment_results(company_id: str = "Acme Corp") -> Optional[pd.DataFram
         db.close()
 
 
-def delete_sentiment_results(company_id: str = "Acme Corp") -> int:
+def delete_sentiment_results(company_id: str = "Acme Corp", branch_id: Optional[str] = None) -> int:
     """Delete all sentiment results for a company. Returns count of deleted records."""
     db = SessionLocal()
     try:
         company_db_id = get_or_create_company(db, company_id)
-        count = db.query(SentimentResult).filter(
-            SentimentResult.company_id == company_db_id
-        ).delete()
+        query = db.query(SentimentResult).filter(SentimentResult.company_id == company_db_id)
+        if branch_id is None:
+            query = query.filter(SentimentResult.branch_id.is_(None))
+        else:
+            query = query.filter(SentimentResult.branch_id == int(branch_id))
+        count = query.delete()
         db.commit()
         logger.info(f"Deleted {count} sentiment records for company {company_id}")
         return count
@@ -551,6 +584,7 @@ class RecommendationResult(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     
     rule_id = Column(String(50), nullable=True)
@@ -564,10 +598,19 @@ class RecommendationResult(Base):
 # Create the table
 Base.metadata.create_all(bind=engine)
 
+try:
+    with engine.begin() as conn:
+        cols = [row[1] for row in conn.exec_driver_sql("PRAGMA table_info(recommendation_results)").fetchall()]
+        if cols and "branch_id" not in cols:
+            conn.exec_driver_sql("ALTER TABLE recommendation_results ADD COLUMN branch_id INTEGER")
+except Exception as exc:
+    logger.warning(f"Could not ensure recommendation_results.branch_id column: {exc}")
+
 
 def save_recommendation_results(
     recommendation_data: pd.DataFrame,
     company_id: str = "Acme Corp",
+    branch_id: Optional[str] = None,
 ) -> bool:
     """
     Save recommendation/association rules to database.
@@ -586,6 +629,8 @@ def save_recommendation_results(
         # Delete existing recommendations for this company
         db.query(RecommendationResult).filter(
             RecommendationResult.company_id == company_db_id
+        ).filter(
+            RecommendationResult.branch_id == (int(branch_id) if branch_id is not None else None)
         ).delete()
         db.commit()
         
@@ -616,6 +661,7 @@ def save_recommendation_results(
             try:
                 rec = RecommendationResult(
                     company_id=company_db_id,
+                    branch_id=int(branch_id) if branch_id is not None else None,
                     rule_id=str(row.get("RuleID", row.get("rule_id", idx))),
                     if_product=str(row[if_col]),
                     then_product=str(row[then_col]),
@@ -640,7 +686,7 @@ def save_recommendation_results(
         db.close()
 
 
-def get_recommendation_results(company_id: str = "Acme Corp") -> Optional[pd.DataFrame]:
+def get_recommendation_results(company_id: str = "Acme Corp", branch_id: Optional[str] = None) -> Optional[pd.DataFrame]:
     """
     Get recommendation/association rules from database.
     
@@ -651,9 +697,12 @@ def get_recommendation_results(company_id: str = "Acme Corp") -> Optional[pd.Dat
     try:
         company_db_id = get_or_create_company(db, company_id)
         
-        results = db.query(RecommendationResult).filter(
-            RecommendationResult.company_id == company_db_id
-        ).order_by(desc(RecommendationResult.lift)).all()
+        query = db.query(RecommendationResult).filter(RecommendationResult.company_id == company_db_id)
+        if branch_id is None:
+            query = query.filter(RecommendationResult.branch_id.is_(None))
+        else:
+            query = query.filter(RecommendationResult.branch_id == int(branch_id))
+        results = query.order_by(desc(RecommendationResult.lift)).all()
         
         if not results:
             logger.info(f"No recommendation results found in database for company {company_id}")
@@ -682,14 +731,17 @@ def get_recommendation_results(company_id: str = "Acme Corp") -> Optional[pd.Dat
         db.close()
 
 
-def delete_recommendation_results(company_id: str = "Acme Corp") -> int:
+def delete_recommendation_results(company_id: str = "Acme Corp", branch_id: Optional[str] = None) -> int:
     """Delete all recommendation results for a company. Returns count of deleted records."""
     db = SessionLocal()
     try:
         company_db_id = get_or_create_company(db, company_id)
-        count = db.query(RecommendationResult).filter(
-            RecommendationResult.company_id == company_db_id
-        ).delete()
+        query = db.query(RecommendationResult).filter(RecommendationResult.company_id == company_db_id)
+        if branch_id is None:
+            query = query.filter(RecommendationResult.branch_id.is_(None))
+        else:
+            query = query.filter(RecommendationResult.branch_id == int(branch_id))
+        count = query.delete()
         db.commit()
         logger.info(f"Deleted {count} recommendation records for company {company_id}")
         return count
@@ -705,14 +757,19 @@ def delete_recommendation_results(company_id: str = "Acme Corp") -> int:
 # BULK OPERATIONS
 # =============================================================================
 
-def delete_all_analytics_for_company(company_id: str = "Acme Corp") -> Dict[str, int]:
-    """Delete all analytics results for a company. Used during cascade delete."""
+def delete_all_analytics_for_tenant(company_id: str = "Acme Corp", branch_id: Optional[str] = None) -> Dict[str, int]:
+    """Delete analytics results for a single tenant scope."""
     return {
-        "forecasts": delete_forecast_results(company_id),
-        "rfm": delete_rfm_results(company_id),
-        "sentiment": delete_sentiment_results(company_id),
-        "recommendations": delete_recommendation_results(company_id),
+        "forecasts": delete_forecast_results(company_id, branch_id=branch_id),
+        "rfm": delete_rfm_results(company_id, branch_id=branch_id),
+        "sentiment": delete_sentiment_results(company_id, branch_id=branch_id),
+        "recommendations": delete_recommendation_results(company_id, branch_id=branch_id),
     }
+
+
+def delete_all_analytics_for_company(company_id: str = "Acme Corp") -> Dict[str, int]:
+    """Delete all analytics results for a company. Used during full-company resets."""
+    return delete_all_analytics_for_tenant(company_id, branch_id=None)
 
 
 def sync_csv_to_database(company_id: str = "Acme Corp", data_dir: Path = None) -> Dict[str, bool]:
@@ -725,16 +782,39 @@ def sync_csv_to_database(company_id: str = "Acme Corp", data_dir: Path = None) -
     """
     if data_dir is None:
         data_dir = Path(__file__).parent.parent / "data"
+
+    branch_id = None
+    company_key = company_id
+    current_dir = Path(data_dir)
+    scope_dir = current_dir
+
+    # Accept either a tenant scope directory (.../company_X or .../branch_Y)
+    # or a dataset directory below it (.../sales, .../reviews, .../uploads).
+    if scope_dir.name in {"uploads", "sales", "reviews", "customers"}:
+        scope_dir = scope_dir.parent
+
+    if scope_dir.name.startswith("branch_"):
+        branch_id = scope_dir.name.replace("branch_", "", 1)
+        branches_dir = scope_dir.parent
+        company_dir = branches_dir.parent if branches_dir.name == "branches" else branches_dir
+        if company_dir.name.startswith("company_"):
+            company_key = company_dir.name.replace("company_", "", 1)
+    elif scope_dir.name.startswith("company_"):
+        company_key = scope_dir.name.replace("company_", "", 1)
+    elif scope_dir.parent.name.startswith("company_"):
+        company_key = scope_dir.parent.name.replace("company_", "", 1)
+
+    tenant_files = derived_output_paths(Path(__file__).parent.parent / "data", company_key, branch_id)
     
     status = {}
     
     # Sync RFM
-    rfm_path = data_dir / "rfm_table.csv"
+    rfm_path = tenant_files["rfm_table.csv"]
     if rfm_path.exists():
         try:
             df = pd.read_csv(rfm_path)
             if not df.empty:
-                status["rfm"] = save_rfm_results(df, company_id)
+                status["rfm"] = save_rfm_results(df, company_id, branch_id=branch_id)
             else:
                 status["rfm"] = False
         except Exception as e:
@@ -744,12 +824,12 @@ def sync_csv_to_database(company_id: str = "Acme Corp", data_dir: Path = None) -
         status["rfm"] = False
     
     # Sync Sentiment
-    sentiment_path = data_dir / "sentiment_results.csv"
+    sentiment_path = tenant_files["sentiment_results.csv"]
     if sentiment_path.exists():
         try:
             df = pd.read_csv(sentiment_path)
             if not df.empty:
-                status["sentiment"] = save_sentiment_results(df, company_id)
+                status["sentiment"] = save_sentiment_results(df, company_id, branch_id=branch_id)
             else:
                 status["sentiment"] = False
         except Exception as e:
@@ -759,12 +839,12 @@ def sync_csv_to_database(company_id: str = "Acme Corp", data_dir: Path = None) -
         status["sentiment"] = False
     
     # Sync Recommendations
-    recs_path = data_dir / "product_recommendations.csv"
+    recs_path = tenant_files["product_recommendations.csv"]
     if recs_path.exists():
         try:
             df = pd.read_csv(recs_path)
             if not df.empty:
-                status["recommendations"] = save_recommendation_results(df, company_id)
+                status["recommendations"] = save_recommendation_results(df, company_id, branch_id=branch_id)
             else:
                 status["recommendations"] = False
         except Exception as e:
@@ -774,7 +854,7 @@ def sync_csv_to_database(company_id: str = "Acme Corp", data_dir: Path = None) -
         status["recommendations"] = False
     
     # Sync Forecast
-    forecast_path = data_dir / "sales_forecast.csv"
+    forecast_path = tenant_files["sales_forecast.csv"]
     if forecast_path.exists():
         try:
             df = pd.read_csv(forecast_path)
@@ -784,6 +864,7 @@ def sync_csv_to_database(company_id: str = "Acme Corp", data_dir: Path = None) -
                 status["forecast"] = save_forecast_results(
                     forecast_data, 
                     company_id, 
+                    branch_id=branch_id,
                     model_type="LinearRegression"
                 )
             else:

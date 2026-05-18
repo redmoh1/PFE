@@ -15,13 +15,16 @@ from pathlib import Path
 from typing import List, Optional, Dict, Any
 
 import pandas as pd
-from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Header
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File, Depends
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
+
+from backend.auth import get_tenant_scope, TenantScope, require_tenant_manager
 
 from backend.inventory_store import (
     connect,
     normalize_company_id,
+    normalize_branch_id,
     normalize_product_name,
     upsert_stock,
     increment_stock,
@@ -41,10 +44,21 @@ from backend.inventory_store import (
     advice_for,
 )
 from backend.notification_store import create_notification
+from src.tenant_paths import derived_output_paths, ensure_tenant_directories
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/inventory", tags=["Inventory"])
+
+
+def _company_key_from_tenant(tenant: TenantScope) -> str:
+    # Inventory/notifications stores currently partition by a company TEXT key.
+    # Prefer Company.name when available; otherwise fall back to a stable mapping.
+    if getattr(tenant, "company_name", None):
+        return str(tenant.company_name)
+    if int(getattr(tenant, "company_id", 0) or 0) == 1:
+        return "Acme Corp"
+    return str(tenant.company_id)
 
 
 def _derive_cost_per_unit_from_sales(df: pd.DataFrame) -> Dict[str, float]:
@@ -164,10 +178,11 @@ LARGE_STOCK_MOVEMENT_THRESHOLD = 50
 def _load_avg_daily_sales_for_notifications(
     source: Optional[str],
     company_id: Optional[str],
+    branch_id: Optional[str],
 ) -> Dict[str, float]:
     """Best-effort average daily sales map for notification triggers."""
     try:
-        sales_file = _pick_sales_data_file(source=source, company_id=company_id)
+        sales_file = _pick_sales_data_file(source=source, company_id=company_id, branch_id=branch_id)
         df = pd.read_csv(sales_file)
         return compute_avg_daily_sales(df)
     except Exception:
@@ -183,6 +198,7 @@ def _emit_inventory_notifications(
     avg_daily_sales: float,
     delta: int,
     company_id: Optional[str],
+    branch_id: Optional[str],
 ) -> None:
     """Create notifications for status transitions and major movements."""
     product = normalize_product_name(product_name)
@@ -209,6 +225,7 @@ def _emit_inventory_notifications(
             message=message,
             type="ALERT",
             company_id=company_id,
+            branch_id=branch_id,
         )
 
     if prev_status != "WARNING" and new_status == "WARNING":
@@ -221,6 +238,7 @@ def _emit_inventory_notifications(
             message=message,
             type="WARNING",
             company_id=company_id,
+            branch_id=branch_id,
         )
 
     if (previous_stock is None or int(previous_stock) > 0) and (current_stock is not None and int(current_stock) == 0):
@@ -230,6 +248,7 @@ def _emit_inventory_notifications(
             message=f"{product} stock reached zero.",
             type="ALERT",
             company_id=company_id,
+            branch_id=branch_id,
         )
 
     if abs(int(delta)) >= LARGE_STOCK_MOVEMENT_THRESHOLD:
@@ -240,6 +259,7 @@ def _emit_inventory_notifications(
             message=f"Large stock movement: {product} {movement} by {abs(int(delta))} units.",
             type="INFO",
             company_id=company_id,
+            branch_id=branch_id,
         )
 
 
@@ -253,7 +273,7 @@ def _data_dir() -> Path:
     return _project_base_dir() / "data"
 
 
-def _company_data_dir(company_id: Optional[str]) -> Path:
+def _company_data_dir(company_id: Optional[str], branch_id: Optional[str] = None) -> Path:
     """Resolve the correct data directory for a company.
 
     The existing backend stores company datasets under data/<company_id>/.
@@ -263,11 +283,11 @@ def _company_data_dir(company_id: Optional[str]) -> Path:
 
     base = _data_dir()
     company = normalize_company_id(company_id)
-    candidate = base / company
-    return candidate if candidate.exists() else base
+    branch = normalize_branch_id(branch_id) if branch_id is not None else None
+    return ensure_tenant_directories(base, company, branch)["uploads"]
 
 
-def _pick_sales_data_file(source: Optional[str] = None, company_id: Optional[str] = None) -> Path:
+def _pick_sales_data_file(source: Optional[str] = None, company_id: Optional[str] = None, branch_id: Optional[str] = None) -> Path:
     """Pick the best available sales dataset.
 
     Preference order is:
@@ -282,39 +302,33 @@ def _pick_sales_data_file(source: Optional[str] = None, company_id: Optional[str
         Path to an existing CSV.
     """
 
-    # This project currently stores canonical pipeline outputs in data/ (shared),
-    # while uploaded raw datasets may exist under data/<company_id>/<dataset_type>/.
-    # We therefore try the shared folder first, then fall back to the company folder.
     base_dir = _data_dir()
-    company_dir = _company_data_dir(company_id)
-    candidate_dirs = [base_dir]
-    if company_dir != base_dir:
-        candidate_dirs.append(company_dir)
+    company = normalize_company_id(company_id)
+    branch = normalize_branch_id(branch_id) if branch_id is not None else None
+    uploads_dir = _company_data_dir(company_id, branch_id=branch_id)
+    derived_files = derived_output_paths(base_dir, company, branch)
 
     if source:
         source = source.lower().strip()
-        mapping = {
-            "cleaned": "cleaned_dataset.csv",
-            "merged": "merged_data.csv",
-            "raw": "sales.csv",
+        mapping: Dict[str, Path] = {
+            "cleaned": derived_files["cleaned_dataset.csv"],
+            "merged": derived_files["merged_data.csv"],
+            "raw": uploads_dir / "sales.csv",
         }
-        picked_name = mapping.get(source)
-        if not picked_name:
+        picked = mapping.get(source)
+        if not picked:
             raise HTTPException(status_code=400, detail="Invalid source. Use cleaned|merged|raw")
-        for d in candidate_dirs:
-            picked = d / picked_name
-            if picked.exists():
-                return picked
-        raise HTTPException(status_code=404, detail=f"Requested source file not found: {picked_name}")
+        if picked.exists():
+            return picked
+        raise HTTPException(status_code=404, detail=f"Requested source file not found: {picked.name}")
 
-    for d in candidate_dirs:
-        for candidate in [
-            d / "cleaned_dataset.csv",
-            d / "merged_data.csv",
-            d / "sales.csv",
-        ]:
-            if candidate.exists():
-                return candidate
+    for candidate in [
+        derived_files["cleaned_dataset.csv"],
+        derived_files["merged_data.csv"],
+        uploads_dir / "sales.csv",
+    ]:
+        if candidate.exists():
+            return candidate
 
     raise HTTPException(
         status_code=404,
@@ -340,7 +354,7 @@ def get_inventory_products(
         default=None,
         description="Optional: cleaned|merged|raw. Defaults to best available.",
     ),
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> List[str]:
     """Extract unique product names from the current sales data.
 
@@ -351,7 +365,9 @@ def get_inventory_products(
         A sorted list of unique product names.
     """
 
-    csv_path = _pick_sales_data_file(source, company_id=company_id)
+    company_id = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
+    csv_path = _pick_sales_data_file(source, company_id=company_id, branch_id=branch_id)
 
     try:
         df = pd.read_csv(csv_path)
@@ -407,7 +423,7 @@ def get_inventory_products(
     # Exclude products that were deleted from Inventory view (soft delete).
     conn = connect()
     try:
-        deleted = get_deleted_products_set(conn, company_id=company_id)
+        deleted = get_deleted_products_set(conn, company_id=company_id, branch_id=branch_id)
     finally:
         conn.close()
 
@@ -418,7 +434,8 @@ def get_inventory_products(
 @router.delete("/product/{product_name}")
 def delete_inventory_product(
     product_name: str,
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    _: object = Depends(require_tenant_manager),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     """Soft-delete a product from Inventory Management.
 
@@ -434,11 +451,14 @@ def delete_inventory_product(
     if not name:
         raise HTTPException(status_code=400, detail="Invalid product name")
 
+    company_id = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
+
     conn = connect()
     try:
-        mark_product_deleted(conn, name, company_id=company_id)
-        removed = delete_stock_row(conn, name, company_id=company_id)
-        removed_costs = delete_cost_row(conn, name, company_id=company_id)
+        mark_product_deleted(conn, name, company_id=company_id, branch_id=branch_id)
+        removed = delete_stock_row(conn, name, company_id=company_id, branch_id=branch_id)
+        removed_costs = delete_cost_row(conn, name, company_id=company_id, branch_id=branch_id)
     finally:
         conn.close()
 
@@ -453,7 +473,8 @@ def delete_inventory_product(
 @router.post("/update-cost")
 def update_inventory_costs(
     payload: CostUpdateRequest,
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    _: object = Depends(require_tenant_manager),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     """Persist seller-provided cost_per_unit values.
 
@@ -464,10 +485,13 @@ def update_inventory_costs(
     if not payload.items:
         return {"ok": True, "updated": 0}
 
+    company_id = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
+
     conn = connect()
     try:
         for item in payload.items:
-            upsert_cost_per_unit(conn, item.product_name, item.cost_per_unit, company_id=company_id)
+            upsert_cost_per_unit(conn, item.product_name, item.cost_per_unit, company_id=company_id, branch_id=branch_id)
         return {"ok": True, "updated": len(payload.items)}
     finally:
         conn.close()
@@ -476,7 +500,8 @@ def update_inventory_costs(
 @router.post("/update")
 def update_inventory_stock(
     payload: StockUpdateRequest,
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    _: object = Depends(require_tenant_manager),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     """Persist seller-provided stock values.
 
@@ -487,15 +512,18 @@ def update_inventory_stock(
     if not payload.items:
         return {"ok": True, "updated": 0}
 
-    avg_daily_map = _load_avg_daily_sales_for_notifications(source=None, company_id=company_id)
+    company_id = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
+
+    avg_daily_map = _load_avg_daily_sales_for_notifications(source=None, company_id=company_id, branch_id=branch_id)
     conn = connect()
     try:
-        stock_map = get_stock_map(conn, company_id=company_id)
+        stock_map = get_stock_map(conn, company_id=company_id, branch_id=branch_id)
         for item in payload.items:
             product = normalize_product_name(item.product_name)
             previous_stock = stock_map.get(product)
             current_stock = int(item.current_stock)
-            upsert_stock(conn, product, current_stock, company_id=company_id, movement_reason="Manual Adjustment")
+            upsert_stock(conn, product, current_stock, company_id=company_id, branch_id=branch_id, movement_reason="Manual Adjustment")
             delta = current_stock - (int(previous_stock) if previous_stock is not None else 0)
             _emit_inventory_notifications(
                 conn=conn,
@@ -505,6 +533,7 @@ def update_inventory_stock(
                 avg_daily_sales=float(avg_daily_map.get(product, 0.0)),
                 delta=delta,
                 company_id=company_id,
+                branch_id=branch_id,
             )
             stock_map[product] = current_stock
         return {"ok": True, "updated": len(payload.items)}
@@ -515,18 +544,22 @@ def update_inventory_stock(
 @router.post("/add-product")
 def add_inventory_product(
     payload: AddProductRequest,
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    _: object = Depends(require_tenant_manager),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     """Manually add a new product with initial stock."""
 
+    company_id = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
+
     product = normalize_product_name(payload.product_name)
-    avg_daily_map = _load_avg_daily_sales_for_notifications(source=None, company_id=company_id)
+    avg_daily_map = _load_avg_daily_sales_for_notifications(source=None, company_id=company_id, branch_id=branch_id)
     conn = connect()
     try:
-        stock_map = get_stock_map(conn, company_id=company_id)
+        stock_map = get_stock_map(conn, company_id=company_id, branch_id=branch_id)
         previous_stock = stock_map.get(product)
         current_stock = int(payload.initial_stock)
-        upsert_stock(conn, product, current_stock, company_id=company_id, movement_reason="Manual Adjustment")
+        upsert_stock(conn, product, current_stock, company_id=company_id, branch_id=branch_id, movement_reason="Manual Adjustment")
         delta = current_stock - (int(previous_stock) if previous_stock is not None else 0)
         _emit_inventory_notifications(
             conn=conn,
@@ -536,6 +569,7 @@ def add_inventory_product(
             avg_daily_sales=float(avg_daily_map.get(product, 0.0)),
             delta=delta,
             company_id=company_id,
+            branch_id=branch_id,
         )
         return {"ok": True, "product_name": product}
     finally:
@@ -545,7 +579,8 @@ def add_inventory_product(
 @router.post("/upload-invoice")
 async def upload_purchase_invoice(
     file: UploadFile = File(...),
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    _: object = Depends(require_tenant_manager),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     """Upload a purchase invoice CSV and automatically increase stock.
 
@@ -571,14 +606,17 @@ async def upload_purchase_invoice(
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=422, detail=str(exc))
 
-    avg_daily_map = _load_avg_daily_sales_for_notifications(source=None, company_id=company_id)
+    company_id = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
+
+    avg_daily_map = _load_avg_daily_sales_for_notifications(source=None, company_id=company_id, branch_id=branch_id)
     conn = connect()
     try:
-        stock_map = get_stock_map(conn, company_id=company_id)
+        stock_map = get_stock_map(conn, company_id=company_id, branch_id=branch_id)
         for line in lines:
             product = normalize_product_name(line.product_name)
             previous_stock = stock_map.get(product)
-            increment_stock(conn, product, line.quantity_purchased, company_id=company_id, movement_reason="Purchase")
+            increment_stock(conn, product, line.quantity_purchased, company_id=company_id, branch_id=branch_id, movement_reason="Purchase")
             current_stock = (int(previous_stock) if previous_stock is not None else 0) + int(line.quantity_purchased)
             if current_stock < 0:
                 current_stock = 0
@@ -590,6 +628,7 @@ async def upload_purchase_invoice(
                 avg_daily_sales=float(avg_daily_map.get(product, 0.0)),
                 delta=int(current_stock) - (int(previous_stock) if previous_stock is not None else 0),
                 company_id=company_id,
+                branch_id=branch_id,
             )
             stock_map[product] = current_stock
         return {"ok": True, "lines_applied": len(lines)}
@@ -601,7 +640,7 @@ async def upload_purchase_invoice(
 def get_stock_history(
     product_name: str,
     limit: int = Query(default=200, ge=1, le=2000, description="Max records to return"),
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     """Return stock movement history for a product (latest first)."""
 
@@ -609,9 +648,12 @@ def get_stock_history(
     if not name:
         raise HTTPException(status_code=400, detail="Invalid product name")
 
+    company_id = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
+
     conn = connect()
     try:
-        items = list_stock_movements(conn, name, company_id=company_id, limit=limit)
+        items = list_stock_movements(conn, name, company_id=company_id, branch_id=branch_id, limit=limit)
     finally:
         conn.close()
 
@@ -628,11 +670,14 @@ def get_inventory_status(
     alert_days: int = Query(default=3, ge=0, le=365, description="Days-left threshold for ALERT"),
     lead_time_days: int = Query(default=7, ge=0, le=365, description="Lead time in days for reorder suggestion"),
     safety_days: int = Query(default=0, ge=0, le=365, description="Extra safety days for reorder suggestion"),
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     """Return inventory status per product (stock + sales velocity + advice)."""
 
-    csv_path = _pick_sales_data_file(source, company_id=company_id)
+    company_id = _company_key_from_tenant(tenant)
+    branch_id = str(tenant.branch_id) if tenant.branch_id is not None else None
+
+    csv_path = _pick_sales_data_file(source, company_id=company_id, branch_id=branch_id)
 
     try:
         df = pd.read_csv(csv_path)
@@ -644,7 +689,7 @@ def get_inventory_status(
     if not df.empty:
         # Try to reuse the same detection logic as /products.
         try:
-            detected_products = get_inventory_products(source=source, company_id=company_id)
+            detected_products = get_inventory_products(source=source, tenant=tenant)
         except Exception:
             detected_products = []
 
@@ -655,17 +700,17 @@ def get_inventory_status(
 
     conn = connect()
     try:
-        stock_map = get_stock_map(conn, company_id=company_id)
-        cost_map = get_cost_per_unit_map(conn, company_id=company_id)
-        manual_products = list_manual_products(conn, company_id=company_id)
-        deleted = get_deleted_products_set(conn, company_id=company_id)
+        stock_map = get_stock_map(conn, company_id=company_id, branch_id=branch_id)
+        cost_map = get_cost_per_unit_map(conn, company_id=company_id, branch_id=branch_id)
+        manual_products = list_manual_products(conn, company_id=company_id, branch_id=branch_id)
+        deleted = get_deleted_products_set(conn, company_id=company_id, branch_id=branch_id)
 
         # Seed missing costs from derived values (one-time, best-effort).
         missing = [p for p in (stock_map.keys() | set(manual_products)) if p not in cost_map and p in derived_cost_map]
         if missing:
             for p in missing:
                 try:
-                    upsert_cost_per_unit(conn, p, derived_cost_map[p], company_id=company_id)
+                    upsert_cost_per_unit(conn, p, derived_cost_map[p], company_id=company_id, branch_id=branch_id)
                     cost_map[p] = float(derived_cost_map[p])
                 except Exception:
                     # Non-blocking: keep null if we can't derive or store.
@@ -735,7 +780,7 @@ def get_inventory_alerts_summary(
     alert_days: int = Query(default=3, ge=0, le=365, description="Days-left threshold for ALERT"),
     lead_time_days: int = Query(default=7, ge=0, le=365, description="Lead time in days for reorder suggestion"),
     safety_days: int = Query(default=0, ge=0, le=365, description="Extra safety days for reorder suggestion"),
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     """Return a compact alert summary for header widgets/badges.
 
@@ -748,7 +793,7 @@ def get_inventory_alerts_summary(
         alert_days=alert_days,
         lead_time_days=lead_time_days,
         safety_days=safety_days,
-        company_id=company_id,
+        tenant=tenant,
     )
     items = payload.get("items") or []
 
@@ -785,7 +830,7 @@ def get_inventory_summary(
     alert_days: int = Query(default=3, ge=0, le=365, description="Days-left threshold for ALERT"),
     lead_time_days: int = Query(default=7, ge=0, le=365, description="Lead time in days for reorder suggestion"),
     safety_days: int = Query(default=0, ge=0, le=365, description="Extra safety days for reorder suggestion"),
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Dict[str, Any]:
     """Return derived, read-only inventory counters.
 
@@ -805,7 +850,7 @@ def get_inventory_summary(
         alert_days=alert_days,
         lead_time_days=lead_time_days,
         safety_days=safety_days,
-        company_id=company_id,
+        tenant=tenant,
     )
 
     items: List[Dict[str, Any]] = payload.get("items") or []
@@ -843,7 +888,7 @@ def export_reorder_csv(
     alert_days: int = Query(default=3, ge=0, le=365),
     lead_time_days: int = Query(default=7, ge=0, le=365),
     safety_days: int = Query(default=0, ge=0, le=365),
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Response:
     """Export reorder suggestions as a CSV file.
 
@@ -857,7 +902,7 @@ def export_reorder_csv(
         alert_days=alert_days,
         lead_time_days=lead_time_days,
         safety_days=safety_days,
-        company_id=company_id,
+        tenant=tenant,
     )
 
     items: List[Dict[str, Any]] = payload.get("items") or []
@@ -922,7 +967,7 @@ def export_purchase_order_template_csv(
     alert_days: int = Query(default=3, ge=0, le=365),
     lead_time_days: int = Query(default=7, ge=0, le=365),
     safety_days: int = Query(default=0, ge=0, le=365),
-    company_id: Optional[str] = Header(default=None, alias="X-Company-ID"),
+    tenant: TenantScope = Depends(get_tenant_scope),
 ) -> Response:
     """Export a Purchase Order CSV template.
 
@@ -936,7 +981,7 @@ def export_purchase_order_template_csv(
         alert_days=alert_days,
         lead_time_days=lead_time_days,
         safety_days=safety_days,
-        company_id=company_id,
+        tenant=tenant,
     )
 
     items: List[Dict[str, Any]] = payload.get("items") or []

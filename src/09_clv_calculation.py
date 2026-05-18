@@ -37,6 +37,7 @@ This module implements multiple CLV approaches:
 """
 
 import logging
+import os
 import sys
 import json
 from pathlib import Path
@@ -50,8 +51,8 @@ import numpy as np
 # Paths & Logging
 # -------------------------------------------------
 BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
-OUTPUT_DIR = BASE_DIR / "output"
+DATA_DIR = Path(os.getenv("SI_DATA_DIR", str(BASE_DIR / "data")))
+OUTPUT_DIR = Path(os.getenv("SI_OUTPUT_DIR", str(BASE_DIR / "output")))
 LOGS_DIR = BASE_DIR / "logs"
 
 OUTPUT_DIR.mkdir(exist_ok=True)

@@ -28,6 +28,7 @@ LIMITATION: TextBlob does not support Arabic. For production Arabic NLP, conside
 """
 
 import logging
+import os
 import sys
 import re
 from pathlib import Path
@@ -40,14 +41,16 @@ from textblob import TextBlob
 # Paths & Logging
 # -------------------------------------------------
 BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
-OUTPUT_DIR = BASE_DIR / "output"
-PLOTS_DIR = OUTPUT_DIR / "plots"
+DATA_DIR = Path(os.getenv("SI_DATA_DIR", str(BASE_DIR / "data")))
+OUTPUT_DIR = Path(os.getenv("SI_OUTPUT_DIR", str(BASE_DIR / "output")))
+PLOTS_DIR = Path(os.getenv("SI_PLOTS_DIR", str(OUTPUT_DIR / "plots")))
 LOGS_DIR = BASE_DIR / "logs"
+SENTIMENT_DIR = Path(os.getenv("SI_SENTIMENT_DIR", str(BASE_DIR / "output" / "sentiment")))
 
 OUTPUT_DIR.mkdir(exist_ok=True)
 PLOTS_DIR.mkdir(exist_ok=True)
 LOGS_DIR.mkdir(exist_ok=True)
+SENTIMENT_DIR.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -502,7 +505,7 @@ def main():
         generate_visualizations(df, summary)
         
         # Save results
-        output_path = DATA_DIR / "sentiment_results.csv"
+        output_path = SENTIMENT_DIR / "sentiment_results.csv"
         df.to_csv(output_path, index=False)
         logger.info(f"\nSentiment results saved to {output_path} ({len(df)} reviews, {len(df.columns)} columns)")
         

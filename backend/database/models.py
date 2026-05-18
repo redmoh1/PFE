@@ -38,9 +38,17 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # -------------------------------------------------
 class UserRole(str, Enum):
     """User roles for authorization."""
-    ADMIN = "admin"  # Full access: manage users, companies, all data
-    ANALYST = "analyst"  # Read + analyze: view data, run analytics
-    VIEWER = "viewer"  # Read-only: view dashboards only
+    # New SaaS roles (preferred)
+    SUPER_ADMIN = "super_admin"        # System-wide access across all companies
+    COMPANY_ADMIN = "company_admin"    # Full access within one company
+    BRANCH_ADMIN = "branch_admin"      # Full access within one branch
+    EMPLOYEE = "employee"              # Limited access within branch
+    VIEWER = "viewer"                  # Read-only within company/branch scope
+
+    # Legacy roles (kept for backward compatibility with existing tokens/data)
+    ADMIN = "admin"
+    BRANCH_MANAGER = "branch_manager"
+    ANALYST = "analyst"
 
 
 class NotificationType(str, Enum):
@@ -67,12 +75,18 @@ class User(Base):
     hashed_password = Column(String(255), nullable=False)
     role = Column(SQLEnum(UserRole), default=UserRole.VIEWER, nullable=False)
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True)
     is_active = Column(Boolean, default=True, nullable=False)
+    is_email_verified = Column(Boolean, default=True, nullable=False)
+    email_verified_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     last_login = Column(DateTime, nullable=True)
     
     # Relationships
     company = relationship("Company", back_populates="users")
+    branch = relationship("Branch", back_populates="users", foreign_keys=[branch_id])
+    verification_otps = relationship("EmailVerificationOTP", back_populates="user", cascade="all, delete-orphan")
+    password_reset_tokens = relationship("PasswordResetToken", back_populates="user", cascade="all, delete-orphan")
     
     def verify_password(self, plain_password: str) -> bool:
         """Verify password against hash."""
@@ -112,6 +126,7 @@ class Company(Base):
     
     # Relationships
     users = relationship("User", back_populates="company")
+    branches = relationship("Branch", back_populates="company", cascade="all, delete-orphan")
     forecasts = relationship("ForecastResult", back_populates="company", cascade="all, delete-orphan")
     rfm_results = relationship("RFMResult", back_populates="company", cascade="all, delete-orphan")
     sentiment_results = relationship("SentimentResult", back_populates="company", cascade="all, delete-orphan")
@@ -134,7 +149,8 @@ class ForecastResult(Base):
     __tablename__ = "forecast_results"
     
     id = Column(Integer, primary_key=True, index=True)
-    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False, index=True)
+    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     
     # Model metadata
@@ -157,6 +173,7 @@ class ForecastResult(Base):
     
     # Relationships
     company = relationship("Company", back_populates="forecasts")
+    branch = relationship("Branch")
     
     def __repr__(self):
         return f"<ForecastResult(company='{self.company.name}', model='{self.model_type}', periods={self.forecast_periods})>"
@@ -173,7 +190,8 @@ class RFMResult(Base):
     __tablename__ = "rfm_results"
     
     id = Column(Integer, primary_key=True, index=True)
-    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False, index=True)
+    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     
     # Customer info
@@ -195,6 +213,7 @@ class RFMResult(Base):
     
     # Relationships
     company = relationship("Company", back_populates="rfm_results")
+    branch = relationship("Branch")
     
     def __repr__(self):
         return f"<RFMResult(customer='{self.customer_id}', segment='{self.rfm_segment}')>"
@@ -211,7 +230,8 @@ class SentimentResult(Base):
     __tablename__ = "sentiment_results"
     
     id = Column(Integer, primary_key=True, index=True)
-    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False, index=True)
+    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     
     # Review info
@@ -231,6 +251,7 @@ class SentimentResult(Base):
     
     # Relationships
     company = relationship("Company", back_populates="sentiment_results")
+    branch = relationship("Branch")
     
     def __repr__(self):
         return f"<SentimentResult(sentiment='{self.sentiment}', confidence={self.confidence:.2f}, method='{self.analysis_method}')>"
@@ -250,7 +271,8 @@ class ModelPerformanceLog(Base):
     __tablename__ = "model_performance_logs"
     
     id = Column(Integer, primary_key=True, index=True)
-    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False, index=True)
+    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True, index=True)
     logged_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     
     # Model info
@@ -280,6 +302,8 @@ class Notification(Base):
     __tablename__ = "notifications"
 
     id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=True, index=True)
+    branch_id = Column(Integer, ForeignKey("branches.id"), nullable=True, index=True)
     product_name = Column(String(255), nullable=True, index=True)
     message = Column(Text, nullable=False)
     type = Column(SQLEnum(NotificationType), default=NotificationType.INFO, nullable=False)
@@ -288,3 +312,110 @@ class Notification(Base):
 
     def __repr__(self):
         return f"<Notification(id={self.id}, type='{self.type}', is_read={self.is_read})>"
+
+
+class Branch(Base):
+    """Branch model for per-company branch management."""
+    __tablename__ = "branches"
+
+    id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False, index=True)
+    name = Column(String(255), nullable=False)
+    city = Column(String(255), nullable=False)
+    phone = Column(String(50), nullable=True)
+    manager_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    is_active = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    company = relationship("Company", back_populates="branches")
+    users = relationship("User", back_populates="branch", foreign_keys=[User.branch_id])
+    manager = relationship("User", foreign_keys=[manager_id], lazy="joined")
+
+    def __repr__(self):
+        return f"<Branch(id={self.id}, name='{self.name}', city='{self.city}', is_active={self.is_active})>"
+
+
+class EmailVerificationOTP(Base):
+    """One-time verification code for activating newly registered accounts."""
+
+    __tablename__ = "email_verification_otps"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    otp_hash = Column(String(255), nullable=False)
+    expires_at = Column(DateTime, nullable=False, index=True)
+    attempt_count = Column(Integer, default=0, nullable=False)
+    max_attempts = Column(Integer, default=5, nullable=False)
+    used = Column(Boolean, default=False, nullable=False, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    used_at = Column(DateTime, nullable=True)
+
+    user = relationship("User", back_populates="verification_otps")
+
+    def __repr__(self):
+        return f"<EmailVerificationOTP(user_id={self.user_id}, expires_at='{self.expires_at}', used={self.used})>"
+
+
+class PasswordResetToken(Base):
+    """Password reset token record with one-time-use semantics."""
+
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    token_hash = Column(String(255), nullable=False, unique=True, index=True)
+    expires_at = Column(DateTime, nullable=False, index=True)
+    used = Column(Boolean, default=False, nullable=False, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    used_at = Column(DateTime, nullable=True)
+
+    user = relationship("User", back_populates="password_reset_tokens")
+
+    def __repr__(self):
+        return f"<PasswordResetToken(user_id={self.user_id}, expires_at='{self.expires_at}', used={self.used})>"
+
+
+class UploadMappingProfile(Base):
+    """Saved per-tenant column mappings for future uploads."""
+
+    __tablename__ = "upload_mapping_profiles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    company_id = Column(String(255), nullable=False, index=True)
+    branch_id = Column(String(255), nullable=True, index=True)
+    user_id = Column(String(255), nullable=True, index=True)
+    dataset_type = Column(String(50), nullable=False, index=True)
+    source_signature = Column(String(64), nullable=False, index=True)
+    source_columns = Column(JSON, nullable=False)
+    field_mapping = Column(JSON, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    last_used_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+    def __repr__(self):
+        return f"<UploadMappingProfile(company_id='{self.company_id}', dataset_type='{self.dataset_type}')>"
+
+
+class PendingDatasetUpload(Base):
+    """Staged CSV upload awaiting manual column mapping confirmation."""
+
+    __tablename__ = "pending_dataset_uploads"
+
+    id = Column(String(64), primary_key=True, index=True)
+    company_id = Column(String(255), nullable=False, index=True)
+    branch_id = Column(String(255), nullable=True, index=True)
+    user_id = Column(String(255), nullable=True, index=True)
+    dataset_type = Column(String(50), nullable=False, index=True)
+    original_file_name = Column(String(255), nullable=False)
+    staged_file_path = Column(String(1024), nullable=False)
+    column_signature = Column(String(64), nullable=False, index=True)
+    extracted_columns = Column(JSON, nullable=False)
+    preview_rows = Column(JSON, nullable=False)
+    row_count = Column(Integer, nullable=False)
+    replace_dataset_id = Column(Integer, nullable=True, index=True)
+    status = Column(String(32), nullable=False, default="pending", index=True)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    expires_at = Column(DateTime, nullable=False, index=True)
+
+    def __repr__(self):
+        return f"<PendingDatasetUpload(id='{self.id}', dataset_type='{self.dataset_type}', status='{self.status}')>"

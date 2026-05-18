@@ -18,6 +18,7 @@ this module.
 """
 
 import sys
+import os
 import logging
 from pathlib import Path
 from typing import Tuple, Optional, Dict
@@ -28,14 +29,16 @@ import matplotlib.pyplot as plt
 
 # Paths & Logging
 BASE_DIR = Path(__file__).parent.parent
-DATA_DIR = BASE_DIR / "data"
+DATA_DIR = Path(os.getenv("SI_DATA_DIR", str(BASE_DIR / "data")))
 LOGS_DIR = BASE_DIR / "logs"
-OUTPUT_DIR = BASE_DIR / "output"
-PLOTS_DIR = OUTPUT_DIR / "plots"
+OUTPUT_DIR = Path(os.getenv("SI_OUTPUT_DIR", str(BASE_DIR / "output")))
+PLOTS_DIR = Path(os.getenv("SI_PLOTS_DIR", str(OUTPUT_DIR / "plots")))
+SEGMENTATION_DIR = Path(os.getenv("SI_SEGMENTATION_DIR", str(BASE_DIR / "output" / "segmentation")))
 
 LOGS_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
 PLOTS_DIR.mkdir(exist_ok=True)
+SEGMENTATION_DIR.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -103,6 +106,8 @@ def find_data_file() -> Path:
     3. data/sales.csv
     """
     possible_paths = [
+        OUTPUT_DIR / "cleaned_dataset.csv",
+        OUTPUT_DIR / "merged_data.csv",
         DATA_DIR / "cleaned_dataset.csv",
         DATA_DIR / "merged_data.csv",
         DATA_DIR / "sales.csv",
@@ -473,7 +478,7 @@ def main() -> None:
         plot_rfm_distribution(rfm, PLOTS_DIR)
         
         # Save results
-        output_path = DATA_DIR / "rfm_table.csv"
+        output_path = SEGMENTATION_DIR / "rfm_table.csv"
         save_rfm_results(rfm, output_path)
         
         logger.info("=" * 60)
