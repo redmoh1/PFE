@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useData } from '../store/DataContext';
 import { useAuth, useAuthFetch } from '../store/AuthContext';
 import FiltersBar from '../components/FiltersBar';
@@ -44,6 +44,7 @@ const SalesAnalytics: React.FC = () => {
   const [cityData, setCityData] = useState<ComparisonDatum[]>([]);
   const [previousProductData, setPreviousProductData] = useState<ComparisonDatum[]>([]);
   const [previousCityData, setPreviousCityData] = useState<ComparisonDatum[]>([]);
+  const requestIdRef = useRef(0);
 
   const canCompare = Boolean(filters.startDate && filters.endDate);
   const previousRange = useMemo(() => {
@@ -63,6 +64,11 @@ const SalesAnalytics: React.FC = () => {
   }, [canCompare, filters.startDate, filters.endDate]);
 
   useEffect(() => {
+    requestIdRef.current += 1;
+    const requestId = requestIdRef.current;
+    const controller = new AbortController();
+    const isCurrentRequest = () => requestIdRef.current === requestId && !controller.signal.aborted;
+
     const fetchData = async () => {
       if (!user) return;
 
@@ -74,27 +80,35 @@ const SalesAnalytics: React.FC = () => {
       if (filters.product) params.set('product', filters.product);
 
       try {
-        const productsRes = await authFetch(`/api/top-products?${params.toString()}`, { cache: 'no-store' });
+        const productsRes = await authFetch(`/api/top-products?${params.toString()}`, { cache: 'no-store', signal: controller.signal });
+        if (!isCurrentRequest()) return;
         if (productsRes.ok) {
           const data = await productsRes.json();
-          setProductData(data.map((p: any) => ({ name: String(p.product_id), value: Number(p.revenue) || 0 })));
+          if (!isCurrentRequest()) return;
+          setProductData(data.map((p: any) => ({ name: String(p.product_name || p.product_id), value: Number(p.revenue) || 0 })));
         } else if (productsRes.status === 204) {
+          if (!isCurrentRequest()) return;
           setProductData([]);
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch products:', e);
         setProductData([]);
       }
 
       try {
-        const citiesRes = await authFetch(`/api/top-cities?${params.toString()}`, { cache: 'no-store' });
+        const citiesRes = await authFetch(`/api/top-cities?${params.toString()}`, { cache: 'no-store', signal: controller.signal });
+        if (!isCurrentRequest()) return;
         if (citiesRes.ok) {
           const data = await citiesRes.json();
+          if (!isCurrentRequest()) return;
           setCityData(data.map((c: any) => ({ name: String(c.city), value: Number(c.revenue) || 0 })));
         } else if (citiesRes.status === 204) {
+          if (!isCurrentRequest()) return;
           setCityData([]);
         }
       } catch (e) {
+        if (!isCurrentRequest()) return;
         console.error('Failed to fetch cities:', e);
         setCityData([]);
       }
@@ -109,36 +123,48 @@ const SalesAnalytics: React.FC = () => {
         if (filters.product) prevParams.set('product', filters.product);
 
         try {
-          const prevProductsRes = await authFetch(`/api/top-products?${prevParams.toString()}`, { cache: 'no-store' });
+          const prevProductsRes = await authFetch(`/api/top-products?${prevParams.toString()}`, { cache: 'no-store', signal: controller.signal });
+          if (!isCurrentRequest()) return;
           if (prevProductsRes.ok) {
             const data = await prevProductsRes.json();
-            setPreviousProductData(data.map((p: any) => ({ name: String(p.product_id), value: Number(p.revenue) || 0 })));
+            if (!isCurrentRequest()) return;
+            setPreviousProductData(data.map((p: any) => ({ name: String(p.product_name || p.product_id), value: Number(p.revenue) || 0 })));
           } else {
+            if (!isCurrentRequest()) return;
             setPreviousProductData([]);
           }
         } catch (e) {
+          if (!isCurrentRequest()) return;
           console.error('Failed to fetch previous products:', e);
           setPreviousProductData([]);
         }
 
         try {
-          const prevCitiesRes = await authFetch(`/api/top-cities?${prevParams.toString()}`, { cache: 'no-store' });
+          const prevCitiesRes = await authFetch(`/api/top-cities?${prevParams.toString()}`, { cache: 'no-store', signal: controller.signal });
+          if (!isCurrentRequest()) return;
           if (prevCitiesRes.ok) {
             const data = await prevCitiesRes.json();
+            if (!isCurrentRequest()) return;
             setPreviousCityData(data.map((c: any) => ({ name: String(c.city), value: Number(c.revenue) || 0 })));
           } else {
+            if (!isCurrentRequest()) return;
             setPreviousCityData([]);
           }
         } catch (e) {
+          if (!isCurrentRequest()) return;
           console.error('Failed to fetch previous cities:', e);
           setPreviousCityData([]);
         }
       } else {
+        if (!isCurrentRequest()) return;
         setPreviousProductData([]);
         setPreviousCityData([]);
       }
     };
-    fetchData();
+    void fetchData();
+    return () => {
+      controller.abort();
+    };
   }, [user, authFetch, filters, canCompare, previousRange]);
 
   const productDataWithComparison = useMemo<ComparisonDatum[]>(() => {
@@ -289,24 +315,30 @@ const SalesAnalytics: React.FC = () => {
 
           {/* Pie chart (fixed height) */}
           <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={cityDataWithComparison}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
-                  paddingAngle={5}
-                  dataKey="value"
-                >
-                  {cityDataWithComparison.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-                <Tooltip content={<ComparisonTooltip />} />
-              </PieChart>
-            </ResponsiveContainer>
+            {cityDataWithComparison.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={cityDataWithComparison}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {cityDataWithComparison.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<ComparisonTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-sm text-text-secondary dark:text-text-secondaryDark">
+                No city data for this branch.
+              </div>
+            )}
           </div>
 
           {/* Legend (normal flow; card grows to fit) */}

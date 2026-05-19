@@ -202,7 +202,7 @@ DATE_CANDIDATES = ["OrderDate", "Sale_Date", "Order_Date", "Date", "order_date"]
 # IMPORTANT: Include "Price" for datasets that use Price instead of TotalPrice
 REVENUE_CANDIDATES = ["TotalPrice", "Price", "Sales_Amount", "SalesAmount", "Revenue", "Sales", "Amount", "amount", "price"]
 PRODUCT_CANDIDATES = ["Product", "ProductName", "product_name", "Description", "description", "ProductID", "Product_ID", "SKU"]
-CITY_CANDIDATES = ["City", "city", "Region", "region", "Market"]
+CITY_CANDIDATES = ["City", "city", "City_x", "City_y", "customer_city", "CustomerCity", "Region", "region", "Market"]
 ORDER_ID_CANDIDATES = ["OrderID", "order_id", "id", "ID", "Order_Id", "InvoiceNo"]
 CUSTOMER_ID_CANDIDATES = ["CustomerID", "Customer_ID", "customer_id", "CustomerId", "cust_id", "client_id"]
 
@@ -3603,7 +3603,7 @@ def normalize_sales_dataframe(source_df: pd.DataFrame) -> pd.DataFrame:
         revenue_series = pd.Series(0.0, index=working.index)
     working["__total_price"] = pd.to_numeric(revenue_series, errors="coerce").fillna(0)
 
-    product_col = next((c for c in PRODUCT_CANDIDATES if c in working.columns), None)
+    product_col = _resolve_display_product_column(working)
     working["__product"] = working[product_col].astype(str) if product_col else None
 
     city_col = next((c for c in CITY_CANDIDATES if c in working.columns), None)
@@ -3633,6 +3633,11 @@ def _resolve_first_existing_column(df: pd.DataFrame, candidates: List[str]) -> O
     return next((column for column in candidates if column in df.columns), None)
 
 
+def _resolve_display_product_column(df: pd.DataFrame) -> Optional[str]:
+    preferred_candidates = ["Product", "product", "ProductName", "product_name", "Description", "description", "Item", "item"]
+    return _resolve_first_existing_column(df, preferred_candidates) or _resolve_first_existing_column(df, PRODUCT_CANDIDATES)
+
+
 def build_canonical_sales_dataframe(raw_df: pd.DataFrame) -> pd.DataFrame:
     normalized = normalize_sales_dataframe(raw_df)
     if normalized.empty:
@@ -3644,12 +3649,13 @@ def build_canonical_sales_dataframe(raw_df: pd.DataFrame) -> pd.DataFrame:
     else:
         order_values = pd.Series(range(1, len(normalized) + 1), dtype="int64")
 
-    product_col = _resolve_first_existing_column(raw_df, PRODUCT_CANDIDATES)
-    if product_col is None:
+    product_id_col = _resolve_first_existing_column(raw_df, PRODUCT_CANDIDATES)
+    if product_id_col is None:
         raise HTTPException(
             status_code=400,
             detail=f"Missing product column. Expected one of: {', '.join(PRODUCT_CANDIDATES)}",
         )
+    product_display_col = _resolve_display_product_column(raw_df) or product_id_col
 
     city_col = _resolve_first_existing_column(raw_df, CITY_CANDIDATES)
     city_values = (
@@ -3669,8 +3675,8 @@ def build_canonical_sales_dataframe(raw_df: pd.DataFrame) -> pd.DataFrame:
             "OrderID": order_values,
             "OrderDate": normalized["__order_date"].reset_index(drop=True),
             "TotalPrice": normalized["__total_price"].reset_index(drop=True),
-            "ProductID": raw_df.loc[normalized.index, product_col].reset_index(drop=True),
-            "Product": raw_df.loc[normalized.index, product_col].reset_index(drop=True),
+            "ProductID": raw_df.loc[normalized.index, product_id_col].reset_index(drop=True),
+            "Product": raw_df.loc[normalized.index, product_display_col].reset_index(drop=True),
             "City": city_values,
         }
     )
@@ -3683,7 +3689,8 @@ def build_canonical_sales_dataframe(raw_df: pd.DataFrame) -> pd.DataFrame:
         raise HTTPException(status_code=400, detail="Sales CSV product values are empty")
 
     canonical["ProductID"] = product_series.replace({"": "Unknown", "None": "Unknown", "nan": "Unknown"})
-    canonical["Product"] = canonical["ProductID"]
+    display_product_series = canonical["Product"].astype(str).str.strip().replace({"": pd.NA, "None": pd.NA, "nan": pd.NA})
+    canonical["Product"] = display_product_series.fillna(canonical["ProductID"])
     canonical["City"] = canonical["City"].astype(str).str.strip().replace({"": "Unknown", "None": "Unknown", "nan": "Unknown"})
     if "CustomerID" in canonical.columns:
         canonical["CustomerID"] = canonical["CustomerID"].astype(str).str.strip().replace({"": pd.NA, "None": pd.NA, "nan": pd.NA})
@@ -4818,6 +4825,7 @@ def get_top_products(
     return [
         TopProductResponse(
             product_id=str(row["__product"]),
+            product_name=str(row["__product"]),
             revenue=float(row["__total_price"]),
             order_count=int(row["order_count"]),
         )

@@ -735,9 +735,15 @@ def compute_avg_daily_sales(df: pd.DataFrame) -> Dict[str, float]:
     except Exception as exc:  # noqa: BLE001
         logger.warning("SchemaResolver failed for avg_daily_sales (%s). Falling back.", exc)
 
+    if product_col and product_col in {"ProductID", "Product_ID"}:
+        for c in ["Product", "product", "ProductName", "product_name", "Description", "description", "Item", "item"]:
+            if c in df.columns:
+                product_col = c
+                break
+
     # Fallbacks
     if not product_col:
-        for c in ["ProductID","Product", "product", "Description", "description", "SKU", "StockCode"]:
+        for c in ["Product", "product", "ProductName", "product_name", "Description", "description", "Item", "item", "ProductID", "SKU", "StockCode"]:
             if c in df.columns:
                 product_col = c
                 break

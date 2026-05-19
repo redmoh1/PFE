@@ -260,7 +260,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: item.OrderID || item.Product_ID || `s-${idx}`,
             date: item.OrderDate || item.Sale_Date || item.Date || new Date().toISOString().split('T')[0],
             amount: item.TotalPrice || item.Sales_Amount || 0,
-            product: item.ProductID || item.Product_ID || 'Unknown',
+            product: item.Product || item.ProductName || item.product_name || item.Description || item.description || item.ProductID || item.Product_ID || 'Unknown',
             category: 'Product',
             city: item.City || item.Region || 'Unknown',
             customerId: item.CustomerID || 'c-unknown'
