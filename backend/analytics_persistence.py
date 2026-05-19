@@ -178,33 +178,8 @@ def get_forecast_results(
     Returns:
         DataFrame with forecast data or None if not found
     """
-    db = SessionLocal()
-    try:
-        company_db_id = get_or_create_company(db, company_id)
-        
-        query = db.query(ForecastResult).filter(
-            ForecastResult.company_id == company_db_id
-        )
-        if branch_id is None:
-            query = query.filter(ForecastResult.branch_id.is_(None))
-        else:
-            query = query.filter(ForecastResult.branch_id == int(branch_id))
-        
-        if model_type:
-            query = query.filter(ForecastResult.model_type == model_type)
-        
-        # Get latest forecast
-        forecast = query.order_by(desc(ForecastResult.created_at)).first()
-        
-        if not forecast or not forecast.forecast_data:
-            logger.info(f"No forecast found in database for company {company_id}")
-            return None
-        
-        # Convert JSON data to DataFrame
-        df = pd.DataFrame(forecast.forecast_data)
-
-        # Normalize column names to match the CSV loader and API merge logic.
-        # Historical note: some writers store OrderDate/ForecastedSales directly.
+    def _normalize_forecast_frame(raw_df: pd.DataFrame) -> pd.DataFrame:
+        df = raw_df.copy()
         date_candidates = ["MonthStart", "date", "ds", "OrderDate", "Date"]
         date_col = next((c for c in date_candidates if c in df.columns), None)
         if date_col and date_col != "MonthStart":
@@ -215,12 +190,87 @@ def get_forecast_results(
         if forecast_col and forecast_col != "ForecastedSales":
             df = df.rename(columns={forecast_col: "ForecastedSales"})
 
+        lower_candidates = ["ForecastLower", "forecast_lower", "yhat_lower"]
+        lower_col = next((c for c in lower_candidates if c in df.columns), None)
+        if lower_col and lower_col != "ForecastLower":
+            df = df.rename(columns={lower_col: "ForecastLower"})
+
+        upper_candidates = ["ForecastUpper", "forecast_upper", "yhat_upper"]
+        upper_col = next((c for c in upper_candidates if c in df.columns), None)
+        if upper_col and upper_col != "ForecastUpper":
+            df = df.rename(columns={upper_col: "ForecastUpper"})
+
         if "MonthStart" in df.columns:
             df["MonthStart"] = pd.to_datetime(df["MonthStart"], errors="coerce")
-        
-        logger.info(f"Loaded forecast from database: {len(df)} records")
         return df
-        
+
+    db = SessionLocal()
+    try:
+        company_db_id = get_or_create_company(db, company_id)
+
+        query = db.query(ForecastResult).filter(ForecastResult.company_id == company_db_id)
+        if branch_id is not None:
+            query = query.filter(ForecastResult.branch_id == int(branch_id))
+
+        if model_type:
+            query = query.filter(ForecastResult.model_type == model_type)
+
+        if branch_id is not None:
+            forecast = query.order_by(desc(ForecastResult.created_at)).first()
+            if not forecast or not forecast.forecast_data:
+                logger.info(f"No forecast found in database for company {company_id}")
+                return None
+            df = _normalize_forecast_frame(pd.DataFrame(forecast.forecast_data))
+            logger.info(f"Loaded forecast from database: {len(df)} records")
+            return df
+
+        results = query.order_by(desc(ForecastResult.created_at)).all()
+        if not results:
+            logger.info(f"No forecast found in database for company {company_id}")
+            return None
+
+        latest_by_branch: Dict[Optional[int], ForecastResult] = {}
+        for item in results:
+            if item.branch_id in latest_by_branch:
+                continue
+            if not item.forecast_data:
+                continue
+            latest_by_branch[item.branch_id] = item
+
+        frames: List[pd.DataFrame] = []
+        for item in latest_by_branch.values():
+            frame = _normalize_forecast_frame(pd.DataFrame(item.forecast_data))
+            if frame is None or frame.empty:
+                continue
+            frames.append(frame)
+
+        if not frames:
+            logger.info(f"No forecast data found in database for company {company_id}")
+            return None
+
+        combined = pd.concat(frames, ignore_index=True)
+        if "MonthStart" not in combined.columns:
+            logger.info(f"Forecast data missing MonthStart for company {company_id}")
+            return None
+
+        sum_cols = [
+            col
+            for col in ["ForecastedSales", "ForecastLower", "ForecastUpper"]
+            if col in combined.columns
+        ]
+        for col in sum_cols:
+            combined[col] = pd.to_numeric(combined[col], errors="coerce")
+
+        aggregated = (
+            combined.dropna(subset=["MonthStart"])
+            .groupby("MonthStart", as_index=False)[sum_cols]
+            .sum()
+            .sort_values("MonthStart")
+        )
+
+        logger.info(f"Loaded forecast from database (all branches): {len(aggregated)} records")
+        return aggregated
+
     except Exception as e:
         logger.error(f"Failed to get forecast from database: {e}")
         return None
@@ -343,9 +393,7 @@ def get_rfm_results(company_id: str = "Acme Corp", branch_id: Optional[str] = No
         company_db_id = get_or_create_company(db, company_id)
         
         query = db.query(RFMResult).filter(RFMResult.company_id == company_db_id)
-        if branch_id is None:
-            query = query.filter(RFMResult.branch_id.is_(None))
-        else:
+        if branch_id is not None:
             query = query.filter(RFMResult.branch_id == int(branch_id))
         results = query.all()
         
@@ -515,9 +563,7 @@ def get_sentiment_results(company_id: str = "Acme Corp", branch_id: Optional[str
         company_db_id = get_or_create_company(db, company_id)
         
         query = db.query(SentimentResult).filter(SentimentResult.company_id == company_db_id)
-        if branch_id is None:
-            query = query.filter(SentimentResult.branch_id.is_(None))
-        else:
+        if branch_id is not None:
             query = query.filter(SentimentResult.branch_id == int(branch_id))
         results = query.all()
         
@@ -698,9 +744,7 @@ def get_recommendation_results(company_id: str = "Acme Corp", branch_id: Optiona
         company_db_id = get_or_create_company(db, company_id)
         
         query = db.query(RecommendationResult).filter(RecommendationResult.company_id == company_db_id)
-        if branch_id is None:
-            query = query.filter(RecommendationResult.branch_id.is_(None))
-        else:
+        if branch_id is not None:
             query = query.filter(RecommendationResult.branch_id == int(branch_id))
         results = query.order_by(desc(RecommendationResult.lift)).all()
         

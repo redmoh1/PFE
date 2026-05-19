@@ -11,7 +11,7 @@ interface Recommendation {
 }
 
 const Recommendations: React.FC = () => {
-  const { user } = useAuth();
+  const { user, selectedBranchId } = useAuth();
   const authFetch = useAuthFetch();
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +23,9 @@ const Recommendations: React.FC = () => {
         return;
       }
       try {
-        const res = await authFetch('/api/recommendations?limit=10');
+        const params = new URLSearchParams({ limit: '10' });
+        if (selectedBranchId) params.set('branch_id', selectedBranchId);
+        const res = await authFetch(`/api/recommendations?${params.toString()}`);
         if (res.status === 204) {
           setRecommendations([]);
         } else if (res.ok) {
@@ -41,7 +43,7 @@ const Recommendations: React.FC = () => {
       }
     };
     fetchRecommendations();
-  }, [user, authFetch]);
+  }, [user, selectedBranchId, authFetch]);
 
   const hasData = recommendations && recommendations.length > 0;
   const avgConfidence = hasData 

@@ -339,7 +339,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Fetch recommendations - ALWAYS fresh from server with JWT auth
       try {
-        const recsRes = await getJson('/api/recommendations?limit=10');
+        const recParams = new URLSearchParams({ limit: '10' });
+        if (effectiveBranch) recParams.set('branch_id', effectiveBranch);
+        const recsRes = await getJson(`/api/recommendations?${recParams.toString()}`);
         if (recsRes.stale) return;
         if (recsRes.empty) {
           console.log('[DataContext] Recommendations API returned 204 - clearing state');
@@ -369,7 +371,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Fetch RFM segmentation data - ALWAYS fresh from server with JWT auth
       try {
-        const segmentRes = await getJson('/api/segmentation');
+        const segmentParams = new URLSearchParams();
+        if (effectiveBranch) segmentParams.set('branch_id', effectiveBranch);
+        const segmentSuffix = segmentParams.toString();
+        const segmentRes = await getJson(`/api/segmentation${segmentSuffix ? `?${segmentSuffix}` : ''}`);
         if (segmentRes.stale) return;
         if (segmentRes.empty) {
           console.log('[DataContext] Segmentation API returned 204 - clearing state');

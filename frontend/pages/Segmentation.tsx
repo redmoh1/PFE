@@ -15,7 +15,7 @@ interface SegmentationMetadata {
 
 const Segmentation: React.FC = () => {
   const { segments } = useData();
-  const { user } = useAuth();
+  const { user, selectedBranchId } = useAuth();
   const authFetch = useAuthFetch();
   const [metadata, setMetadata] = useState<SegmentationMetadata | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,7 +24,10 @@ const Segmentation: React.FC = () => {
     const fetchMetadata = async () => {
       if (!user) return;
       try {
-        const res = await authFetch('/api/segmentation');
+        const params = new URLSearchParams();
+        if (selectedBranchId) params.set('branch_id', selectedBranchId);
+        const suffix = params.toString();
+        const res = await authFetch(`/api/segmentation${suffix ? `?${suffix}` : ''}`);
         if (res.status === 204) {
           setMetadata(null);
         } else if (res.ok) {
@@ -38,7 +41,7 @@ const Segmentation: React.FC = () => {
       }
     };
     fetchMetadata();
-  }, [user, authFetch]);
+  }, [user, selectedBranchId, authFetch]);
 
   const hasData = segments && segments.length > 0;
 

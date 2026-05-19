@@ -12,7 +12,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from sqlalchemy import func, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -212,12 +212,13 @@ def _insert_legacy_registration(
     is_active: bool,
     email_verified: bool,
 ) -> None:
+    default_city = "Unspecified"
     conn.execute(
         """
         INSERT INTO branches (id, company_id, name, city, phone, manager_id, created_at, is_active)
         VALUES (?, ?, ?, ?, ?, ?, ?, 1)
         """,
-        (branch_id, company_name, branch_name, branch_name, None, str(user_id), created_at),
+        (branch_id, company_name, branch_name, default_city, None, str(user_id), created_at),
     )
     conn.execute(
         """
@@ -486,7 +487,7 @@ class UserRegister(BaseModel):
     company_name: str
     branch_name: str
     full_name: str
-    email: EmailStr
+    email: str
     password: str
 
 
@@ -530,20 +531,20 @@ class VerificationChallengeResponse(BaseModel):
 class VerifyEmailOTPRequest(BaseModel):
     """Verify a newly registered account with a one-time password."""
 
-    email: EmailStr
+    email: str
     otp: str
 
 
 class ResendVerificationOTPRequest(BaseModel):
     """Request a new email verification OTP."""
 
-    email: EmailStr
+    email: str
 
 
 class ForgotPasswordRequest(BaseModel):
     """Request a password reset email."""
 
-    email: EmailStr
+    email: str
 
 
 class ResetPasswordRequest(BaseModel):
@@ -568,7 +569,7 @@ class ResetTokenValidationResponse(BaseModel):
 
 class LoginRequest(BaseModel):
     """Login request."""
-    email: EmailStr
+    email: str
     password: str
 
 
@@ -665,7 +666,7 @@ def register_user(
             id=shared_branch_id,
             company_id=company.id,
             name=branch_name,
-            city=branch_name,
+            city="Unspecified",
             is_active=True,
         )
         db.add(branch)

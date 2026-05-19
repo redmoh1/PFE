@@ -16,6 +16,10 @@ from backend.main import app
 client = TestClient(app)
 
 
+def _auth_headers():
+    return {"Authorization": "Bearer demo-token-admin@acme.com"}
+
+
 class TestRootEndpoints:
     """Test root and health endpoints."""
     
@@ -45,9 +49,9 @@ class TestKPIEndpoints:
     
     def test_kpis_without_dates(self):
         """Test KPIs endpoint without date filters."""
-        response = client.get("/api/kpis")
-        # Should return 200 or 503 if data not loaded
-        assert response.status_code in [200, 503]
+        response = client.get("/api/kpis", headers=_auth_headers())
+        # Should return 200, 204 (no data), or 503 if data not loaded
+        assert response.status_code in [200, 204, 503]
         
         if response.status_code == 200:
             data = response.json()
@@ -57,8 +61,11 @@ class TestKPIEndpoints:
     
     def test_kpis_with_valid_dates(self):
         """Test KPIs with valid date range."""
-        response = client.get("/api/kpis?start_date=2024-01-01&end_date=2024-12-31")
-        assert response.status_code in [200, 503]
+        response = client.get(
+            "/api/kpis?start_date=2024-01-01&end_date=2024-12-31",
+            headers=_auth_headers(),
+        )
+        assert response.status_code in [200, 204, 503]
     
     def test_kpis_with_invalid_date_format(self):
         """Test KPIs with invalid date format.
@@ -66,7 +73,7 @@ class TestKPIEndpoints:
         FastAPI Query validation with pattern=r"^\\d{4}-\\d{2}-\\d{2}$" should reject
         strings that don't match YYYY-MM-DD format with a 422 Unprocessable Entity.
         """
-        response = client.get("/api/kpis?start_date=invalid-date")
+        response = client.get("/api/kpis?start_date=invalid-date", headers=_auth_headers())
         # FastAPI returns 422 for validation errors (Query pattern mismatch)
         assert response.status_code == 422
         # Verify error message mentions the invalid parameter
@@ -80,8 +87,8 @@ class TestForecastEndpoints:
     
     def test_monthly_sales(self):
         """Test monthly sales endpoint."""
-        response = client.get("/api/monthly-sales")
-        assert response.status_code in [200, 503]
+        response = client.get("/api/monthly-sales", headers=_auth_headers())
+        assert response.status_code in [200, 204, 503]
         
         if response.status_code == 200:
             data = response.json()
@@ -93,13 +100,13 @@ class TestProductEndpoints:
     
     def test_top_products_default_limit(self):
         """Test top products with default limit."""
-        response = client.get("/api/top-products")
-        assert response.status_code in [200, 503]
+        response = client.get("/api/top-products", headers=_auth_headers())
+        assert response.status_code in [200, 204, 503]
     
     def test_top_products_custom_limit(self):
         """Test top products with custom limit."""
-        response = client.get("/api/top-products?limit=5")
-        assert response.status_code in [200, 503]
+        response = client.get("/api/top-products?limit=5", headers=_auth_headers())
+        assert response.status_code in [200, 204, 503]
         
         if response.status_code == 200:
             data = response.json()
@@ -107,7 +114,7 @@ class TestProductEndpoints:
     
     def test_top_products_invalid_limit(self):
         """Test top products with invalid limit (> 100)."""
-        response = client.get("/api/top-products?limit=150")
+        response = client.get("/api/top-products?limit=150", headers=_auth_headers())
         # Should return validation error
         assert response.status_code == 422
 
@@ -117,15 +124,13 @@ class TestSentimentEndpoints:
     
     def test_sentiment_endpoint(self):
         """Test Customer Feedback endpoint."""
-        response = client.get("/api/sentiment")
-        assert response.status_code in [200, 503]
+        response = client.get("/api/sentiment", headers=_auth_headers())
+        assert response.status_code in [200, 204, 503]
         
         if response.status_code == 200:
             data = response.json()
-            assert "positive" in data
-            assert "neutral" in data
-            assert "negative" in data
-            assert "total" in data
+            assert "sentiment_breakdown" in data
+            assert "total_reviews" in data
 
 
 class TestRecommendationEndpoints:
@@ -133,13 +138,13 @@ class TestRecommendationEndpoints:
     
     def test_recommendations_default(self):
         """Test recommendations with default limit."""
-        response = client.get("/api/recommendations")
-        assert response.status_code in [200, 503]
+        response = client.get("/api/recommendations", headers=_auth_headers())
+        assert response.status_code in [200, 204, 503]
     
     def test_recommendations_with_limit(self):
         """Test recommendations with custom limit."""
-        response = client.get("/api/recommendations?limit=5")
-        assert response.status_code in [200, 503]
+        response = client.get("/api/recommendations?limit=5", headers=_auth_headers())
+        assert response.status_code in [200, 204, 503]
 
 
 class TestRawDataEndpoints:
@@ -147,13 +152,13 @@ class TestRawDataEndpoints:
     
     def test_raw_data_default_limit(self):
         """Test raw data with default limit."""
-        response = client.get("/api/raw-data")
-        assert response.status_code in [200, 503]
+        response = client.get("/api/raw-data", headers=_auth_headers())
+        assert response.status_code in [200, 204, 503]
     
     def test_raw_data_with_limit(self):
         """Test raw data with custom limit."""
-        response = client.get("/api/raw-data?limit=50")
-        assert response.status_code in [200, 503]
+        response = client.get("/api/raw-data?limit=50", headers=_auth_headers())
+        assert response.status_code in [200, 204, 503]
         
         if response.status_code == 200:
             data = response.json()
@@ -165,7 +170,7 @@ class TestSummaryEndpoints:
     
     def test_summary_endpoint(self):
         """Test system summary endpoint."""
-        response = client.get("/api/summary")
+        response = client.get("/api/summary", headers=_auth_headers())
         assert response.status_code == 200
         data = response.json()
         assert "status" in data
@@ -186,7 +191,7 @@ class TestSummaryEndpoints:
 ])
 def test_all_endpoints_accessible(endpoint):
     """Test that all endpoints are accessible."""
-    response = client.get(endpoint)
+    response = client.get(endpoint, headers=_auth_headers())
     # Should not return 404 or 500
     assert response.status_code != 404
     assert response.status_code != 500

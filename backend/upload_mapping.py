@@ -344,6 +344,8 @@ def apply_column_mapping(df: pd.DataFrame, dataset_type: str, mapping: Optional[
             continue
         if source_column == definition.canonical_column:
             continue
+        if definition.canonical_column in renamed.columns:
+            continue
         rename_map[source_column] = definition.canonical_column
     if rename_map:
         renamed = renamed.rename(columns=rename_map)

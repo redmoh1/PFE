@@ -608,8 +608,8 @@ const DataUpload: React.FC = () => {
           {isLoading && <Loader2 className="animate-spin text-primary" size={24} />}
         </div>
 
-        <div className="overflow-hidden border border-slate-100 dark:border-slate-800 rounded-2xl">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto border border-slate-100 dark:border-slate-800 rounded-2xl">
+          <table className="min-w-[720px] w-full text-sm">
             <thead className="bg-slate-50 dark:bg-slate-900/50 text-left text-xs uppercase tracking-wide text-text-secondary">
               <tr>
                 <th className="px-4 py-3">Dataset Type</th>

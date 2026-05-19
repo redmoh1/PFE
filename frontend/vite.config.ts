@@ -4,7 +4,10 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
-  const apiTarget = env.VITE_API_TARGET || 'http://localhost:8001';
+  const rawTarget = env.VITE_API_TARGET || 'http://localhost:8001';
+  const apiTarget = rawTarget.includes('127.0.0.1:8002') || rawTarget.includes('localhost:8002')
+    ? 'http://127.0.0.1:8000'
+    : rawTarget;
     return {
       server: {
         port: 3000,

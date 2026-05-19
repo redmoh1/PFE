@@ -515,6 +515,13 @@ def normalize_role_text(role: object) -> str:
     return mapping.get(raw, "viewer")
 
 
+def normalize_branch_id(branch_id: object) -> Optional[str]:
+    value = str(branch_id or "").strip()
+    if not value or value.upper() == "GLOBAL":
+        return None
+    return value
+
+
 def resolve_branch_scope(request: Request) -> Optional[str]:
     """Resolve effective branch scope from request (query) + role restrictions.
 
@@ -524,7 +531,7 @@ def resolve_branch_scope(request: Request) -> Optional[str]:
       we validate it against the authenticated user and their assigned branch.
     """
 
-    requested = (request.query_params.get("branch_id") or "").strip()
+    requested = normalize_branch_id(request.query_params.get("branch_id"))
     current_user = get_user_from_request(request)
 
     if not current_user:
@@ -532,7 +539,7 @@ def resolve_branch_scope(request: Request) -> Optional[str]:
 
     role = normalize_role_text(current_user.get("role"))
     user_branch = current_user.get("branch_id")
-    user_branch_text = str(user_branch).strip() if user_branch is not None else ""
+    user_branch_text = normalize_branch_id(user_branch)
 
     # Branch-scoped users are locked to their assigned branch.
     if role in {"branch_admin", "employee"}:
@@ -550,6 +557,10 @@ def resolve_branch_scope(request: Request) -> Optional[str]:
 
     if requested:
         company_id = resolve_company_id_from_user(current_user)
+        try:
+            requested_id = int(requested)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid branch_id")
         conn = get_db_connection()
         try:
             row = conn.execute(
@@ -559,7 +570,7 @@ def resolve_branch_scope(request: Request) -> Optional[str]:
                 WHERE company_id = ? AND id = ? AND is_active = 1
                 LIMIT 1
                 """,
-                (company_id, int(requested)),
+                (company_id, requested_id),
             ).fetchone()
         finally:
             conn.close()
@@ -731,6 +742,7 @@ def pipeline_lock(operation: str = "pipeline"):
 
 
 def ensure_company_dir(company_id: str, dataset_type: str, branch_id: Optional[str] = None) -> Path:
+    branch_id = normalize_branch_id(branch_id)
     if ensure_tenant_directories is not None:
         tenant_dirs = ensure_tenant_directories(DATA_DIR, company_id, branch_id)
         return tenant_dirs["uploads"]
@@ -744,6 +756,7 @@ def ensure_company_dir(company_id: str, dataset_type: str, branch_id: Optional[s
 
 
 def ensure_company_output_dir(company_id: str, branch_id: Optional[str] = None) -> Path:
+    branch_id = normalize_branch_id(branch_id)
     if ensure_tenant_directories is not None:
         tenant_dirs = ensure_tenant_directories(DATA_DIR, company_id, branch_id)
         return tenant_dirs["outputs"]
@@ -757,6 +770,7 @@ def ensure_company_output_dir(company_id: str, branch_id: Optional[str] = None) 
 
 
 def tenant_file_path(company_id: str, filename: str, branch_id: Optional[str] = None) -> Path:
+    branch_id = normalize_branch_id(branch_id)
     if derived_output_paths is not None:
         file_map = derived_output_paths(DATA_DIR, company_id, branch_id)
         if filename in file_map:
@@ -767,8 +781,70 @@ def tenant_file_path(company_id: str, filename: str, branch_id: Optional[str] = 
 def analytics_result_candidates(company_id: str, filename: str, branch_id: Optional[str] = None) -> List[Path]:
     """Return tenant-first result file candidates with legacy compatibility fallbacks."""
     candidates: List[Path] = [tenant_file_path(company_id, filename, branch_id=branch_id)]
-    if branch_id is None:
-        candidates.append(DATA_DIR / filename)
+
+
+    unique_candidates: List[Path] = []
+    seen: set[str] = set()
+    for candidate in candidates:
+        key = str(candidate)
+        if key in seen:
+            continue
+        seen.add(key)
+        unique_candidates.append(candidate)
+    return unique_candidates
+
+
+def load_aggregated_branch_output(
+    company_id: str,
+    filename: str,
+    dataset_type: str,
+) -> tuple[Optional[pd.DataFrame], Optional[str]]:
+    """Load and concatenate branch-scoped outputs for a company.
+
+    Returns a tuple of (dataframe, last_modified_iso) or (None, None).
+    """
+    frames: List[pd.DataFrame] = []
+    timestamps: List[float] = []
+    for dataset in list_active_datasets(company_id, dataset_type):
+        branch_id = normalize_branch_id(dataset.get("branch_id"))
+        if not branch_id:
+            continue
+        output_path = tenant_file_path(company_id, filename, branch_id=branch_id)
+        if not output_path.exists():
+            continue
+        try:
+            frame = pd.read_csv(output_path)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Failed to read branch output %s: %s", output_path, exc)
+            continue
+        if frame is None or frame.empty:
+            continue
+        frames.append(frame)
+        try:
+            timestamps.append(output_path.stat().st_mtime)
+        except Exception:
+            continue
+
+    if not frames:
+        return None, None
+
+    combined = pd.concat(frames, ignore_index=True)
+    last_modified = None
+    if timestamps:
+        last_modified = datetime.fromtimestamp(max(timestamps)).isoformat()
+    return combined, last_modified
+
+
+def recommendation_result_candidates(company_id: str, branch_id: Optional[str] = None) -> List[Path]:
+    """Return candidate paths for product recommendation outputs."""
+    candidates = analytics_result_candidates(company_id, "product_recommendations.csv", branch_id=branch_id)
+    if branch_id is not None:
+        fallback_candidates = [
+            DATA_DIR / "product_recommendations.csv",
+            OUTPUT_DIR / "recommendations" / "product_recommendations.csv",
+        ]
+        for candidate in fallback_candidates:
+            candidates.append(candidate)
 
     unique_candidates: List[Path] = []
     seen: set[str] = set()
@@ -783,6 +859,7 @@ def analytics_result_candidates(company_id: str, filename: str, branch_id: Optio
 
 def resolve_active_dataset_source_path(company_id: str, dataset_type: str, branch_id: Optional[str] = None) -> Optional[Path]:
     """Resolve the best source CSV for an active tenant dataset."""
+    branch_id = normalize_branch_id(branch_id)
     active = get_active_dataset(company_id, dataset_type, branch_id=branch_id)
     if active:
         active_path = Path(str(active.get("file_path") or ""))
@@ -2233,8 +2310,13 @@ def reload_all_data_from_disk(company_id: str = "Acme Corp", branch_id: Optional
         sentiment_df = None
     
     # Load recommendations
-    recs_path = tenant_file_path(company_id, "product_recommendations.csv", branch_id=branch_id)
-    if recs_path.exists():
+    recommendation_df = None
+    recs_path = None
+    for candidate in recommendation_result_candidates(company_id, branch_id=branch_id):
+        if candidate.exists():
+            recs_path = candidate
+            break
+    if recs_path is not None:
         try:
             recommendation_df = pd.read_csv(recs_path)
             logger.info(f"[DATA RELOAD] Loaded product_recommendations.csv: {len(recommendation_df)} rows")
@@ -2242,8 +2324,6 @@ def reload_all_data_from_disk(company_id: str = "Acme Corp", branch_id: Optional
         except Exception as e:
             logger.warning(f"[DATA RELOAD] Failed to load product_recommendations.csv: {e}")
             recommendation_df = None
-    else:
-        recommendation_df = None
     
     # Load model
     if MODEL_PATH.exists():
@@ -2408,9 +2488,21 @@ def trigger_recommendation_pipeline(sales_file_path: Path, company_id: str = "Ac
             logger.info("[TRIGGER RECO] Recommendations pipeline completed successfully")
             # Reload global recommendation_df
             reco_path = tenant_file_path(company_id, "product_recommendations.csv", branch_id=branch_id)
-            if reco_path.exists():
+            resolved_path = None
+            for candidate in recommendation_result_candidates(company_id, branch_id=branch_id):
+                if candidate.exists():
+                    resolved_path = candidate
+                    break
+            if resolved_path is not None and resolved_path != reco_path:
                 try:
-                    recommendation_df = pd.read_csv(reco_path)
+                    reco_path.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(resolved_path, reco_path)
+                    resolved_path = reco_path
+                except Exception as exc:
+                    logger.warning("[TRIGGER RECO] Failed to sync recommendations output: %s", exc)
+            if resolved_path is not None and resolved_path.exists():
+                try:
+                    recommendation_df = pd.read_csv(resolved_path)
                     logger.info(f"[TRIGGER RECO] Loaded {len(recommendation_df)} recommendation rules")
                     return True
                 except Exception as e:
@@ -2594,6 +2686,7 @@ def trigger_rfm_pipeline(sales_file_path: Path, company_id: str = "Acme Corp", b
 
 
 def list_datasets(company_id: str, branch_id: Optional[str] = None) -> List[Dict[str, Any]]:
+    branch_id = normalize_branch_id(branch_id)
     conn = get_db_connection()
     if branch_id:
         rows = conn.execute(
@@ -2652,6 +2745,7 @@ def company_has_any_dataset(company_id: str, branch_id: Optional[str] = None) ->
     tenant starts with an empty dashboard (204) until they upload data.
     """
     try:
+        branch_id = normalize_branch_id(branch_id)
         conn = get_db_connection()
         if branch_id:
             row = conn.execute(
@@ -2681,6 +2775,7 @@ def company_has_any_dataset(company_id: str, branch_id: Optional[str] = None) ->
 def company_has_active_dataset(company_id: str, dataset_type: str, branch_id: Optional[str] = None) -> bool:
     """Return True when this tenant has an ACTIVE (current) dataset of a given type."""
     try:
+        branch_id = normalize_branch_id(branch_id)
         conn = get_db_connection()
         if branch_id:
             row = conn.execute(
@@ -2703,7 +2798,11 @@ def company_has_active_dataset(company_id: str, dataset_type: str, branch_id: Op
                       AND dataset_type = ?
                       AND is_deleted = 0
                       AND is_active = 1
-                      AND (branch_id IS NULL OR TRIM(CAST(branch_id AS TEXT)) = '')
+                                            AND (
+                                                branch_id IS NULL
+                                                OR TRIM(CAST(branch_id AS TEXT)) = ''
+                                                OR UPPER(TRIM(CAST(branch_id AS TEXT))) = 'GLOBAL'
+                                            )
                     LIMIT 1
                     """,
                     (company_id, dataset_type),
@@ -2733,6 +2832,7 @@ def company_has_active_dataset(company_id: str, dataset_type: str, branch_id: Op
 
 
 def archive_existing(company_id: str, dataset_type: str, branch_id: Optional[str] = None) -> None:
+    branch_id = normalize_branch_id(branch_id)
     conn = get_db_connection()
     if branch_id:
         conn.execute(
@@ -2764,6 +2864,7 @@ def insert_dataset(
     row_count: int,
     branch_id: Optional[str] = None,
 ) -> Dict[str, Any]:
+    branch_id = normalize_branch_id(branch_id)
     conn = get_db_connection()
     uploaded_at = datetime.now(timezone.utc).isoformat()
     cur = conn.execute(
@@ -2781,6 +2882,7 @@ def insert_dataset(
 
 
 def get_dataset(dataset_id: int, company_id: str, branch_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    branch_id = normalize_branch_id(branch_id)
     conn = get_db_connection()
     if branch_id:
         row = conn.execute(
@@ -2797,6 +2899,7 @@ def get_dataset(dataset_id: int, company_id: str, branch_id: Optional[str] = Non
 
 
 def get_active_dataset(company_id: str, dataset_type: str, branch_id: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    branch_id = normalize_branch_id(branch_id)
     conn = get_db_connection()
     if branch_id:
         row = conn.execute(
@@ -2813,7 +2916,11 @@ def get_active_dataset(company_id: str, dataset_type: str, branch_id: Optional[s
                 """
                 SELECT * FROM datasets
                 WHERE company_id = ? AND dataset_type = ? AND is_deleted = 0 AND is_active = 1
-                  AND (branch_id IS NULL OR TRIM(CAST(branch_id AS TEXT)) = '')
+                                    AND (
+                                        branch_id IS NULL
+                                        OR TRIM(CAST(branch_id AS TEXT)) = ''
+                                        OR UPPER(TRIM(CAST(branch_id AS TEXT))) = 'GLOBAL'
+                                    )
                 ORDER BY uploaded_at DESC
                 LIMIT 1
                 """,
@@ -2837,36 +2944,15 @@ def _filter_sales_df_for_branch_scope(df: pd.DataFrame, company_id: str, branch_
     if df is None or df.empty or not branch_id:
         return df
 
-    branch = get_branch_record(company_id, str(branch_id))
-    if not branch:
-        return df.iloc[0:0].copy()
-
     branch_id_text = str(branch_id).strip()
-    branch_name = str(branch.get("name") or "").strip()
-    branch_city = str(branch.get("city") or "").strip()
 
     id_columns = ["branch_id", "BranchID", "branchId"]
     for column in id_columns:
         if column in df.columns:
             scoped = df[df[column].astype(str).str.strip() == branch_id_text].copy()
-            if not scoped.empty:
-                return scoped
+            return scoped
 
-    text_candidates = []
-    if branch_name:
-        text_candidates.append(branch_name.casefold())
-    if branch_city:
-        text_candidates.append(branch_city.casefold())
-
-    text_columns = ["Branch", "branch", "BranchName", "branch_name", "City", "city", "Region", "region"]
-    for column in text_columns:
-        if column in df.columns and text_candidates:
-            series = df[column].astype(str).str.strip().str.casefold()
-            scoped = df[series.isin(text_candidates)].copy()
-            if not scoped.empty:
-                return scoped
-
-    return df.iloc[0:0].copy()
+    return df
 
 
 def get_latest_active_dataset(dataset_type: str) -> Optional[Dict[str, Any]]:
@@ -2885,6 +2971,7 @@ def get_latest_active_dataset(dataset_type: str) -> Optional[Dict[str, Any]]:
 
 
 def delete_dataset(dataset_id: int, company_id: str, branch_id: Optional[str] = None) -> None:
+    branch_id = normalize_branch_id(branch_id)
     conn = get_db_connection()
     if branch_id:
         conn.execute(
@@ -3086,6 +3173,7 @@ def cascade_delete_derived_files(dataset_type: str, company_id: str = "Acme Corp
 
 
 def is_company_active(dataset_id: int, company_id: str, branch_id: Optional[str] = None) -> bool:
+    branch_id = normalize_branch_id(branch_id)
     conn = get_db_connection()
     if branch_id:
         row = conn.execute(
@@ -3756,12 +3844,10 @@ def list_company_datasets(request: Request):
 def _resolve_upload_actor(request: Request) -> tuple[Dict[str, Any], str, str, Optional[str]]:
     current_user = require_tenant_manager_request(request)
     company_id = require_company_id(request)
-    branch_id = resolve_branch_scope(request)
+    branch_id = normalize_branch_id(resolve_branch_scope(request))
     user_role = normalize_role_text((current_user or {}).get("role"))
     if user_role in {"super_admin", "company_admin"} and not branch_id:
         raise HTTPException(status_code=400, detail="Branch selection is required for admin uploads")
-    if not branch_id:
-        branch_id = "GLOBAL"
     user_key = str((current_user or {}).get("id") or (current_user or {}).get("email") or "").strip() or None
     return current_user, company_id, branch_id, user_key
 
@@ -4061,6 +4147,18 @@ def _get_rfm_segmentation_data(request: Request):
                 read_error = exc
 
         if (rfm_df is None or rfm_df.empty) and branch_id is None:
+            aggregated_df, aggregated_ts = load_aggregated_branch_output(
+                company_id,
+                "rfm_table.csv",
+                "sales",
+            )
+            if aggregated_df is not None and not aggregated_df.empty:
+                rfm_df = aggregated_df
+                if aggregated_ts:
+                    result_path_used = Path("aggregated")
+                logger.info(f"[RFM API] Loaded {len(rfm_df)} records from branch aggregation")
+
+        if rfm_df is None or rfm_df.empty:
             sales_file = resolve_active_dataset_source_path(company_id, "sales", branch_id=branch_id)
             if sales_file is not None:
                 if not can_manage_tenant_data(current_user.get("role")):
@@ -4334,6 +4432,32 @@ def load_forecast_data(company_id: str = "Acme Corp", branch_id: Optional[str] =
     1. Database (SQLite) - persists across container restarts
     2. CSV file fallback - for backward compatibility
     """
+    def _normalize_forecast_frame(frame: pd.DataFrame) -> Optional[pd.DataFrame]:
+        if frame is None or frame.empty:
+            return None
+        fdf = frame.copy()
+        date_cols = ["MonthStart", "ds", "date", "Date", "OrderDate"]
+        date_col = next((c for c in date_cols if c in fdf.columns), None)
+        if date_col:
+            fdf = fdf.rename(columns={date_col: "MonthStart"})
+            fdf["MonthStart"] = pd.to_datetime(fdf["MonthStart"], errors="coerce")
+
+        forecast_cols = ["ForecastedSales", "yhat", "forecast", "predicted"]
+        forecast_col = next((c for c in forecast_cols if c in fdf.columns), None)
+        if forecast_col:
+            fdf = fdf.rename(columns={forecast_col: "ForecastedSales"})
+
+        lower_cols = ["ForecastLower", "forecast_lower", "yhat_lower"]
+        lower_col = next((c for c in lower_cols if c in fdf.columns), None)
+        if lower_col and lower_col != "ForecastLower":
+            fdf = fdf.rename(columns={lower_col: "ForecastLower"})
+
+        upper_cols = ["ForecastUpper", "forecast_upper", "yhat_upper"]
+        upper_col = next((c for c in upper_cols if c in fdf.columns), None)
+        if upper_col and upper_col != "ForecastUpper":
+            fdf = fdf.rename(columns={upper_col: "ForecastUpper"})
+
+        return fdf
     # Try database first (persistent storage)
     if ANALYTICS_PERSISTENCE_AVAILABLE:
         try:
@@ -4356,19 +4480,9 @@ def load_forecast_data(company_id: str = "Acme Corp", branch_id: Optional[str] =
     for fpath in forecast_files:
         if fpath.exists():
             try:
-                fdf = pd.read_csv(fpath)
-                # Normalize column names
-                date_cols = ["MonthStart", "ds", "date", "Date", "OrderDate"]
-                date_col = next((c for c in date_cols if c in fdf.columns), None)
-                if date_col:
-                    fdf = fdf.rename(columns={date_col: "MonthStart"})
-                    fdf["MonthStart"] = pd.to_datetime(fdf["MonthStart"], errors="coerce")
-                
-                # Normalize forecast column
-                forecast_cols = ["ForecastedSales", "yhat", "forecast", "predicted"]
-                forecast_col = next((c for c in forecast_cols if c in fdf.columns), None)
-                if forecast_col:
-                    fdf = fdf.rename(columns={forecast_col: "ForecastedSales"})
+                fdf = _normalize_forecast_frame(pd.read_csv(fpath))
+                if fdf is None or fdf.empty:
+                    continue
                 
                 logger.info(f"[FORECAST] Loaded forecast from {fpath.name}: {len(fdf)} rows")
                 
@@ -4384,6 +4498,50 @@ def load_forecast_data(company_id: str = "Acme Corp", branch_id: Optional[str] =
                 return fdf
             except Exception as e:
                 logger.warning(f"Failed to load forecast from {fpath}: {e}")
+
+    if branch_id is None:
+        aggregated_frames: List[pd.DataFrame] = []
+        for dataset in list_active_datasets(company_id, "sales"):
+            branch = normalize_branch_id(dataset.get("branch_id"))
+            if not branch:
+                continue
+            branch_files = [
+                tenant_file_path(company_id, "forecast.csv", branch_id=branch),
+                tenant_file_path(company_id, "sales_forecast.csv", branch_id=branch),
+                tenant_file_path(company_id, "sales_forecast_future.csv", branch_id=branch),
+                ensure_company_output_dir(company_id, branch) / f"{company_id}_forecast_prophet.csv",
+                ensure_company_dir(company_id, "sales", branch_id=branch) / "forecast.csv",
+            ]
+            for fpath in branch_files:
+                if not fpath.exists():
+                    continue
+                try:
+                    fdf = _normalize_forecast_frame(pd.read_csv(fpath))
+                    if fdf is None or fdf.empty:
+                        continue
+                    aggregated_frames.append(fdf)
+                    break
+                except Exception as exc:  # noqa: BLE001
+                    logger.warning("Failed to load branch forecast %s: %s", fpath, exc)
+
+        if aggregated_frames:
+            combined = pd.concat(aggregated_frames, ignore_index=True)
+            if "MonthStart" in combined.columns:
+                sum_cols = [
+                    col
+                    for col in ["ForecastedSales", "ForecastLower", "ForecastUpper"]
+                    if col in combined.columns
+                ]
+                for col in sum_cols:
+                    combined[col] = pd.to_numeric(combined[col], errors="coerce")
+                aggregated = (
+                    combined.dropna(subset=["MonthStart"])
+                    .groupby("MonthStart", as_index=False)[sum_cols]
+                    .sum()
+                    .sort_values("MonthStart")
+                )
+                logger.info(f"[FORECAST] Aggregated {len(aggregated)} forecast rows across branches")
+                return aggregated
     
     return None
 
@@ -4764,6 +4922,19 @@ def get_sentiment_analysis(request: Request):
             logger.warning(f"[SENTIMENT DIAGNOSTIC] Failed to read CSV {candidate}: {exc}")
             read_error = exc
 
+    aggregated_timestamp: Optional[str] = None
+    if local_sentiment_df is None and branch_id is None:
+        aggregated_df, aggregated_ts = load_aggregated_branch_output(
+            company_id,
+            "sentiment_results.csv",
+            "reviews",
+        )
+        if aggregated_df is not None and not aggregated_df.empty:
+            local_sentiment_df = aggregated_df
+            aggregated_timestamp = aggregated_ts
+            data_source_used = "aggregated-branches"
+            logger.info(f"[SENTIMENT DIAGNOSTIC] Aggregated sentiment from branches: {len(local_sentiment_df)} rows")
+
     if local_sentiment_df is None:
         if read_error is not None:
             raise HTTPException(status_code=500, detail="Unable to read sentiment_results.csv") from read_error
@@ -4823,7 +4994,12 @@ def get_sentiment_analysis(request: Request):
             word_freq = Counter(words)
             top_keywords = [word for word, _ in word_freq.most_common(5)]
 
-    last_analyzed = datetime.fromtimestamp(sentiment_path_used.stat().st_mtime).isoformat() if sentiment_path_used else datetime.now().isoformat()
+    if sentiment_path_used:
+        last_analyzed = datetime.fromtimestamp(sentiment_path_used.stat().st_mtime).isoformat()
+    elif aggregated_timestamp:
+        last_analyzed = aggregated_timestamp
+    else:
+        last_analyzed = datetime.now().isoformat()
     
     logger.info(f"[SENTIMENT API] Returning analysis for {total} reviews")
 
@@ -4881,7 +5057,12 @@ def get_recommendations(request: Request, limit: int = Query(10, ge=1, le=100)):
         return Response(status_code=204)
 
     rules_df = None
-    recommendations_path = tenant_file_path(company_id, "product_recommendations.csv", branch_id=branch_id)
+    recommendations_path = None
+    recs_candidates = recommendation_result_candidates(company_id, branch_id=branch_id)
+    for candidate in recs_candidates:
+        if candidate.exists():
+            recommendations_path = candidate
+            break
     
     # Try database first (persistent storage)
     if ANALYTICS_PERSISTENCE_AVAILABLE:
@@ -4896,60 +5077,76 @@ def get_recommendations(request: Request, limit: int = Query(10, ge=1, le=100)):
     # Fallback to CSV file
     if rules_df is None or rules_df.empty:
         logger.info(f"[RECOMMENDATIONS API] Checking for data at CSV: {recommendations_path}")
-    
-        if not recommendations_path.exists():
-            # AUTO-RUN FALLBACK: If no recommendations exist but sales data is available, run pipeline
-            logger.info("[RECOMMENDATIONS API] product_recommendations.csv not found - checking for sales data to auto-generate")
-            
-            # Look for sales data in company folder or canonical location
-            sales_file = None
-            company_sales_dir = ensure_company_dir(company_id, "sales", branch_id=branch_id)
-            if company_sales_dir.exists() and company_sales_dir.is_dir():
-                csvs = [p for p in company_sales_dir.glob("*.csv") if p.is_file()]
-                if csvs:
-                    sales_file = max(csvs, key=lambda p: p.stat().st_mtime)
-                    logger.info(f"[RECOMMENDATIONS API] Found company sales file: {sales_file}")
-            
-            # Fallback to canonical location
-            if not sales_file:
-                canonical_sales = tenant_file_path(company_id, "sales.csv", branch_id=branch_id)
-                if canonical_sales.exists():
-                    sales_file = canonical_sales
-                    logger.info(f"[RECOMMENDATIONS API] Found canonical sales file: {sales_file}")
-            
-            if sales_file:
-                if not can_manage_tenant_data(current_user.get("role")):
-                    logger.info("[RECOMMENDATIONS API] Skipping auto-run for non-admin role=%s", current_user.get("role"))
-                    return Response(status_code=204)
-                logger.info(f"[RECOMMENDATIONS API] Auto-running recommendations pipeline from: {sales_file}")
-                success = trigger_recommendation_pipeline(sales_file, company_id=company_id, branch_id=branch_id)
-                if success and recommendations_path.exists():
-                    # Reload from newly generated file
-                    try:
-                        rules_df = pd.read_csv(recommendations_path)
-                        logger.info(f"[RECOMMENDATIONS API] Auto-generated recommendations: {len(rules_df)} rules")
-                        
-                        # Sync to database for future requests
-                        if ANALYTICS_PERSISTENCE_AVAILABLE and rules_df is not None and not rules_df.empty:
-                            try:
-                                save_recommendation_results(rules_df, company_id, branch_id=branch_id)
-                                logger.info("[RECOMMENDATIONS API] Synced auto-generated data to database")
-                            except Exception as e:
-                                logger.warning(f"[RECOMMENDATIONS API] Failed to sync to database: {e}")
-                    except Exception as e:
-                        logger.error(f"[RECOMMENDATIONS API] Failed to read auto-generated recommendations: {e}")
+
+        if recommendations_path is None:
+            if branch_id is None:
+                aggregated_df, _ = load_aggregated_branch_output(
+                    company_id,
+                    "product_recommendations.csv",
+                    "sales",
+                )
+                if aggregated_df is not None and not aggregated_df.empty:
+                    rules_df = aggregated_df
+                    logger.info("[RECOMMENDATIONS API] Loaded recommendations from branch aggregation")
+
+            if rules_df is None or rules_df.empty:
+                # AUTO-RUN FALLBACK: If no recommendations exist but sales data is available, run pipeline
+                logger.info("[RECOMMENDATIONS API] product_recommendations.csv not found - checking for sales data to auto-generate")
+
+                # Look for sales data in company folder or canonical location
+                sales_file = None
+                company_sales_dir = ensure_company_dir(company_id, "sales", branch_id=branch_id)
+                if company_sales_dir.exists() and company_sales_dir.is_dir():
+                    csvs = [p for p in company_sales_dir.glob("*.csv") if p.is_file()]
+                    if csvs:
+                        sales_file = max(csvs, key=lambda p: p.stat().st_mtime)
+                        logger.info(f"[RECOMMENDATIONS API] Found company sales file: {sales_file}")
+
+                # Fallback to canonical location
+                if not sales_file:
+                    canonical_sales = tenant_file_path(company_id, "sales.csv", branch_id=branch_id)
+                    if canonical_sales.exists():
+                        sales_file = canonical_sales
+                        logger.info(f"[RECOMMENDATIONS API] Found canonical sales file: {sales_file}")
+
+                if sales_file:
+                    if not can_manage_tenant_data(current_user.get("role")):
+                        logger.info("[RECOMMENDATIONS API] Skipping auto-run for non-admin role=%s", current_user.get("role"))
+                        return Response(status_code=204)
+                    logger.info(f"[RECOMMENDATIONS API] Auto-running recommendations pipeline from: {sales_file}")
+                    success = trigger_recommendation_pipeline(sales_file, company_id=company_id, branch_id=branch_id)
+                    recommendations_path = None
+                    for candidate in recs_candidates:
+                        if candidate.exists():
+                            recommendations_path = candidate
+                            break
+                    if success and recommendations_path is not None:
+                        # Reload from newly generated file
+                        try:
+                            rules_df = pd.read_csv(recommendations_path)
+                            logger.info(f"[RECOMMENDATIONS API] Auto-generated recommendations: {len(rules_df)} rules")
+
+                            # Sync to database for future requests
+                            if ANALYTICS_PERSISTENCE_AVAILABLE and rules_df is not None and not rules_df.empty:
+                                try:
+                                    save_recommendation_results(rules_df, company_id, branch_id=branch_id)
+                                    logger.info("[RECOMMENDATIONS API] Synced auto-generated data to database")
+                                except Exception as e:
+                                    logger.warning(f"[RECOMMENDATIONS API] Failed to sync to database: {e}")
+                        except Exception as e:
+                            logger.error(f"[RECOMMENDATIONS API] Failed to read auto-generated recommendations: {e}")
+                            return Response(status_code=204)
+                    else:
+                        logger.warning("[RECOMMENDATIONS API] Auto-run recommendations pipeline failed - returning 204")
                         return Response(status_code=204)
                 else:
-                    logger.warning("[RECOMMENDATIONS API] Auto-run recommendations pipeline failed - returning 204")
+                    logger.info("[RECOMMENDATIONS API] No sales data available to auto-generate recommendations - returning 204")
                     return Response(status_code=204)
-            else:
-                logger.info("[RECOMMENDATIONS API] No sales data available to auto-generate recommendations - returning 204")
-                return Response(status_code=204)
         else:
             try:
                 rules_df = pd.read_csv(recommendations_path)
                 logger.info(f"[RECOMMENDATIONS API] Loaded product_recommendations.csv: {len(rules_df)} rows")
-                
+
                 # Sync to database for future requests
                 if ANALYTICS_PERSISTENCE_AVAILABLE and not rules_df.empty:
                     try:

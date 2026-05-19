@@ -330,6 +330,15 @@ def _pick_sales_data_file(source: Optional[str] = None, company_id: Optional[str
         if candidate.exists():
             return candidate
 
+    # Legacy fallback for single-tenant/demo data stored at data/*.csv.
+    for candidate in [
+        base_dir / "cleaned_dataset.csv",
+        base_dir / "merged_data.csv",
+        base_dir / "sales.csv",
+    ]:
+        if candidate.exists():
+            return candidate
+
     raise HTTPException(
         status_code=404,
         detail="No sales dataset found. Upload sales data first (sales.csv / cleaned_dataset.csv).",
@@ -390,11 +399,16 @@ def get_inventory_products(
         # Resolver is optional; do not break the API if import fails.
         logger.warning("SchemaResolver not available or failed (%s). Falling back.", exc)
 
+    # Prefer human-readable product names when both ID and name exist.
+    if product_col and product_col in {"ProductID", "Product_ID"}:
+        for c in ("Product", "product", "ProductName", "product_name", "Description", "description"):
+            if c in df.columns:
+                product_col = c
+                break
+
     # Fallback: common product-ish columns.
     if not product_col:
         fallback_candidates = [
-            "ProductID",
-            "Product_ID",
             "Product",
             "product",
             "ProductName",
@@ -405,6 +419,8 @@ def get_inventory_products(
             "sku",
             "StockCode",
             "stock_code",
+            "ProductID",
+            "Product_ID",
         ]
         for c in fallback_candidates:
             if c in df.columns:
