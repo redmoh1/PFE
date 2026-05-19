@@ -201,7 +201,7 @@ MAX_PREVIEW_ROWS = 50
 DATE_CANDIDATES = ["OrderDate", "Sale_Date", "Order_Date", "Date", "order_date"]
 # IMPORTANT: Include "Price" for datasets that use Price instead of TotalPrice
 REVENUE_CANDIDATES = ["TotalPrice", "Price", "Sales_Amount", "SalesAmount", "Revenue", "Sales", "Amount", "amount", "price"]
-PRODUCT_CANDIDATES = ["ProductID", "Product_ID", "Product", "SKU"]
+PRODUCT_CANDIDATES = ["Product", "ProductName", "product_name", "Description", "description", "ProductID", "Product_ID", "SKU"]
 CITY_CANDIDATES = ["City", "city", "Region", "region", "Market"]
 ORDER_ID_CANDIDATES = ["OrderID", "order_id", "id", "ID", "Order_Id", "InvoiceNo"]
 CUSTOMER_ID_CANDIDATES = ["CustomerID", "Customer_ID", "customer_id", "CustomerId", "cust_id", "client_id"]
@@ -1066,6 +1066,7 @@ class MonthlySalesResponse(BaseModel):
 
 class TopProductResponse(BaseModel):
     product_id: str
+    product_name: Optional[str] = None
     revenue: float
     order_count: int
 

@@ -117,6 +117,12 @@ function normalizeEmail(email: string): string {
   return String(email || '').trim().toLowerCase();
 }
 
+function normalizeBranchSelection(branchId: string | number | null | undefined): string {
+  const value = String(branchId ?? '').trim();
+  if (!value) return '';
+  return /^\d+$/.test(value) ? value : '';
+}
+
 function normalizeVerificationChallenge(raw: VerificationChallengeResponse): PendingVerificationState {
   return {
     email: normalizeEmail(raw.email),
@@ -177,11 +183,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               ...parsedUser,
               role: normalizeUserRole(parsedUser.role),
             };
-            const savedBranch = localStorage.getItem('selected_branch_id') || '';
-            const userBranch = normalizedUser?.branchId !== undefined && normalizedUser?.branchId !== null
-              ? String(normalizedUser.branchId)
-              : '';
+            const savedBranch = normalizeBranchSelection(localStorage.getItem('selected_branch_id'));
+            const userBranch = normalizeBranchSelection(normalizedUser?.branchId);
             localStorage.setItem('auth_user', JSON.stringify(normalizedUser));
+            localStorage.setItem('selected_branch_id', savedBranch || userBranch);
             setSelectedBranchIdState(savedBranch || userBranch);
             setState({
               user: normalizedUser,
@@ -227,7 +232,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('auth_user', JSON.stringify(user));
     localStorage.setItem('company', user.company);
 
-    const initialBranch = user.branchId !== undefined && user.branchId !== null ? String(user.branchId) : '';
+    const initialBranch = normalizeBranchSelection(user.branchId);
     localStorage.setItem('selected_branch_id', initialBranch);
     setSelectedBranchIdState(initialBranch);
 
@@ -540,7 +545,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const setSelectedBranchId = useCallback((branchId: string) => {
-    const value = (branchId || '').trim();
+    const value = normalizeBranchSelection(branchId);
     setSelectedBranchIdState(value);
     localStorage.setItem('selected_branch_id', value);
   }, []);
@@ -590,8 +595,9 @@ export const useAuthFetch = () => {
       headers.set('Authorization', `Bearer ${token}`);
     }
 
-    const forcedBranch = user?.branchId !== undefined && user?.branchId !== null ? String(user.branchId) : '';
-    const effectiveBranch = canSwitchBranches(user?.role) ? selectedBranchId : (forcedBranch || selectedBranchId);
+    const forcedBranch = normalizeBranchSelection(user?.branchId);
+    const requestedBranch = normalizeBranchSelection(selectedBranchId);
+    const effectiveBranch = canSwitchBranches(user?.role) ? requestedBranch : (forcedBranch || requestedBranch);
     
     // If URL already starts with http, use as-is; otherwise prepend API_BASE_URL
     const fullUrl = (() => {

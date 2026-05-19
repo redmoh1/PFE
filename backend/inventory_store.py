@@ -737,7 +737,7 @@ def compute_avg_daily_sales(df: pd.DataFrame) -> Dict[str, float]:
 
     # Fallbacks
     if not product_col:
-        for c in ["ProductID", "Product_ID", "Product", "product", "Description", "description", "SKU", "StockCode"]:
+        for c in ["ProductID","Product", "product", "Description", "description", "SKU", "StockCode"]:
             if c in df.columns:
                 product_col = c
                 break

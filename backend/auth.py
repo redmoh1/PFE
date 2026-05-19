@@ -189,7 +189,7 @@ def _legacy_active_branch_ids(company_name: str) -> list[int]:
 
 
 def _active_branch_ids(db: Session, company_id: int) -> list[int]:
-    active_ids: list[int] = []
+    active_ids: set[int] = set()
     try:
         rows = db.connection().exec_driver_sql(
             """
@@ -200,16 +200,16 @@ def _active_branch_ids(db: Session, company_id: int) -> list[int]:
             """,
             (int(company_id),),
         ).fetchall()
-        active_ids = [int(row[0]) for row in rows if row and row[0] is not None]
+        active_ids.update(int(row[0]) for row in rows if row and row[0] is not None)
     except Exception:
-        active_ids = []
-
-    if active_ids:
-        return active_ids
+        active_ids = set()
 
     company = db.query(Company).filter(Company.id == int(company_id)).first()
     company_name = str(company.name).strip() if company and company.name else ""
-    return _legacy_active_branch_ids(company_name)
+    if company_name:
+        active_ids.update(_legacy_active_branch_ids(company_name))
+
+    return sorted(active_ids)
 
 
 def build_access_token_payload(user: User, db: Session) -> dict:
@@ -490,10 +490,11 @@ async def get_tenant_scope(
             allowed_branch_ids=allowed,
         )
 
-    # Company admins can select any branch in their company, or all branches (None).
-    active_branch_ids = set(_active_branch_ids(db, company_id))
-    claimed_branch_ids = set(int(branch) for branch in claims.allowed_branch_ids)
-    allowed_branch_ids: list[int] = sorted(claimed_branch_ids & active_branch_ids) or sorted(active_branch_ids)
+    # Company-scoped roles should follow the current DB state, not stale token claims.
+    # Tokens can outlive branch create/delete operations, so relying on the embedded
+    # allowed_branch_ids list causes false "Branch access denied" responses.
+    active_branch_ids = sorted(set(_active_branch_ids(db, company_id)))
+    allowed_branch_ids: list[int] = active_branch_ids
 
     if branch_id is None:
         return TenantScope(
