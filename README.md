@@ -162,6 +162,9 @@ Note: full mode can be very large (NLP/ML libs).
 ### Production notes
 
 - If you set `ENVIRONMENT=production` on the backend, you must set `JWT_SECRET_KEY` (required by the backend).
+- Docker Compose now forwards the backend email settings from the host environment or `.env`, including `EMAIL_DELIVERY_MODE`, `SMTP_*`, `RESEND_*`, and `FRONTEND_BASE_URL`.
+- To enable real email delivery in production with SMTP, set `ENVIRONMENT=production`, `EMAIL_DELIVERY_MODE=smtp`, valid `SMTP_*` values, and a public `FRONTEND_BASE_URL` before rebuilding the backend.
+- To enable Resend instead, set `ENVIRONMENT=production`, `EMAIL_DELIVERY_MODE=resend`, `RESEND_API_KEY`, optionally `RESEND_API_BASE_URL`, and a verified sender in `SMTP_FROM_EMAIL` plus a public `FRONTEND_BASE_URL`.
 - If you host the frontend separately (different domain), set backend `CORS_ORIGINS` to your frontend URL.
 - The frontend container now proxies API calls through `API_UPSTREAM`. In local Docker Compose it defaults to `http://backend:8001`, but in hosted environments you should override it to the real backend URL or internal service address exposed by your platform.
 - If you deploy the frontend as static files without the bundled nginx reverse proxy, set `VITE_API_BASE` at build time to your public backend URL so the app does not fall back to same-origin `/api` requests.

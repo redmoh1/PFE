@@ -772,10 +772,6 @@ def register_user(
             message = "Registration completed, but email delivery is running in console mode. Check backend logs for the verification code or configure SMTP to send real emails."
     except EmailDeliveryError as exc:
         logger.warning("Failed to send verification email to %s: %s", new_user.email, exc)
-        pending_otp.used = True
-        pending_otp.used_at = _utcnow()
-        db.commit()
-        challenge_otp_record = None
         email_sent = False
         message = "Registration completed, but the verification email could not be sent. Use resend to request a new code."
 
@@ -954,10 +950,6 @@ def resend_email_otp(
             message = "Email delivery is running in console mode. Check backend logs for the latest verification code or configure SMTP to send real emails."
     except EmailDeliveryError as exc:
         logger.warning("Failed to resend verification email to %s: %s", user.email, exc)
-        otp_record.used = True
-        otp_record.used_at = _utcnow()
-        db.commit()
-        challenge_otp_record = None
         email_sent = False
         message = "We could not send a new verification email right now. Please try again shortly."
 

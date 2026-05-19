@@ -6,10 +6,25 @@ services:
       args:
         INSTALL_FULL: "false"
     environment:
-      # Keep development by default; if you set ENVIRONMENT=production you MUST set JWT_SECRET_KEY
-      ENVIRONMENT: development
-      # If you host frontend separately, set CORS_ORIGINS to your frontend domain
-      # CORS_ORIGINS: "https://your-frontend.example"
+      # Override these in a local .env or host environment for production deployments.
+      ENVIRONMENT: "${ENVIRONMENT:-development}"
+      JWT_SECRET_KEY: "${JWT_SECRET_KEY:-}"
+      ONE_TIME_TOKEN_SECRET: "${ONE_TIME_TOKEN_SECRET:-}"
+      ACCESS_TOKEN_EXPIRE_MINUTES: "${ACCESS_TOKEN_EXPIRE_MINUTES:-1440}"
+      # If you host frontend separately, set CORS_ORIGINS to your frontend domain.
+      CORS_ORIGINS: "${CORS_ORIGINS:-http://localhost:5173,http://localhost:3000}"
+      FRONTEND_BASE_URL: "${FRONTEND_BASE_URL:-http://127.0.0.1:3000}"
+      EMAIL_DELIVERY_MODE: "${EMAIL_DELIVERY_MODE:-}"
+      SMTP_HOST: "${SMTP_HOST:-}"
+      SMTP_PORT: "${SMTP_PORT:-587}"
+      SMTP_USERNAME: "${SMTP_USERNAME:-}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD:-}"
+      SMTP_FROM_EMAIL: "${SMTP_FROM_EMAIL:-}"
+      SMTP_FROM_NAME: "${SMTP_FROM_NAME:-InsightPro}"
+      SMTP_USE_STARTTLS: "${SMTP_USE_STARTTLS:-true}"
+      SMTP_USE_SSL: "${SMTP_USE_SSL:-false}"
+      RESEND_API_KEY: "${RESEND_API_KEY:-}"
+      RESEND_API_BASE_URL: "${RESEND_API_BASE_URL:-https://api.resend.com}"
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs

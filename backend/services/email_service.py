@@ -1,7 +1,8 @@
-"""SMTP-backed transactional email delivery."""
+"""Transactional email delivery providers for auth flows."""
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import smtplib
@@ -11,6 +12,8 @@ from datetime import datetime, timezone
 from email.message import EmailMessage
 from pathlib import Path
 from typing import Mapping
+from urllib import error as urllib_error
+from urllib import request as urllib_request
 from urllib.parse import urlencode, urlparse, parse_qsl, urlunparse
 
 try:
@@ -61,7 +64,7 @@ def _mirror_self_delivery(settings: "EmailSettings", recipient_email: str, subje
     with SELF_DELIVERY_DEBUG_LOG.open("a", encoding="utf-8") as handle:
         handle.write(f"[{timestamp}] To={recipient_email} Subject={subject}\n")
         handle.write(
-            "Gmail self-delivery mirror: sender and recipient are the same mailbox, so Gmail may show this message under Sent or All Mail instead of Inbox.\n\n"
+            "Self-delivery mirror: sender and recipient are the same mailbox, so your mail provider may show this message under Sent or All Mail instead of Inbox.\n\n"
         )
         handle.write(text_body)
         handle.write("\n" + ("-" * 80) + "\n")
@@ -87,6 +90,8 @@ class EmailSettings:
     smtp_from_name: str
     smtp_use_starttls: bool
     smtp_use_ssl: bool
+    resend_api_key: str
+    resend_api_base_url: str
     frontend_base_url: str
 
     @classmethod
@@ -108,6 +113,8 @@ class EmailSettings:
             smtp_from_name=os.getenv("SMTP_FROM_NAME", "InsightPro").strip() or "InsightPro",
             smtp_use_starttls=_env_flag("SMTP_USE_STARTTLS", True),
             smtp_use_ssl=_env_flag("SMTP_USE_SSL", False),
+            resend_api_key=os.getenv("RESEND_API_KEY", "").strip(),
+            resend_api_base_url=(os.getenv("RESEND_API_BASE_URL", "https://api.resend.com").strip() or "https://api.resend.com").rstrip("/"),
             frontend_base_url=(os.getenv("FRONTEND_BASE_URL", "http://127.0.0.1:3000").strip() or "http://127.0.0.1:3000").rstrip("/"),
         )
 
@@ -120,6 +127,66 @@ def build_frontend_url(query_params: Mapping[str, str]) -> str:
     return urlunparse(parsed._replace(query=urlencode(existing_params)))
 
 
+def _send_via_resend(
+    *,
+    settings: EmailSettings,
+    recipient_email: str,
+    subject: str,
+    html_body: str,
+    text_body: str,
+) -> EmailDeliveryResult:
+    if not settings.resend_api_key:
+        raise EmailDeliveryError("Resend delivery is not configured. Set RESEND_API_KEY.")
+
+    if not settings.smtp_from_email:
+        raise EmailDeliveryError("Resend delivery requires SMTP_FROM_EMAIL for the sender address.")
+
+    payload = {
+        "from": f"{settings.smtp_from_name} <{settings.smtp_from_email}>",
+        "to": [recipient_email],
+        "subject": subject,
+        "html": html_body,
+        "text": text_body,
+    }
+    request = urllib_request.Request(
+        f"{settings.resend_api_base_url}/emails",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {settings.resend_api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "InsightPro/1.0",
+        },
+        method="POST",
+    )
+
+    try:
+        with urllib_request.urlopen(request, timeout=30) as response:
+            response_body = response.read().decode("utf-8") if response else ""
+        response_payload = json.loads(response_body) if response_body else {}
+    except urllib_error.HTTPError as exc:
+        error_body = exc.read().decode("utf-8", errors="replace")
+        try:
+            error_payload = json.loads(error_body) if error_body else {}
+        except json.JSONDecodeError:
+            error_payload = {}
+        detail = error_payload.get("message") or error_payload.get("name") or error_body or exc.reason
+        raise EmailDeliveryError(f"Resend API request failed ({exc.code}): {detail}") from exc
+    except urllib_error.URLError as exc:
+        reason = getattr(exc, "reason", exc)
+        raise EmailDeliveryError(f"Failed to send email via Resend: {reason}") from exc
+    except OSError as exc:
+        raise EmailDeliveryError(f"Failed to send email via Resend: {exc}") from exc
+
+    logger.info(
+        "[Email:resend] To=%s Subject=%s Id=%s",
+        recipient_email,
+        subject,
+        response_payload.get("id", "unknown"),
+    )
+    _mirror_self_delivery(settings, recipient_email, subject, text_body)
+    return EmailDeliveryResult(delivery_mode=settings.delivery_mode, delivered_externally=True)
+
+
 def send_transactional_email(*, recipient_email: str, subject: str, html_body: str, text_body: str) -> EmailDeliveryResult:
     settings = EmailSettings.from_env()
 
@@ -128,6 +195,15 @@ def send_transactional_email(*, recipient_email: str, subject: str, html_body: s
         logger.info("[Email:console] Body:\n%s", text_body)
         _mirror_self_delivery(settings, recipient_email, subject, text_body)
         return EmailDeliveryResult(delivery_mode=settings.delivery_mode, delivered_externally=False)
+
+    if settings.delivery_mode == "resend":
+        return _send_via_resend(
+            settings=settings,
+            recipient_email=recipient_email,
+            subject=subject,
+            html_body=html_body,
+            text_body=text_body,
+        )
 
     if settings.delivery_mode != "smtp":
         raise EmailDeliveryError(f"Unsupported email delivery mode: {settings.delivery_mode}")

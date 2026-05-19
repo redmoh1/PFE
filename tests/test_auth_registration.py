@@ -1,5 +1,6 @@
 import sqlite3
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 import pytest
@@ -235,6 +236,83 @@ def test_register_console_mode_does_not_claim_external_email_delivery(registrati
         headers={"Authorization": f"Bearer {verify_body['access_token']}"},
     )
     assert token_check.status_code == 200
+
+
+def test_register_smtp_failure_keeps_verification_challenge_active(registration_client, monkeypatch):
+    client, session_local, _, _, _, _ = registration_client
+
+    monkeypatch.setattr(
+        auth_routes,
+        "_send_verification_email",
+        lambda user, company_name, otp_code: (_ for _ in ()).throw(
+            auth_routes.EmailDeliveryError("smtp unavailable")
+        ),
+    )
+
+    payload = {
+        "company_name": "SMTP Failure Labs",
+        "branch_name": "HQ",
+        "full_name": "Nadia Rahal",
+        "email": "nadia@smtp-failure.example",
+        "password": "StrongPass123",
+    }
+
+    response = client.post("/api/auth/register", json=payload)
+    assert response.status_code == 201
+
+    body = response.json()
+    assert body["verification_required"] is True
+    assert body["email_sent"] is False
+    assert "could not be sent" in body["message"].lower()
+    assert body["expires_in"] > 0
+    assert body["resend_available_in"] == auth_routes.EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS
+
+    with session_local() as db:
+        otp_record = db.query(EmailVerificationOTP).one()
+        assert otp_record.used is False
+
+    verify_response = client.post(
+        "/api/auth/verify-email",
+        json={"email": payload["email"], "otp": "123456"},
+    )
+    assert verify_response.status_code == 200
+
+
+def test_resend_smtp_failure_keeps_latest_otp_active(registration_client, monkeypatch):
+    client, session_local, _, _, _, _ = registration_client
+
+    payload = _register_pending_admin(client)
+    with session_local() as db:
+        otp_record = db.query(EmailVerificationOTP).one()
+        otp_record.created_at = otp_record.created_at - timedelta(
+            seconds=auth_routes.EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS + 1
+        )
+        db.commit()
+
+    monkeypatch.setattr(
+        auth_routes,
+        "_send_verification_email",
+        lambda user, company_name, otp_code: (_ for _ in ()).throw(
+            auth_routes.EmailDeliveryError("smtp unavailable")
+        ),
+    )
+
+    response = client.post(
+        "/api/auth/verify-email/resend",
+        json={"email": payload["email"]},
+    )
+    assert response.status_code == 200
+
+    body = response.json()
+    assert body["email_sent"] is False
+    assert "could not send" in body["message"].lower()
+    assert body["expires_in"] > 0
+    assert body["resend_available_in"] == auth_routes.EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS
+
+    with session_local() as db:
+        otp_records = db.query(EmailVerificationOTP).order_by(EmailVerificationOTP.id.asc()).all()
+        assert len(otp_records) == 2
+        assert otp_records[-1].used is False
 
 
 def test_register_rejects_duplicate_email_case_insensitive(registration_client):
