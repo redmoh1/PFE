@@ -4,8 +4,8 @@
 
 This is a complete sales intelligence platform that brings together data analytics, machine learning, and modern web technologies. The system is designed to help businesses understand their sales patterns, predict future trends, and make data-driven decisions.
 
-**🎯 Target Market:** MENA SME Retail Analytics  
-**💎 Killer Feature:** End-to-end Sales Overview + forecasting
+** Target Market:** MENA SME Retail Analytics  
+** Killer Feature:** End-to-end Sales Overview + forecasting
 
 The project consists of three main components:
 
@@ -15,7 +15,7 @@ The project consists of three main components:
 
 ---
 
-## 🚀 Key Differentiators
+## Key Differentiators
 
 | Feature | Description |
 |---------|-------------|
@@ -27,7 +27,7 @@ The project consists of three main components:
 
 ---
 
-## 📊 Intelligence Modules
+##  Intelligence Modules
 
 ### New in v2.0
 
@@ -111,7 +111,7 @@ Company admins can switch branches in the UI. Branch admins are locked to their 
 
 ## Getting Started
 
-## 🧰 Hosting (Docker) — Recommended
+##  Hosting (Docker) — Recommended
 
 This repo includes a ready-to-run Docker setup that:
 
